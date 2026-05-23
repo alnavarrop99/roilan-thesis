@@ -1,0 +1,45 @@
+% ===========================================================================
+% Figura 1.3: Medición del retardo en gPTP (Peer Delay Mechanism)
+% Basada en la Figura 1.3 del documento base
+% ===========================================================================
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+\begin{document}
+\begin{tikzpicture}[
+    blk/.style={rectangle, draw, thick, minimum width=2.5cm, minimum height=1.2cm, align=center, font=\small},
+    msg/.style={thick, -{Stealth[length=2.5mm,width=2mm]}},
+    ts/.style={font=\small, inner sep=2pt}
+  ]
+
+  % Nodos
+  \node[blk, fill=blue!10] (req) at (0,0) {SOLICITANTE\\(Maestro)};
+  \node[blk, fill=green!10] (resp) at (7,0) {RESPONDEDOR\\(Esclavo)};
+
+  % Ejes de tiempo
+  \draw[thick, -{Stealth[length=2mm]}] (-0.5,-1) -- (7.5,-1) node[below] {$t$ (solicitante)};
+  \draw[thick, -{Stealth[length=2mm]}] (-0.5+7.5,-1) -- (7.5+7.5,-1) node[below] {$t$ (respondedor)};
+
+  % Mensaje 1: Pdelay_Req
+  \draw[msg] (req.north) .. controls +(0,4) and +(0,4) .. node[above, font=\small] {\emph{Pdelay\_Req}} (resp.north);
+  \draw[fill] (req.north) ++(0,0.5) circle (2pt) node[right, ts] {$t_1$};
+  \draw[fill] (resp.north) ++(0,0.5) circle (2pt) node[left, ts] {$t_2$};
+
+  % Mensaje 2: Pdelay_Resp
+  \draw[msg, dashed] (resp.south) .. controls +(0,-4) and +(0,-4) .. node[below, font=\small] {\emph{Pdelay\_Resp}} (req.south);
+  \draw[fill] (resp.south) ++(0,-0.5) circle (2pt) node[left, ts] {$t_3$};
+  \draw[fill] (req.south) ++(0,-0.5) circle (2pt) node[right, ts] {$t_4$};
+
+  % Mensaje 3: Pdelay_Resp_Follow_Up
+  \draw[msg, dashed] ($(resp.south)+(0,-1)$) .. controls +(0,-5) and +(0,-5) .. node[below, font=\small] {\emph{PdelayResp}}\node[below, font=\small] {\emph{FollowUp}($t_3$)} ($(req.south)+(0,-1)$);
+
+  % Fórmula
+  \node[draw, thick, fill=white, rounded corners, font=\footnotesize] at (3.75,-4.5) {$\displaystyle \text{Pdelay} = \frac{(t_4 - t_1) - r(t_3 - t_2)}{2}$};
+
+  \node[font=\small, text=gray, below, align=center] at (3.75,-5.5) {Fuente: Adaptado de [48].\\$r$ = \textit{rate ratio} = $f_{esclavo} / f_{maestro}$};
+\end{tikzpicture}
+\end{document}

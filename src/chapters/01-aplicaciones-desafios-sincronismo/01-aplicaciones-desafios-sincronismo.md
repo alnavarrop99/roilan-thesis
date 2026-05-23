@@ -32,6 +32,9 @@ Donde $\alpha_u$ y $\beta_u$ son la desviación y el desfasaje del reloj en el n
 
 Los protocolos de sincronización de relojes se basan en la comunicación de la estación maestra de tiempo (*master clock*) a la estación esclava (*slave*), y pueden ser unidireccionales o bidireccionales. En el primer caso, el maestro actúa como estación emisora y puede enviar señales de tiempo de forma continua o periódica, pero no recibe retroalimentación del esclavo. En el esquema bidireccional, los dispositivos intercambian mensajes con marcas de tiempo, permitiendo al esclavo estimar el desfasaje respecto al maestro y corregir su reloj local. Este último enfoque es el adoptado por los principales protocolos de sincronización de precisión, como el Protocolo de Tiempo de Precisión (PTP) y su perfil generalizado (gPTP).
 
+![Sincronización unidireccional y bidireccional](../../figures/ch01/fig_1_1_sync_uni_vs_bidi.pdf)
+*Figura 1.1. Sincronización de reloj unidireccional y bidireccional.*
+
 En los últimos años, la integración de redes TSN con tecnologías inalámbricas como 5G ha generado un renovado interés en la sincronización de precisión sobre enlaces inalámbricos [15], [16]. La capacidad de 5G para proporcionar conectividad de baja latencia y alta confiabilidad lo convierte en un habilitador clave para aplicaciones de automatización industrial, vehículos conectados y sistemas multi-sensor que requieren sincronización precisa [17].
 
 ## 1.2 Aplicaciones del sincronismo en IoT
@@ -57,6 +60,9 @@ Entre las aplicaciones concretas que dependen de una sincronización precisa se 
 ## 1.3 Desafíos del sincronismo en redes inalámbricas
 
 Lograr una sincronización precisa en redes inalámbricas presenta desafíos considerablemente mayores que en las redes cableadas. La tecnología inalámbrica ha aportado nuevas posibilidades y ventajas a las comunicaciones de red, en contraste con las redes cableadas, pero, a diferencia de la comunicación basada en Ethernet, los enlaces inalámbricos introducen falta de fiabilidad, canales y latencias asimétricas, interferencia de canal y distorsión de la señal en la ruta de comunicación, lo que dificulta el desarrollo de normas e implementaciones adecuadas para hacer posible el sincronismo en redes inalámbricas [21].
+
+![Fuentes de error de sincronización](../../figures/ch01/fig_1_2_fuentes_error.pdf)
+*Figura 1.2. Fuentes de error de sincronización.*
 
 A continuación, se describen los principales desafíos que afectan la sincronización de tiempo en entornos inalámbricos.
 
@@ -167,13 +173,33 @@ Las principales características que distinguen a gPTP de PTP incluyen:
 
 5. **Soporte para múltiples saltos**: gPTP está diseñado para operar en redes con múltiples saltos (*multi-hop*), donde los relojes de frontera en cada salto regeneran la señal de sincronización, acumulando potencialmente errores [31].
 
+![Medición del retardo en gPTP](../../figures/ch01/fig_1_3_gptp_medicion_retardo.pdf)
+*Figura 1.3. Medición del retardo en gPTP.*
+
 El intercambio de mensajes en gPTP sigue un esquema similar al de PTP de dos pasos. El cálculo del desfasaje se realiza mediante la Ecuación (1.3) anterior, y el retardo de propagación en cada enlace se mide periódicamente. La frecuencia de los mensajes *Sync* y del mecanismo de medición de retardo determina la velocidad de convergencia y la estabilidad de la sincronización [33].
+
+![Cálculo del retardo e impacto de la deriva](../../figures/ch01/fig_1_4_retardo_y_deriva.pdf)
+*Figura 1.4. (a) Procedimiento para calcular el retardo de propagación; (b) Impacto de la deriva de los relojes.*
 
 Sin embargo, al igual que PTP, gPTP asume que el retardo de propagación es simétrico en ambos sentidos del enlace. Esta suposición, razonable en enlaces Ethernet cableados *full-duplex*, no se cumple en la mayoría de los enlaces inalámbricos. Como resultado, la presencia de retardos asimétricos en los canales inalámbricos introduce un error sistemático en el cálculo del *offset*, degradando significativamente la precisión del sincronismo [25], [14].
 
 La versión 2020 del estándar IEEE 802.1AS [30] introduce mejoras significativas respecto a la versión anterior de 2011, incluyendo soporte para múltiples dominios de tiempo (opcional), mayor precisión en la medición de retardos, y mecanismos mejorados para la redundancia. No obstante, la compensación explícita de asimetrías sigue siendo un área de investigación activa no completamente resuelta por el estándar [31].
 
 Trabajos recientes han explorado la aplicación de gPTP en contextos novedosos como la integración TSN-5G [15], [16] y los sistemas autónomos multisensor [17]. En estos escenarios, la asimetría de los enlaces inalámbricos se manifiesta de forma particularmente severa, lo que motiva el desarrollo de métodos de corrección específicos como los que se abordan en el Capítulo 2 de la presente investigación.
+
+La Tabla 1.1 presenta una comparación resumida de los principales protocolos de sincronización, destacando las fortalezas y limitaciones de cada uno en el contexto de las redes inalámbricas.
+
+**Tabla 1.1. Comparación de las principales características de los protocolos de sincronización.**
+
+| Característica | NTP | PTP (IEEE 1588) | gPTP (IEEE 802.1AS) | GPS |
+|----------------|-----|-----------------|----------------------|-----|
+| Precisión típica | ∼ms | ∼ns–µs | ∼ns | ∼ns |
+| Medio | IP genérico | Ethernet | Ethernet / Inalámbrico | Satelital |
+| Timestamp | Software | HW/SW | HW preferido | Receptor dedicado |
+| Comunicación | Cliente-servidor | Multicast (BMCA) | Peer-to-peer (Pdelay) | Unidireccional |
+| Overhead | Bajo | Medio | Medio | Alto |
+| Costo | Gratuito | Bajo | Bajo | Elevado |
+| IoT | Limitada | Factible | Recomendado | Impracticable |
 
 ## 1.6 Conclusiones del capítulo
 

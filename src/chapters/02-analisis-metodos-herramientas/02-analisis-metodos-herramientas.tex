@@ -18,6 +18,13 @@ La clave para obtener una sincronización de tiempo de alto rendimiento está es
 
 Como el retardo de procesamiento de las soluciones de sellado de tiempo de hardware se puede diseñar para que sea constante, las correcciones de tiempo requeridas pueden ser muy precisas (en el orden de los nanosegundos) y, por lo tanto, las estampas de tiempo también. Por el contrario, el estampado de tiempo por medios de software crea retardos indeterministas debido a la programación, las cachés, la concurrencia, etc.\ y, por lo tanto, la estampa de tiempo debe estar lo más cerca posible del medio~\cite{mahmood2014}. Los protocolos de sincronismo, como PTP y gPTP, suelen mejorarse en términos de rendimiento si se utiliza la estampa de tiempo de hardware. Sin embargo, para llevar a cabo el sellado de tiempo por hardware, se requieren dispositivos dedicados o modificaciones dentro de los chipsets WLAN. Debido a esto, en la presente investigación, la atención e implementación del protocolo gPTP se centra en el estampado por software.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/ch02/fig_2_1_ubicaciones_ts}
+  \caption{Ubicaciones para la estampa de tiempo en redes orientadas a paquetes.}
+  \label{fig:2.1}
+\end{figure}
+
 Los protocolos de sincronismo basados en paquetes, como gPTP, dependen de la calidad de las estampas de tiempo tomadas en la recepción y transmisión de los mismos. Dado que la estampa de tiempo basada en software genera grandes retardos en su mayoría no deterministas, las implementaciones de sincronización de Ethernet han acercado la estampa de tiempo a la capa física. Sin embargo, la mayoría de los enfoques de sincronización inalámbrica se limitan a la estampa de tiempo de software debido a la falta de funciones de sellado de tiempo por hardware~\cite{exel2012}.
 
 Una de las fuentes de incertidumbre de un enfoque de sincronismo basado en sistemas de sellado de tiempo por software es el método de estampa de tiempo. Según~\cite{ferrari2011}, entre las diversas fuentes de imprecisión en el sellado de tiempo por software se tienen:
@@ -71,6 +78,13 @@ El método Exel alcanza, según sus autores, una precisión de entre 10 y 100~ns
 
 \textbf{Limitaciones del método Exel:} (1) solo corrige los retardos deterministas conocidos; las asimetrías desconocidas o variantes en el tiempo no son compensadas; (2) no realiza filtrado estadístico de las mediciones, por lo que es sensible al ruido de medición y a valores atípicos; (3) no estima ni compensa la deriva (\textit{skew}) de los relojes, solo el offset.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch02/fig_2_2_latencias_sw}
+  \caption{Latencias de estampa de tiempo de software.}
+  \label{fig:2.2}
+\end{figure}
+
 \subsection{Métodos basados en Filtros de Kalman}
 \label{sec:2.2.2}
 
@@ -121,37 +135,7 @@ El Filtro de Kalman (KF) es un estimador óptimo para sistemas lineales con ruid
 
 La Tabla~\ref{tab:comparacion} presenta una comparación sistemática de los métodos analizados, evaluados según cinco criterios: precisión reportada, complejidad computacional, compatibilidad con gPTP, capacidad de manejar asimetrías desconocidas y madurez de la técnica.
 
-\begin{table}[h]
-\centering
-\caption{Comparación de métodos para mitigación de retardos asimétricos en PTP/gPTP.}
-\label{tab:comparacion}
-\small
-\begin{tabular}{|p{2.8cm}|p{2.0cm}|p{1.8cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.2cm}|}
-\hline
-\textbf{Método} & \textbf{Categoría} & \textbf{Precisión} & \textbf{Complej.} & \textbf{Compat. gPTP} & \textbf{Asim. desc.} & \textbf{Madurez} \\
-\hline
-Exel (2014)~\cite{exel2014} & Corr.\ determinista & 101.5~$\mu$s (sim.) & Baja & Alta & No & Alta \\
-\hline
-Li et al.\ (2024)~\cite{li2024} & KF 2.º orden & $\pm 3$~$\mu$s & Media & Alta & Sí & Alta \\
-\hline
-Hollósi \& Ficzere (2024)~\cite{hollosi2024} & AKF & 40--60\% mejora & Media-Alta & Alta & Sí & Alta \\
-\hline
-Liu \& Wang (2024)~\cite{liu2024} & KF robusto & $<5$~$\mu$s RMSE & Media-Alta & Alta & Sí & Alta \\
-\hline
-Wang et al.\ (2021)~\cite{wang2021} & EKF sin timestamp & $<1$~$\mu$s & Media & Media & Sí & Media \\
-\hline
-Karthik \& Blum (2020)~\cite{karthik2020} & Est.\ robusta & Cotas óptimas & Alta & Alta & Sí & Alta \\
-\hline
-Nguyen et al.\ (2020)~\cite{nguyen2020} & Fuzzy-PI & $<100$~ns & Media & Media & Parcial & Media \\
-\hline
-Zhang et al.\ (2024)~\cite{zhang2024} & Fuzzy-PI + vent. & 52\% reducción & Media-Alta & Media & Parcial & Baja \\
-\hline
-Wang et al.\ (2026)~\cite{wang2026} & Compet.\ Learning & Robusto & Alta & Media-Alta & Sí & Baja \\
-\hline
-Puttnies et al.\ (2018)~\cite{puttnies2018} & Prog.\ Lineal & Factor $10^4$ & Media-Alta & Media & No & Media \\
-\hline
-\end{tabular}
-\end{table}
+\input{tables/tab_2_2_comparacion_metodos}
 
 Del análisis comparativo se concluye que los métodos basados en Filtro de Kalman, y en particular el Filtro de Kalman Adaptativo (AKF), ofrecen la mejor relación entre precisión, complejidad computacional y compatibilidad con gPTP. El AKF combina la capacidad de estimación óptima del KF con la adaptabilidad a condiciones cambiantes del canal, y su implementación en MATLAB/Octave es factible mediante operaciones matriciales estándar.
 
@@ -162,6 +146,13 @@ No obstante, el método de Exel ofrece una ventaja fundamental: su corrección d
 \label{sec:2.3}
 
 Como resultado del análisis sistemático presentado en la Sección~\ref{sec:2.2}, se selecciona un \textbf{enfoque híbrido que combina la corrección determinista de estampas de tiempo de Exel con un Filtro de Kalman Adaptativo (AKF)} para la compensación de retardos asimétricos en el protocolo gPTP.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.65\textwidth]{figures/ch02/fig_2_4_metodo_hibrido}
+  \caption{Arquitectura del método híbrido Exel + AKF.}
+  \label{fig:2.4}
+\end{figure}
 
 \subsection{Arquitectura de dos etapas}
 \label{sec:2.3.1}
@@ -245,27 +236,14 @@ donde $\nu_i = z_i - \mathbf{H} \hat{\mathbf{x}}_{i|i-1}$ es la innovación (res
 
 Los siguientes parámetros deben determinarse experimentalmente durante la fase de implementación:
 
-\begin{table}[h]
-\centering
-\caption{Parámetros del AKF y métodos de determinación.}
-\label{tab:params}
-\small
-\begin{tabular}{|p{2.5cm}|p{5.5cm}|p{4.5cm}|}
-\hline
-\textbf{Parámetro} & \textbf{Descripción} & \textbf{Método de determinación} \\
-\hline
-$\mathbf{Q}_0$ & Covarianza inicial del ruido de proceso & Calibración mediante simulaciones preliminares \\
-\hline
-$\mathbf{P}_0$ & Covarianza inicial del error de estimación & Matriz diagonal con valores grandes (baja confianza inicial) \\
-\hline
-$\mathbf{x}_0$ & Estado inicial $[\theta_0, s_0, \Delta_0]^T$ & $\theta_0$ de la primera medición Exel; $s_0=0$; $\Delta_0=0$ \\
-\hline
-$N$ & Tamaño de ventana para $\hat{R}_k$ & Optimización empírica (valores típicos: 10--50) \\
-\hline
-$\tau$ & Intervalo entre mediciones & 2~s (período nominal de gPTP) \\
-\hline
-\end{tabular}
-\end{table}
+\input{tables/tab_2_3_parametros_akf}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figures/ch02/fig_2_5_ciclo_akf}
+  \caption{Ciclo de predicción-actualización del Filtro de Kalman Adaptativo.}
+  \label{fig:2.5}
+\end{figure}
 
 \subsection{Ventajas del enfoque híbrido}
 \label{sec:2.3.5}

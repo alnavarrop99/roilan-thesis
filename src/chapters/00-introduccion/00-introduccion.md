@@ -19,7 +19,13 @@ En correspondencia con lo expuesto, se propone el siguiente **problema de invest
 
 La **hipótesis** de la investigación se formula de la siguiente manera: si se emplea una versión del protocolo gPTP que combine la corrección determinista de estampas de tiempo con un filtrado estadístico adaptativo, entonces se logra mitigar los efectos negativos de los retardos de propagación asimétricos con una efectividad superior a la alcanzada por el método de corrección determinista por sí solo, lo que resulta en una mejora significativa adicional en la precisión del sincronismo.
 
-En el desarrollo de la investigación se utilizaron los siguientes **métodos científicos**: analítico-sintético, inductivo-deductivo, estadístico-matemáticos, medición y modelación.
+En el desarrollo de la investigación se utilizaron los siguientes **métodos científicos**: analítico-sintético, inductivo-deductivo, estadístico-matemáticos, medición y modelación. El desarrollo de cada componente de la tesis siguió el ciclo iterativo Research-Execute-Validate-Test (R-E-V-T), ilustrado en la Figura 1.
+
+![Ciclo R-E-V-T](../../figures/intro/fig_intro_ciclo_revt.pdf)
+*Figura 1. Ciclo iterativo Research-Execute-Validate-Test aplicado en la investigación.*
+
+![Estructura de la tesis](../../figures/intro/fig_intro_estructura.pdf)
+*Figura 2. Estructura lógica de la tesis.*
 
 Para su presentación, este trabajo de diploma cuenta con una estructura lógica compuesta por el resumen de la investigación, el índice, la introducción, y tres capítulos donde se desarrolla la investigación. En el **Capítulo 1** se realiza una revisión bibliográfica que aborda el sincronismo en redes inalámbricas, sus principales aplicaciones en IoT, los desafíos técnicos, el efecto de las asimetrías y una caracterización de los protocolos de sincronización PTP y gPTP. En el **Capítulo 2** se efectúa un análisis sistemático de 15 métodos existentes para mitigar el efecto de los retardos asimétricos, organizados en siete categorías (corrección determinista, filtros de Kalman, estimación robusta, lógica difusa, aprendizaje computacional, filtros de partículas y programación lineal), y se selecciona y describe en detalle un enfoque híbrido que combina la corrección de Exel con un Filtro de Kalman Adaptativo. El **Capítulo 3** describe las características de la implementación desarrollada en MATLAB/GNU Octave y presenta los resultados de la simulación Monte Carlo, comparando el rendimiento del método propuesto con el método de referencia Exel y con el protocolo estándar. Finalmente, se expresan las conclusiones y recomendaciones para trabajos futuros, y se incluyen las referencias bibliográficas según la norma IEEE.
 

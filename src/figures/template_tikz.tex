@@ -1,0 +1,64 @@
+% ===========================================================================
+% Plantilla TikZ para figuras de la tesis
+% Uso: copiar este archivo como base para cada figura nueva
+% Compilar: pdflatex fig_X_Y.tex
+% ===========================================================================
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds}
+
+% ---------------------------------------------------------------------------
+% Paleta de colores unificada (colorblind-safe)
+% ---------------------------------------------------------------------------
+\definecolor{cSym}{HTML}{2ca02c}   % verde  — simétrico / ideal
+\definecolor{cAsy}{HTML}{d62728}   % rojo   — asimétrico sin corrección
+\definecolor{cExl}{HTML}{1f77b4}   % azul   — Exel
+\definecolor{cAKF}{HTML}{ff7f0e}   % naranja — AKF
+\definecolor{cRef}{HTML}{cccccc}   % gris   — referencia / grid
+\definecolor{cBlk}{HTML}{333333}   % gris oscuro — texto
+
+% ---------------------------------------------------------------------------
+% Estilos de nodos comunes
+% ---------------------------------------------------------------------------
+\tikzset{
+  block/.style={
+    rectangle, draw=cBlk, thick, fill=white,
+    minimum width=2.5cm, minimum height=1cm,
+    text centered, font=\small, rounded corners=2pt
+  },
+  block filled/.style={
+    rectangle, draw=cBlk, thick, fill=#1,
+    text=white, font=\small\bfseries, rounded corners=2pt,
+    minimum width=2.5cm, minimum height=1cm, text centered
+  },
+  arrow/.style={
+    -{Stealth[length=3mm, width=2mm]}, thick, cBlk
+  },
+  arrow colored/.style={
+    -{Stealth[length=3mm, width=2mm]}, thick, #1
+  },
+  label node/.style={
+    font=\footnotesize, cBlk, align=center
+  },
+  timeline/.style={
+    -{Stealth[length=2mm]}, thick, cBlk
+  }
+}
+
+% ---------------------------------------------------------------------------
+% Documento mínimo de ejemplo (borrar o adaptar)
+% ---------------------------------------------------------------------------
+\begin{document}
+\begin{tikzpicture}[node distance=2cm, auto]
+  % Ejemplo de diagrama de bloques
+  \node[block filled=cExl] (exel) {Etapa 1: Exel};
+  \node[block filled=cAKF, right=of exel] (akf) {Etapa 2: AKF};
+  \node[block, right=of akf] (corr) {Corrección};
+
+  \draw[arrow] (exel) -- node[above, label node] {$\hat\theta_{\text{Exel}}$} (akf);
+  \draw[arrow] (akf)  -- node[above, label node] {$\hat\theta_{\text{AKF}}$} (corr);
+\end{tikzpicture}
+\end{document}

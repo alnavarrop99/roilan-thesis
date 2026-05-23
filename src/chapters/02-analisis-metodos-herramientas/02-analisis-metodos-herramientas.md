@@ -10,6 +10,9 @@ La clave para obtener una sincronización de tiempo de alto rendimiento está es
 
 Como el retardo de procesamiento de las soluciones de sellado de tiempo de hardware se puede diseñar para que sea constante, las correcciones de tiempo requeridas pueden ser muy precisas (en el orden de los nanosegundos) y, por lo tanto, las estampas de tiempo también. Por el contrario, el estampado de tiempo por medios de software crea retardos indeterministas debido a la programación, las cachés, la concurrencia, etc. y, por lo tanto, la estampa de tiempo debe estar lo más cerca posible del medio [3]. Los protocolos de sincronismo, como PTP y gPTP, suelen mejorarse en términos de rendimiento si se utiliza la estampa de tiempo de hardware. Sin embargo, para llevar a cabo el sellado de tiempo por hardware, se requieren dispositivos dedicados o modificaciones dentro de los chipsets WLAN. Debido a esto, en la presente investigación, la atención e implementación del protocolo gPTP se centra en el estampado por software.
 
+![Ubicaciones para la estampa de tiempo](../../figures/ch02/fig_2_1_ubicaciones_ts.pdf)
+*Figura 2.1. Ubicaciones para la estampa de tiempo (TS) en redes orientadas a paquetes.*
+
 Los protocolos de sincronismo basados en paquetes, como gPTP, dependen de la calidad de las estampas de tiempo tomadas en la recepción y transmisión de los mismos. Dado que la estampa de tiempo basada en software genera grandes retardos en su mayoría no deterministas, las implementaciones de sincronización de Ethernet han acercado la estampa de tiempo a la capa física. Sin embargo, la mayoría de los enfoques de sincronización inalámbrica se limitan a la estampa de tiempo de software debido a la falta de funciones de sellado de tiempo por hardware [4].
 
 Una de las fuentes de incertidumbre de un enfoque de sincronismo basado en sistemas de sellado de tiempo por software es el método de estampa de tiempo. Según [5], entre las diversas fuentes de imprecisión en el sellado de tiempo por software se tienen:
@@ -53,6 +56,9 @@ Los retardos asimétricos de procesamiento $p$ se componen de términos determin
 El método Exel alcanza, según sus autores, una precisión de entre 10 y 100 ns en condiciones controladas. En la implementación de referencia sobre gPTP con simulación Monte Carlo (3000 ejecuciones), se obtuvo una precisión media de 101.5 µs, una reducción del error del 33.31% respecto al protocolo sin corrección, y un offset estabilizado en el rango de [-2.55, 6.68] µs [8].
 
 **Limitaciones del método Exel:** (1) solo corrige los retardos deterministas conocidos; las asimetrías desconocidas o variantes en el tiempo no son compensadas; (2) no realiza filtrado estadístico de las mediciones, por lo que es sensible al ruido de medición y a valores atípicos; (3) no estima ni compensa la deriva (*skew*) de los relojes, solo el offset.
+
+![Latencias de estampa de tiempo de software](../../figures/ch02/fig_2_2_latencias_sw.pdf)
+*Figura 2.2. Latencias de estampa de tiempo de software.*
 
 ### 2.2.2 Métodos basados en Filtros de Kalman
 
@@ -121,9 +127,12 @@ No obstante, el método de Exel ofrece una ventaja fundamental: su corrección d
 
 Como resultado del análisis sistemático presentado en la Sección 2.2, se selecciona un **enfoque híbrido que combina la corrección determinista de estampas de tiempo de Exel con un Filtro de Kalman Adaptativo (AKF)** para la compensación de retardos asimétricos en el protocolo gPTP. Esta sección describe en detalle la arquitectura y el fundamento teórico del método propuesto.
 
+![Arquitectura del método híbrido Exel + AKF](../../figures/ch02/fig_2_4_metodo_hibrido.pdf)
+*Figura 2.4. Arquitectura del método híbrido Exel + AKF.*
+
 ### 2.3.1 Arquitectura de dos etapas
 
-El método híbrido opera en dos etapas consecutivas, como se ilustra en la Figura 2.2:
+El método híbrido opera en dos etapas consecutivas, como se ilustra en la Figura 2.4:
 
 **Etapa 1 — Corrección determinista (Exel):** Se aplican las Ecuaciones (2.1)–(2.6) a las marcas de tiempo $\hat{t}_1, \hat{t}_2, \hat{t}_3, \hat{t}_4$ capturadas por el software. Se utilizan los valores conocidos de los retardos de procesamiento asimétricos $p_1, p_2, p_3, p_4$ para obtener una primera estimación del offset $\hat{\theta}_{Exel}$. Esta etapa elimina la componente determinista de la asimetría, que en muchos casos representa la mayor parte del error de sincronización [7].
 
@@ -190,6 +199,9 @@ Los siguientes parámetros deben determinarse experimentalmente durante la fase 
 | $\tau$ | Intervalo entre mediciones | 2 s (período nominal de gPTP) |
 
 ### 2.3.5 Ventajas del enfoque híbrido
+
+![Ciclo del Filtro de Kalman Adaptativo](../../figures/ch02/fig_2_5_ciclo_akf.pdf)
+*Figura 2.5. Ciclo del Filtro de Kalman Adaptativo.*
 
 1. **Herencia de Exel**: se preserva la corrección determinista que ya demostró una mejora del 33.31% en la implementación de referencia [8], proporcionando una base sólida sobre la cual construir.
 

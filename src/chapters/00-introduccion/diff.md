@@ -19,6 +19,8 @@ La Introducción mantiene la misma estructura y función que el documento base (
 | 5 | Modified | Descripción del Capítulo 2: «se hace un análisis de los procedimientos y metodologías existentes (...) incluyendo una descripción del método seleccionado» | Ampliado: «se efectúa un análisis sistemático de 15 métodos existentes (...) organizados en siete categorías (...) y se selecciona y describe en detalle un enfoque híbrido que combina la corrección de Exel con un Filtro de Kalman Adaptativo» | Refleja el contenido real del Capítulo 2 ampliado |
 | 6 | Modified | Descripción del Capítulo 3: «explica las características de la implementación que se desarrolla y las modificaciones al estándar como parte de la aplicación del método de corrección» | Actualizado: «describe las características de la implementación desarrollada en MATLAB/GNU Octave y presenta los resultados de la simulación Monte Carlo, comparando el rendimiento del método propuesto con el método de referencia Exel» | Refleja el alcance ampliado (dos implementaciones comparadas) |
 | 7 | Added | — | Mención de GNU Octave como alternativa a MATLAB | Documenta el entorno de implementación dual |
+| 8 | Added | — | Figura 1: Diagrama del ciclo R-E-V-T | Ilustra la metodología iterativa de la investigación |
+| 9 | Added | — | Figura 2: Diagrama de la estructura de la tesis | Representa visualmente la organización de los capítulos |
 
 ---
 
@@ -28,7 +30,7 @@ La Introducción mantiene la misma estructura y función que el documento base (
 |--------|-------|
 | Párrafos preservados | ~60% (contexto, motivación, metodología) |
 | Párrafos modificados | 4 (objetivos, hipótesis, descripción de capítulos) |
-| Párrafos añadidos | 1 (mención de GNU Octave) |
+| Párrafos añadidos | 3 (mención de GNU Octave, referencias a Figuras 1 y 2) |
 | Párrafos eliminados | 0 |
 
 ---

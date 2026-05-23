@@ -1,0 +1,36 @@
+% ===========================================================================
+% Tabla 2.2: Comparación de métodos para mitigación de retardos asimétricos
+% Capítulo 2 — Sección 2.2.7
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Comparación de métodos para mitigación de retardos asimétricos en PTP/gPTP.}
+  \label{tab:comparacion}
+  \small
+  \begin{tabular}{|l|l|c|c|c|c|}
+    \hline
+    \textbf{Método} & \textbf{Categoría} & \textbf{Precisión} & \textbf{Compat.} & \textbf{Asimetría} & \textbf{Madurez} \\
+    & & & \textbf{gPTP} & \textbf{desconocida} & \\
+    \hline
+    Exel (2014) & Corrección determinista & 101.5~$\mu$s (sim.) & Alta & No & Alta \\
+    \hline
+    Li et al. (2024) & KF 2.\textordfeminine{} orden & $\pm$3~$\mu$s & Alta & Sí & Alta \\
+    \hline
+    Hollósi \& Ficzere (2024) & AKF & 40--60\% mejora & Alta & Sí & Alta \\
+    \hline
+    Liu \& Wang (2024) & KF robusto 3 pasos & $<$5~$\mu$s RMSE & Alta & Sí & Alta \\
+    \hline
+    Wang et al. (2021) & EKF sin timestamp & $<$1~$\mu$s & Media & Sí & Media \\
+    \hline
+    Karthik \& Blum (2020) & Estimación robusta & Cotas óptimas & Alta & Sí & Alta \\
+    \hline
+    Nguyen et al. (2020) & Fuzzy-PI & $<$100~ns & Media & Parcial & Media \\
+    \hline
+    Zhang et al. (2024) & Fuzzy-PI + ventana & 52\% reducción & Media & Parcial & Baja \\
+    \hline
+    Wang et al. (2026) & Competitive Learning & Robusto & Media-Alta & Sí & Baja \\
+    \hline
+    Puttnies et al. (2018) & Prog. Lineal & Factor $10^4$ & Media & No & Media \\
+    \hline
+  \end{tabular}
+\end{table}

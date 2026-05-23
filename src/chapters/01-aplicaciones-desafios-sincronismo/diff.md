@@ -52,6 +52,11 @@ Este capítulo conserva la misma estructura de seis secciones y el mismo enfoque
 | 3 | Modified | Descripción de gPTP | Misma estructura (5 características) con más detalle: medición peer-to-peer, rate ratio, ecuación de Pdelay, TransTime | Enriquece la explicación del estándar IEEE 802.1AS |
 | 4 | Added | — | Párrafo sobre IEEE 802.1AS-2020 y trabajos recientes en integración TSN-5G | Actualización con el estándar más reciente y aplicaciones emergentes |
 | 5 | Added | — | Referencia explícita a que gPTP es el único protocolo especificado para redes inalámbricas | Refuerza la justificación de la elección de gPTP |
+| 6 | Added | — | Figura 1.1: Sincronización de reloj unidireccional y bidireccional | Ilustra los dos esquemas de sincronización descritos en el texto |
+| 7 | Added | — | Figura 1.2: Fuentes de error de sincronización | Diagrama de los componentes del error: send, access, propagation y receive time |
+| 8 | Added | — | Figura 1.3: Medición del retardo en gPTP (Peer Delay) | Muestra el intercambio de mensajes Pdelay_Req/Resp/FollowUp con las estampas t1–t4 |
+| 9 | Added | — | Figura 1.4: Cálculo del retardo de propagación e impacto de la deriva | Dos subfiguras: (a) timeline del cálculo de Pdelay, (b) efecto del skew |
+| 10 | Added | — | Tabla 1.1: Comparación de protocolos de sincronización (NTP, PTP, gPTP, GPS) | Proporciona una visión comparativa de los protocolos discutidos en la sección 1.5 |
 
 ### 1.6 Conclusiones del capítulo
 
@@ -85,6 +90,8 @@ Este capítulo conserva la misma estructura de seis secciones y el mismo enfoque
 | New references added | 4 |
 | References removed | 0 |
 | Total references in chapter | 33 (29 del original + 4 nuevas) |
+| Figuras añadidas | 4 (1.1–1.4) |
+| Tablas añadidas | 1 (1.1) |
 
 ---
 

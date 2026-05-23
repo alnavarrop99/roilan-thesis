@@ -1,0 +1,29 @@
+% ===========================================================================
+% Tabla 2.3: Parámetros del Filtro de Kalman Adaptativo (AKF)
+% Capítulo 2 — Sección 2.3.4
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Parámetros de inicialización del Filtro de Kalman Adaptativo.}
+  \label{tab:params}
+  \small
+  \begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{Parámetro} & \textbf{Valor} & \textbf{Descripción} \\
+    \hline
+    Vector estado inicial $\mathbf{x}_0$ & $[0, 0, 0]^T$ & $[\theta, skew, \Delta]$ \\
+    \hline
+    $\mathbf{P}_0$ & $\mathrm{diag}(10^{-10}, 10^{-12}, 10^{-14})$ & Covarianza inicial del error \\
+    \hline
+    $\mathbf{Q}$ & $\mathrm{diag}(10^{-14}, 10^{-18}, 10^{-16})$ & Covarianza del ruido de proceso \\
+    \hline
+    $R_0$ & $10^{-12}$ & Varianza inicial del ruido de medición \\
+    \hline
+    Ventana $N$ & 20 & Innovaciones para adaptación de $R_k$ \\
+    \hline
+    $\mathbf{F}$ & $\begin{bmatrix} 1 & \tau & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$ & Matriz de transición de estado \\
+    \hline
+    $\mathbf{H}$ & $[1, 0, 1/2]$ & Matriz de observación \\
+    \hline
+  \end{tabular}
+\end{table}

@@ -59,3 +59,27 @@
 - `src/matlab/README.md` — resultados validados
 - `src/matlab/gptp_montecarlo_mejorado.m` — nuevo archivo
 - `src/matlab/gptp_montecarlo_rapido.m` — nuevo archivo
+
+## Figuras y Tablas Añadidas (Iteración 3)
+
+| Tipo | Identificador | Descripción |
+|------|--------------|-------------|
+| Figura | 3.1 | Esquema de la implementación desarrollada (maestro, esclavo, enlace con parámetros, arquitectura Exel+AKF) |
+| Figura | 3.2 | Precisión del sincronismo entre dispositivos para cada escenario |
+| Figura | 3.3 | Variación de offset del protocolo gPTP con corrección de asimetrías |
+| Figura | 3.4 | Tiempo de ejecución comparativo: estándar vs Exel vs Exel+AKF |
+| Figura | 3.5 | Overhead computacional porcentual |
+| Figura | 3.6 | Medición de los retardos asimétricos t_ms y t_sm |
+| Figura | 3.7 | Estimación del error de los resultados (IC 95% / IC 99%) |
+| Figura | 3.8 | Distribución de precisión — 4 escenarios (simétrico, asimétrico s/c, Exel, Exel+AKF) |
+| Figura | 3.9 | Distribución del offset estabilizado: Exel vs Exel+AKF |
+| Figura | 3.10 | Comparación de precisión entre Exel y Exel+AKF (barras con error) |
+| Figura | 3.11 | Convergencia de Monte Carlo: precisión media acumulada |
+| Figura | 3.12 | Evolución temporal de los estados AKF: θ(t), skew(t), Δ(t) |
+| Figura | 3.13 | Overhead adicional del Filtro de Kalman Adaptativo |
+| Tabla | 3.1 | Resultados referencia Exel (reemplaza tabla inline) |
+| Tabla | 3.2 | Overhead Exel (reemplaza tabla inline) |
+| Tabla | 3.3 | Resultados Exel+AKF (reemplaza tabla inline) |
+| Tabla | 3.4 | Comparación global (reemplaza tabla inline) |
+
+Todas las figuras se generan mediante Octave (`plot_resultados.m`) con datos reales de simulación Monte Carlo (N=500) y se exportan en formato PDF vectorial. Las tablas se extraen a archivos `.tex` independientes en `src/tables/` e incluyen vía `\input{}`.

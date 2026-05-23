@@ -90,9 +90,21 @@ Los resultados de la implementación de referencia replican los obtenidos en el 
 
 **Análisis del offset:** Tras el ajuste inicial de 4 s (con un offset inicial de 13.43 ms), los valores de corrección del desfasaje se estabilizan en un rango estrecho entre -2.554 µs y 6.675 µs, con un valor medio de 1.265 µs. Esta estabilización demuestra la eficacia de la corrección Exel para minimizar las diferencias temporales entre los dispositivos.
 
-**Análisis de las asimetrías:** En ambos escenarios (con y sin corrección Exel) las asimetrías medidas oscilan aproximadamente entre 230 µs y 240 µs, con variaciones de 10.2 µs para el protocolo estándar y 8.5 µs para la corrección Exel. Esto confirma que el método Exel no elimina las asimetrías del enlace, sino que corrige el desfasaje que estas provocan, logrando mayores niveles de precisión en el sincronismo.
+![Variación de offset del protocolo gPTP](../../figures/ch03/fig_3_3_offset_tiempo.pdf)
+*Figura 3.3. Variación de offset del protocolo gPTP con el método de corrección de asimetrías.*
+
+**Análisis de las asimetrías:** En ambos escenarios (con y sin corrección Exel) las asimetrías medidas oscilan aproximadamente entre 230 µs y 240 µs
+
+![Medición de los retardos asimétricos](../../figures/ch03/fig_3_6_retardos_asimetricos.pdf)
+*Figura 3.6. Medición de los retardos asimétricos.*, con variaciones de 10.2 µs para el protocolo estándar y 8.5 µs para la corrección Exel. Esto confirma que el método Exel no elimina las asimetrías del enlace, sino que corrige el desfasaje que estas provocan, logrando mayores niveles de precisión en el sincronismo.
 
 **Análisis del overhead computacional:** La Tabla 3.2 presenta los tiempos de ejecución comparativos.
+
+![Tiempo de ejecución comparativo](../../figures/ch03/fig_3_4_tiempo_ejecucion.pdf)
+*Figura 3.4. Tiempo de ejecución de gPTP estándar y gPTP con el método de corrección de asimetrías.*
+
+![Overhead porcentual](../../figures/ch03/fig_3_5_overhead_porcentaje.pdf)
+*Figura 3.5. Porcentaje de la diferencia en el tiempo de ejecución.*
 
 **Tabla 3.2. Comparación del overhead computacional entre gPTP estándar y gPTP con corrección Exel.**
 
@@ -104,9 +116,30 @@ Los resultados de la implementación de referencia replican los obtenidos en el 
 
 La corrección Exel exhibe tiempos de ejecución superiores en cada punto evaluado. Para una sola simulación, el incremento es de aproximadamente 67%, pero este porcentaje disminuye drásticamente con el número de simulaciones, estabilizándose en torno al 3–4%. El costo computacional adicional es, por tanto, relativamente pequeño en comparación con los beneficios que ofrece en precisión.
 
-**Estimación del error:** Para un nivel de confianza del 95%, el error estimado de los resultados oscila entre 2.9% y 4.3%, con una media de 3.59%. Para un nivel de confianza del 99%, el error estimado tiene una media de 4.66% y un rango entre 3.8% y 5.5%. Estos bajos valores de error estimado respaldan la validez estadística de los resultados obtenidos mediante la simulación Monte Carlo de 3000 ejecuciones.
+**Estimación del error:** Para un nivel de confianza del 95%, el error estimado de los resultados oscila entre 2.9% y 4.3%
+
+![Estimación del error de los resultados](../../figures/ch03/fig_3_7_estimacion_error.pdf)
+*Figura 3.7. Estimación del error de los resultados.*, con una media de 3.59%. Para un nivel de confianza del 99%, el error estimado tiene una media de 4.66% y un rango entre 3.8% y 5.5%. Estos bajos valores de error estimado respaldan la validez estadística de los resultados obtenidos mediante la simulación Monte Carlo de 3000 ejecuciones.
 
 ### 3.2.2 Resultados de la implementación mejorada (Exel + AKF)
+
+![Precisión del sincronismo — 4 escenarios](../../figures/ch03/fig_3_8_precision_4escenarios.pdf)
+*Figura 3.8. Distribución de precisión del sincronismo para los cuatro escenarios evaluados.*
+
+![Comparación de offset Exel vs Exel+AKF](../../figures/ch03/fig_3_9_offset_comparativo.pdf)
+*Figura 3.9. Distribución del offset estabilizado: comparación Exel vs Exel+AKF.*
+
+![Comparación de precisión entre métodos](../../figures/ch03/fig_3_10_boxplot_metodos.pdf)
+*Figura 3.10. Comparación de precisión entre Exel y Exel+AKF.*
+
+![Convergencia de Monte Carlo](../../figures/ch03/fig_3_11_convergencia_montecarlo.pdf)
+*Figura 3.11. Convergencia de la precisión media acumulada en función del número de simulaciones Monte Carlo.*
+
+![Estados estimados por el AKF](../../figures/ch03/fig_3_12_estados_akf.pdf)
+*Figura 3.12. Evolución temporal de los tres estados estimados por el Filtro de Kalman Adaptativo: offset θ(t), skew s(t) y asimetría residual Δ(t).*
+
+![Overhead del AKF](../../figures/ch03/fig_3_13_overhead_akf.pdf)
+*Figura 3.13. Overhead computacional adicional del Filtro de Kalman Adaptativo.*
 
 La implementación mejorada se evalúa bajo las mismas condiciones de simulación que la de referencia (500 ejecuciones Monte Carlo, 60 s de simulación, distancia de 30 m), permitiendo una comparación directa de los resultados. Las métricas de rendimiento se presentan en la Tabla 3.3.
 

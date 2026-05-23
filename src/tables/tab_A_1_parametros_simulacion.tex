@@ -1,0 +1,37 @@
+% ===========================================================================
+% Tabla A.1: Parámetros de simulación del escenario gPTP
+% Apéndice A
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Parámetros de simulación del escenario gPTP.}
+  \label{tab:param_simulacion}
+  \small
+  \begin{tabular}{|l|c|c|}
+    \hline
+    \textbf{Parámetro} & \textbf{Valor} & \textbf{Descripción} \\
+    \hline
+    Distancia entre dispositivos & 30~m & Distancia nominal maestro--esclavo \\
+    \hline
+    Velocidad de la luz ($c$) & $3 \times 10^8$~m/s & Velocidad de propagación \\
+    \hline
+    Duración de la simulación & 60~s & Tiempo total simulado \\
+    \hline
+    Período de corrección ($\tau$) & 1~s & Frecuencia de corrección de offset \\
+    \hline
+    Resolución (tic) del reloj & 1~ms & Precisión del reloj simulado \\
+    \hline
+    Deriva típica del oscilador & $\pm 30$~ppm & Variación de frecuencia entre relojes \\
+    \hline
+    Asimetría determinista ($p_1$--$p_4$) & Uniforme $[0, 500]$~$\mu$s & Retardos de procesamiento TX/RX \\
+    \hline
+    Asimetría desconocida ($t_a$) & Uniforme $[50, 200]$~$\mu$s & Componente no determinista \\
+    \hline
+    N.° simulaciones Monte Carlo (ref.) & 3000 & Tamaño muestral referencia Exel \\
+    \hline
+    N.° simulaciones Monte Carlo (mej.) & 500 & Tamaño muestral método mejorado \\
+    \hline
+    Semilla base & 42 & Semilla para reproducibilidad \\
+    \hline
+  \end{tabular}
+\end{table}

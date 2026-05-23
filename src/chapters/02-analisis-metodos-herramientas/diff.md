@@ -89,11 +89,15 @@ Este capítulo mantiene la misma estructura de cinco secciones que el original (
 | Métodos analizados (original) | ~6 |
 | Métodos analizados (nuevo) | 15 |
 | Nuevas referencias añadidas | 10 |
+| Figuras añadidas | 4 (2.1 Ubicaciones TS, 2.2 Latencias SW, 2.4 Método híbrido, 2.5 Ciclo AKF) |
+| Tablas añadidas | 2 (2.2 y 2.3) |
 | Referencias eliminadas | 0 |
 
 ---
 
 ## Validation Notes
+
+- Se integran cuatro figuras generadas en Octave: ubicaciones de timestamp (2.1), latencias de software (2.2), arquitectura del método híbrido (2.4) y ciclo del AKF (2.5).
 
 - Las Ecuaciones (2.1)–(2.6) del nuevo capítulo (método Exel) corresponden a las Ecuaciones 2.3–2.8 del original. La renumeración se debe a la nueva organización.
 - Las ecuaciones del AKF (§2.3.2–2.3.3) son nuevas y no tienen equivalente en el original.

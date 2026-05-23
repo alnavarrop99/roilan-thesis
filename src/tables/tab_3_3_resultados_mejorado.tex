@@ -1,0 +1,25 @@
+% ===========================================================================
+% Tabla 3.3: Resultados de la implementación mejorada (Exel + AKF)
+% Capítulo 3 — Sección 3.2.2
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Resultados validados de la implementación mejorada (Exel + AKF) para 500 simulaciones Monte Carlo.}
+  \label{tab:res_akf}
+  \small
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Métrica} & \textbf{Exel (baseline)} & \textbf{Exel + AKF} & \textbf{Mejora} \\
+    \hline
+    Precisión media [$\mu$s] & 100.33 & 66.24 & $-33.6$\% \\
+    \hline
+    Desviación estándar [$\mu$s] & 5.89 & 29.47 & --- \\
+    \hline
+    Reducción del error vs.\ asimétrico sin corregir & 33.2\% & 55.9\% & +22.7~pp \\
+    \hline
+    t-estadístico (pareado) & --- & 25.14 & $p < 0.001$ \\
+    \hline
+    Overhead adicional vs.\ Exel & --- & $\sim$2\% & Despreciable \\
+    \hline
+  \end{tabular}
+\end{table}

@@ -1,0 +1,24 @@
+% ===========================================================================
+% Tabla 3.4: Comparación global de escenarios de simulación
+% Capítulo 3 — Sección 3.2.3
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Comparación global de escenarios de simulación ($N = 500$).}
+  \label{tab:global}
+  \small
+  \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Escenario} & \textbf{Precisión} & \textbf{Desv.} & \textbf{Mejora vs.} & \textbf{Overhead} \\
+    & \textbf{media [$\mu$s]} & \textbf{estándar [$\mu$s]} & \textbf{asimétrico s/c} & \textbf{relativo} \\
+    \hline
+    Simétrico (gPTP estándar) & 49.57 & 10.05 & --- & $1.00\times$ \\
+    \hline
+    Asimétrico sin corrección & 150.11 & 12.04 & 0\% (referencia) & $1.00\times$ \\
+    \hline
+    Asimétrico + Exel & 100.33 & 5.89 & 33.2\% & $1.02\times$ \\
+    \hline
+    Asimétrico + Exel + AKF & 66.24 & 29.47 & 55.9\% & $\sim1.04\times$ \\
+    \hline
+  \end{tabular}
+\end{table}

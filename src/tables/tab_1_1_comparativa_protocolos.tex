@@ -1,0 +1,29 @@
+% ===========================================================================
+% Tabla 1.1: Comparación de protocolos de sincronización
+% Capítulo 1 — Sección 1.5
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Comparación de las principales características de los protocolos de sincronización.}
+  \label{tab:comp_protocolos}
+  \small
+  \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Característica} & \textbf{NTP} & \textbf{PTP (IEEE 1588)} & \textbf{gPTP (IEEE 802.1AS)} & \textbf{GPS} \\
+    \hline
+    Precisión típica & $\sim$ms & $\sim$ns--$\mu$s & $\sim$ns & $\sim$ns \\
+    \hline
+    Medio de transmisión & IP genérico & Ethernet & Ethernet / Inalámbrico & Satelital \\
+    \hline
+    Estampado de tiempo & Software & Hardware / Software & Hardware (preferido) & Receptor dedicado \\
+    \hline
+    Tipo de comunicación & Cliente-servidor & Multicast (BMCA) & Peer-to-peer (Pdelay) & Unidireccional (solo RX) \\
+    \hline
+    Overhead de red & Bajo & Medio & Medio & Alto \\
+    \hline
+    Costo de implementación & Gratuito & Bajo & Bajo & Elevado \\
+    \hline
+    Idoneidad para IoT & Limitada & Factible con escalado & Recomendado para TSN & Impracticable en sensores \\
+    \hline
+  \end{tabular}
+\end{table}

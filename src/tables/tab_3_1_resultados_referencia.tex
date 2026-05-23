@@ -1,0 +1,28 @@
+% ===========================================================================
+% Tabla 3.1: Resultados de la implementación de referencia (Exel)
+% Capítulo 3 — Sección 3.2.1
+% ===========================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Resultados de la implementación de referencia (Exel) para 3000 simulaciones Monte Carlo.}
+  \label{tab:res_exel}
+  \small
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Métrica} & \textbf{Enlace} & \textbf{Enlace asimétrico} & \textbf{Enlace asimétrico} \\
+    & \textbf{simétrico} & \textbf{(sin corrección)} & \textbf{(con Exel)} \\
+    \hline
+    Precisión media [$\mu$s] & 83.82 & 152.2 & 101.5 \\
+    \hline
+    Desviación estándar [$\mu$s] & 28.33 & --- & 14.78 \\
+    \hline
+    Rango de precisión [$\mu$s] & {[}56.17, 112.4{]} & {[}140.4, 167{]} & {[}85.51, 118.4{]} \\
+    \hline
+    Offset estabilizado [$\mu$s] & --- & --- & {[}{-}2.554, 6.675{]} \\
+    \hline
+    Offset medio [$\mu$s] & --- & --- & 1.265 \\
+    \hline
+    Tiempo de convergencia [s] & 2 & 4 & 4 \\
+    \hline
+  \end{tabular}
+\end{table}

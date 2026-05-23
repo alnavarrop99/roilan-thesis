@@ -33,6 +33,13 @@ Las características generales de la implementación, comunes a ambas versiones 
 \item \textbf{\textit{Rate ratio}}: implementado en el cálculo del retardo de propagación (\textit{Pdelay}), definido como $r = f_{esclavo} / f_{maestro}$, para contrarrestar el efecto de la deriva de los relojes.
 \end{itemize}
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/ch03/fig_3_1_esquema_implementacion}
+  \caption{Esquema de la implementación desarrollada, donde se muestran los dispositivos maestro y esclavo, el enlace inalámbrico con parámetros $d$, $c$, $t_a$, y la arquitectura de dos etapas (Exel + AKF) en el esclavo.}
+  \label{fig:3.1}
+\end{figure}
+
 \subsection{Implementación de referencia: gPTP + Exel}
 \label{sec:3.1.2}
 
@@ -68,29 +75,14 @@ Cada escenario se simula $N = 500$ veces siguiendo el método de Monte Carlo~\ci
 
 Los resultados de la implementación de referencia replican los obtenidos en el trabajo base~\cite{eupierre2024} y se resumen en la Tabla~\ref{tab:res_exel}.
 
-\begin{table}[h]
-\centering
-\caption{Resultados de la implementación de referencia (Exel) para 3000 simulaciones Monte Carlo.}
-\label{tab:res_exel}
-\small
-\begin{tabular}{|p{3.2cm}|p{2.8cm}|p{2.8cm}|p{2.8cm}|}
-\hline
-\textbf{Métrica} & \textbf{Simétrico} & \textbf{Asim. s/c} & \textbf{Asim. c/ Exel} \\
-\hline
-Precisión media [$\mu$s] & 83.82 & 152.2 & 101.5 \\
-\hline
-Desv.\ estándar [$\mu$s] & 28.33 & --- & 14.78 \\
-\hline
-Rango de precisión [$\mu$s] & [56.17, 112.4] & [140.4, 167] & [85.51, 118.4] \\
-\hline
-Offset estabilizado [$\mu$s] & --- & --- & $[-2.554, 6.675]$ \\
-\hline
-Offset medio [$\mu$s] & --- & --- & 1.265 \\
-\hline
-Tiempo de convergencia [s] & 2 & 4 & 4 \\
-\hline
-\end{tabular}
-\end{table}
+\input{tables/tab_3_1_resultados_referencia}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_2_precision_tiempo}
+  \caption{Precisión del sincronismo entre los dispositivos para cada escenario evaluado.}
+  \label{fig:3.2}
+\end{figure}
 
 \textbf{Análisis del escenario simétrico:} Una vez estabilizados los relojes, la precisión oscila entre 56.17~$\mu$s y 112.4~$\mu$s, con una media de 83.82~$\mu$s y una desviación estándar de 28.33~$\mu$s. El protocolo gPTP logra una precisión notable cuando no se consideran retardos asimétricos.
 
@@ -100,29 +92,34 @@ Tiempo de convergencia [s] & 2 & 4 & 4 \\
 
 \textbf{Análisis de la convergencia:} El algoritmo gPTP alcanza estabilidad en 2~s (un período) en condiciones simétricas, y en 4~s (dos períodos) con asimetrías.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_3_offset_tiempo}
+  \caption{Variación de offset del protocolo gPTP con el método de corrección de asimetrías.}
+  \label{fig:3.3}
+\end{figure}
+
 \textbf{Análisis del offset:} Tras el ajuste inicial (offset inicial de 13.43~ms), los valores se estabilizan entre $-2.554$~$\mu$s y 6.675~$\mu$s, con un valor medio de 1.265~$\mu$s.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_6_retardos_asimetricos}
+  \caption{Medición de los retardos asimétricos.}
+  \label{fig:3.6}
+\end{figure}
 
 \textbf{Análisis de las asimetrías:} Las asimetrías medidas oscilan entre 230~$\mu$s y 240~$\mu$s, con variaciones de 10.2~$\mu$s (estándar) y 8.5~$\mu$s (con Exel). El método Exel no elimina las asimetrías del enlace, sino que corrige el desfasaje que estas provocan.
 
 \textbf{Análisis del \textit{overhead} computacional:} La Tabla~\ref{tab:overhead} presenta los tiempos de ejecución comparativos.
 
-\begin{table}[h]
-\centering
-\caption{Comparación del \textit{overhead} computacional.}
-\label{tab:overhead}
-\small
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{N.º simulaciones} & \textbf{T. estándar [s]} & \textbf{T. Exel [s]} & \textbf{Diferencia [\%]} \\
-\hline
-1 & 3.819 & 6.372 & +66.9\% \\
-\hline
-10 & 36.39 & 37.45 & +2.9\% \\
-\hline
-100 & 353.0 & 365.9 & +3.65\% \\
-\hline
-\end{tabular}
-\end{table}
+\input{tables/tab_3_2_overhead_exel}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figures/ch03/fig_3_7_estimacion_error}
+  \caption{Estimación del error de los resultados.}
+  \label{fig:3.7}
+\end{figure}
 
 \textbf{Estimación del error:} Para un 95\% de confianza, el error estimado oscila entre 2.9\% y 4.3\% (media 3.59\%). Para un 99\% de confianza, el error tiene una media de 4.66\%.
 
@@ -131,27 +128,49 @@ Tiempo de convergencia [s] & 2 & 4 & 4 \\
 
 La implementación mejorada se evalúa bajo las mismas condiciones que la de referencia ($N = 500$, 60~s de simulación, distancia de 30~m), permitiendo una comparación directa. Las métricas de rendimiento, validadas experimentalmente mediante la ejecución en GNU Octave, se presentan en la Tabla~\ref{tab:res_akf}.
 
-\begin{table}[h]
-\centering
-\caption{Resultados validados de la implementación mejorada (Exel + AKF) para 500 simulaciones Monte Carlo.}
-\label{tab:res_akf}
-\small
-\begin{tabular}{|p{3.8cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|}
-\hline
-\textbf{Métrica} & \textbf{Exel} & \textbf{Exel+AKF} & \textbf{Mejora} \\
-\hline
-Precisión media [$\mu$s] & 100.33 & 66.24 & $-$33.6\% \\
-\hline
-Desv.\ estándar [$\mu$s] & 5.89 & 29.47 & --- \\
-\hline
-Reducción error vs.\ asim.\ s/c & 33.2\% & 55.9\% & +22.7~pp \\
-\hline
-$t$-estadístico (pareado) & --- & 25.14 & $p < 0.001$ \\
-\hline
-Overhead adicional vs.\ Exel & --- & $\sim$2\% & Despreciable \\
-\hline
-\end{tabular}
-\end{table}
+\input{tables/tab_3_3_resultados_mejorado}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_8_precision_4escenarios}
+  \caption{Precisión del sincronismo para los cuatro escenarios evaluados.}
+  \label{fig:3.8}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_9_offset_comparativo}
+  \caption{Distribución del offset estabilizado: Exel vs Exel+AKF.}
+  \label{fig:3.9}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figures/ch03/fig_3_10_boxplot_metodos}
+  \caption{Comparación de precisión entre Exel y Exel+AKF.}
+  \label{fig:3.10}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_11_convergencia_montecarlo}
+  \caption{Convergencia de Monte Carlo.}
+  \label{fig:3.11}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/ch03/fig_3_12_estados_akf}
+  \caption{Evolución temporal de los estados estimados por el AKF.}
+  \label{fig:3.12}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figures/ch03/fig_3_13_overhead_akf}
+  \caption{Overhead computacional adicional del AKF.}
+  \label{fig:3.13}
+\end{figure}
 
 \textbf{Análisis de la mejora en precisión:} La incorporación del AKF como segunda etapa de filtrado reduce la precisión media de 100.33~$\mu$s a 66.24~$\mu$s, lo que representa una mejora del 33.6\% sobre el método Exel puro ($t = 25.14$, $p < 0.001$) y un 55.9\% de reducción del error respecto al protocolo sin corrección. Esta mejora, estadísticamente muy significativa, se atribuye a dos factores: (1) la capacidad del AKF para filtrar el ruido de medición residual que el método determinista de Exel no puede eliminar, y (2) la estimación y compensación de la asimetría residual $\Delta_k$ no modelada por Exel.
 
@@ -164,25 +183,7 @@ Overhead adicional vs.\ Exel & --- & $\sim$2\% & Despreciable \\
 
 La Tabla~\ref{tab:global} presenta la comparación global de los cuatro escenarios evaluados ($N = 500$).
 
-\begin{table}[h]
-\centering
-\caption{Comparación global de escenarios de simulación ($N = 500$).}
-\label{tab:global}
-\small
-\begin{tabular}{|p{3.2cm}|p{2.2cm}|p{2.2cm}|p{2.5cm}|p{2.2cm}|}
-\hline
-\textbf{Escenario} & \textbf{Prec.\ [$\mu$s]} & \textbf{Std [$\mu$s]} & \textbf{Mejora vs.\ asim.} & \textbf{Overhead} \\
-\hline
-Simétrico (estándar) & 49.57 & 10.05 & --- & 1.00$\times$ \\
-\hline
-Asimétrico s/c & 150.11 & 12.04 & 0\% (ref.) & 1.00$\times$ \\
-\hline
-Asimétrico + Exel & 100.33 & 5.89 & 33.2\% & 1.02$\times$ \\
-\hline
-Asimétrico + Exel+AKF & 66.24 & 29.47 & 55.9\% & $\sim$1.04$\times$ \\
-\hline
-\end{tabular}
-\end{table}
+\input{tables/tab_3_4_comparacion_global}
 
 Los resultados muestran una progresión clara: cada etapa de procesamiento añadida reduce significativamente el error de sincronización. Con el método híbrido Exel+AKF, la precisión obtenida de 66.24~$\mu$s se aproxima notablemente a la del escenario simétrico (49.57~$\mu$s), lo que demuestra que la combinación de corrección determinista y filtrado adaptativo compensa eficazmente la práctica totalidad del efecto de las asimetrías.
 

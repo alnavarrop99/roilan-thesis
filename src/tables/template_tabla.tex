@@ -1,0 +1,27 @@
+% ===========================================================================
+% Plantilla LaTeX para tablas de la tesis
+% Uso: \input{../tables/template_tabla.tex} (adaptar contenido)
+% Requiere en el preámbulo: \usepackage{booktabs, siunitx, multirow, array}
+% ===========================================================================
+
+% Ejemplo de tabla con booktabs y alineación numérica
+\begin{table}[htbp]
+  \centering
+  \caption{Descripción de la tabla en tiempo pasivo y descriptivo.}
+  \label{tab:etiqueta}
+  \begin{tabular}{@{}lS[table-format=3.2]S[table-format=2.2]c@{}}
+    \toprule
+    {Parámetro} & {Valor 1} & {Valor 2} & {Unidad} \\
+    \midrule
+    Precisión media & 101.5 & 14.78 & \si{\micro\second} \\
+    Offset estabilizado & 1.265 & 2.555 & \si{\micro\second} \\
+    Tiempo convergencia & 4.0 & 0.5 & \si{\second} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% Notas:
+% - 'S' alinea números por el punto decimal vía siunitx.
+% - @{} elimina padding lateral para tablas más compactas.
+% - \toprule, \midrule, \bottomrule en lugar de \hline (estilo booktabs).
+% - Sin líneas verticales.
