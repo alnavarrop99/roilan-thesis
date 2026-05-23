@@ -1,0 +1,285 @@
+Capítulo 3
+
+42
+
+CAPÍTULO 3. IMPLEMENTACIÓN DE LA CORRECCIÓN DEL PROTOCOLO
+GPTP ANTE LOS RETARDOS ASIMÉTRICOS EN REDES INALÁMBRICAS.
+RESULTADOS
+Sobre la base de haber analizado los métodos existentes en la literatura para contrarrestar el
+efecto negativo de las asimetrías en el sincronismo de redes inalámbricas y seleccionado el
+método de Exel por ofrecer alta compatibilidad con el estándar y obtener excelentes
+resultados de precisión; el presente capítulo está enfocado en dos líneas fundamentales: por
+un lado, desarrollar una correcta implementación del protocolo gPTP para redes inalámbricas
+que mitigue el efecto de los retardos asimétricos en el sincronismo, empleando la herramienta
+MATLAB y el procedimiento seleccionado; y, por otro parte, comparar los resultados de la
+implementación con el comportamiento del protocolo estándar en enlaces simétricos y
+asimétricos, respectivamente.
+3.1 Características de la implementación
+Se ha implementado una instancia del protocolo gPTP, tal y como se describe en el estándar
+IEEE 802.1AS [48], para ello se utiliza como código fuente el presentado en [70], donde la
+implementación se realiza a través de un simulador de eventos discretos en MATLAB y el
+protocolo se efectúa mediante una función llamada gPTPSim, que tiene como parámetros de
+entrada: la duración de la simulación, la frecuencia con la que se mide el desfasaje de los
+relojes y la frecuencia con la que se ejecuta el intercambio de mensajes del protocolo; y de
+salida: el desfasaje de los relojes una vez aplicada la corrección establecida en gPTP y el
+valor de offset calculado por el protocolo para la sincronización. Las características generales
+de la implementación son:
+•
+
+El escenario para la investigación está compuesto por dos dispositivos, cuya distancia
+se establece mediante una variable.
+
+•
+
+No se aplica el Algoritmo de Mejor Reloj Maestro (BMCA) que utiliza gPTP, por lo
+que se definen el dispositivo maestro y el dispositivo esclavo previamente.
+
+•
+
+La resolución de tiempo del reloj de ambos dispositivos es de 1 ms y, mediante el uso
+de funciones de MATLAB para la generación de números aleatorios, se crea un
+tiempo de inicio diferente y se asigna una deriva distinta para cada reloj. Esto permite
+simular los procesos de desfasaje y desviación entre los relojes que aparecen en los
+dispositivos reales.
+
+Capítulo 3
+•
+
+43
+
+Se analiza el desfasaje entre los relojes de los dispositivos y se ejecuta la corrección
+de tiempo en el dispositivo esclavo cada un segundo (como define el protocolo) y
+durante un minuto de simulación.
+
+•
+
+Cada evento presenta tres parámetros: tipo de evento, dispositivo y tiempo de evento.
+El simulador compara en cada instante el tiempo de los eventos que están sucediendo
+y los organiza cronológicamente; mientras el tiempo de evento sea menor que el
+tiempo de simulación, que se estableció como parámetro de entrada de la función,
+seguirá el protocolo ejecutándose e intercambiado los mensajes de evento.
+
+•
+
+Las variables de entrada, la llamada de la función y la adquisición de los datos de
+salida para su posterior análisis son definidas en otro script, donde también se
+establece el número de simulaciones a realizar.
+
+•
+
+Los retardos asimétricos son generados aleatoriamente mediante el uso de la función
+rand y se agregan a los tiempos de propagación en ambos sentidos del enlace.
+
+Uno de los principales aportes de la presente investigación al código fuente fue la
+implementación de la relación de velocidad (rate ratio, r) en el cálculo del retardo de
+propagación (PDelay, ver Ecuación 1.2), este factor es introducido para contrarrestar el
+efecto de la deriva de los relojes y es decisivo para la medición del retardo; r se define como
+la frecuencia del solicitante entre la frecuencia del respondedor, por lo que en este caso sería
+r = fdev1/fdev2. También se puede calcular usando estampas de tiempo de dos mensajes
+consecutivos en la misma dirección, los mensajes de eventos PDelay_Resp y Follow_Up
+cumplen esta condición, pues ambos son mensajes consecutivos en la dirección del esclavo
+hacia el maestro. Por consiguiente, una vez recibido el Follow_Up en el dispositivo maestro,
+se conocen todas las estampas de tiempo del intercambio de mensajes y puede ser calculado
+el rate ratio para ser usado en la medición del retardo. Además, se decidió implementar un
+tiempo de procesamiento en los dispositivos para reflejar el retardo que presentan los
+dispositivos reales procesando la información que será enviada o que acaba de recibirse, para
+ello se utiliza la función rand que genera números aleatorios.
+Para una adecuada implementación del método de corrección de estampas de tiempo
+seleccionado para mitigar el efecto de las asimetrías en el sincronismo de redes inalámbricas
+se tuvo en cuenta que las correcciones necesarias que indica Exel sean realizadas por el
+controlador del dispositivo dentro del ISR, se pueden realizar en MATLAB en el momento
+
+Capítulo 3
+
+44
+
+de tomar la estampa de tiempo, ya que el software almacena esa hora en un arreglo definido
+por el usuario. Como parte de las modificaciones son creadas cuatro variables (p1-p4) de
+números aleatorios, que representan el término determinista de los retardos de procesamiento
+asimétricos p definidos en el método y también incluye los retardos provocados por factores
+como la velocidad de datos, el tamaño del encabezado, la modulación, el tamaño de
+transferencia y la velocidad de la interfaz DMA. De manera similar son implementadas las
+asimetrías desconocidas. Todos estos retardos son incorporados, como corresponde según el
+estándar, al tiempo de generación del siguiente evento, de tal modo que el intercambio de
+mensajes del protocolo muestre aleatoriedades asimétricas y las estampas de tiempo se vean
+afectadas como sucede en el estampado por software en dispositivos reales. Finalmente, en
+el momento de calcular el valor de offset para el ajuste del reloj en el dispositivo esclavo, se
+procede mediante la Ecuación 2.7, tal y como establece el procedimiento.
+En la Figura 3.1 se muestra un esquema de la implementación desarrollada, donde Tms y Tsm
+representan, respectivamente, los tiempos de propagación de maestro a esclavo y viceversa,
+d es la distancia entre los dispositivos, c la velocidad de la luz (3x108 m/s) y ta el término no
+determinista de los retardos asimétricos (asimetrías desconocidas).
+
+Figura 3.1. Esquema de la implementación desarrollada [Elaboración Propia].
+
+Capítulo 3
+
+45
+
+3.2 Análisis de los resultados obtenidos en la implementación del método de corrección
+de asimetrías en el protocolo gPTP
+Para poder comprobar los resultados de la implementación del método seleccionado en el
+protocolo gPTP se realizó la simulación del estándar en condiciones de enlace simétrico
+(ideales) y ante la presencia de asimetrías (enlace asimétrico). Posteriormente, la
+implementación del método descrito en la presente investigación fue evaluado bajo las
+mismas condiciones de enlace asimétrico. Los tres escenarios fueron simulados 3000 veces
+siguiendo el método de Monte Carlo [71], por lo que los análisis realizados tomaron como
+datos la media de los resultados obtenidos en las simulaciones. En la Figura 3.2 se aprecian
+los resultados obtenidos en cuanto a precisión para cada escenario evaluado durante un
+minuto de simulación.
+En el primer escenario, una vez estabilizados los relojes, la precisión tiene un rango simétrico
+entre 56.17 µs y 112.4 µs, con una media de 83.82 µs y una desviación estándar de 28.33 µs,
+esto indica que el protocolo logra una precisión notable con un rango de error muy pequeño
+cuando no se consideran retardos asimétricos. En cambio, cuando el estándar se enfrenta a
+asimetrías en los enlaces inalámbricos se ve empeorada grandemente la precisión con valores
+oscilando en el rango de 140.4 µs y 167 µs, en este caso el valor medio es 152.2 µs; por tanto,
+se comprueba que la presencia de retardos asimétricos en los canales de comunicación, que
+pueden derivar de diferencias en la velocidad de propagación de la señal en diferentes
+trayectorias o en la capacidad de procesamiento de los dispositivos, introduce un error
+significativo en la sincronización. Por último, al incorporar el procedimiento de corrección
+seleccionado, se verifica una mejora notable de la precisión de sincronismo en el protocolo
+gPTP alcanzando resultados en el rango de 85.51 µs y 118.4 µs, con una desviación estándar
+de 14,78 µs, valor menor al alcanzado por el estándar en condiciones de enlace simétrico, y
+una media de 101.5 µs; por consiguiente, el método de corrección implementado es efectivo
+para reducir el impacto de los retardos asimétricos en el sincronismo.
+Como se puede apreciar, el comportamiento obtenido tiende a ser sumamente estable y logra
+mantener siempre el sincronismo por debajo de los 120 µs, aunque es cierto que lo ideal
+cuando se implementa gPTP sería que los valores de precisión estuviesen en el orden de los
+nanosegundos, los resultados obtenidos se califican de muy positivos dada la precisión del
+tic de los relojes en la simulación. Del análisis de los resultados en la Figura 3.2 se obtiene
+
+Capítulo 3
+
+46
+
+que la versión del protocolo gPTP implementada para mitigar el efecto de los retardos
+asimétricos en el sincronismo de redes inalámbricas reduce el impacto de las asimetrías en
+un valor medio de 50.7 µs, aumentando la efectividad del sincronismo que logra el protocolo
+ante los retardos asimétricos en un 33.31 %. Por otro lado, los resultados indican que el
+algoritmo gPTP es capaz de lograr estabilidad más rápido en condiciones de enlace simétrico
+(2 s) demorando solo un período de gPTP, puesto que la presencia de retardos asimétricos en
+el enlace dificulta la corrección del desfasaje entre los relojes alcanzándose los 4 s de
+inestabilidad en la fase inicial, es decir, dos períodos de gPTP.
+
+Figura 3.2. Precisión del sincronismo entre los dispositivos para cada escenario evaluado
+[Elaboración propia].
+
+Asimismo, también fue analizada la variación de los valores de corrección del desfasaje
+(offset) durante el estudio de la implementación, pues proporciona información relevante
+sobre la precisión y estabilidad del proceso de sincronización de los relojes. La Figura 3.3
+muestra una gráfica del comportamiento del valor de offset en el tiempo para la corrección
+implementada del protocolo gPTP ante la presencia de retardos asimétricos. En los momentos
+
+Capítulo 3
+
+47
+
+iniciales de la simulación existe un valor notablemente alto de offset (13.43 ms), esta
+desviación significativa se debe a la sincronización inicial entre los dispositivos donde el
+reloj esclavo ajusta su tiempo para alinearse con el reloj maestro, por ende, las grandes
+fluctuaciones iniciales son esperadas y representan el proceso de corrección inicial. Tras este
+ajuste inicial que dura dos períodos de gPTP (4 s), los valores de corrección del desfasaje se
+estabilizan rápidamente, oscilando dentro de un rango estrecho entre -2.554 µs y 6.675 µs,
+con un valor medio de 1.265 µs, como se puede observar en la Figura 3.3; esta estabilización
+es indicativa del éxito de la implementación en minimizar las diferencias temporales entre
+los dispositivos. La presencia de valores positivos y negativos se debe a que el reloj esclavo
+puede adelantarse o atrasarse con respecto al reloj maestro. Por otro lado, las pequeñas
+fluctuaciones de offset son típicas de un ambiente de sincronización de tiempo debido a
+variaciones menores en el retardo de propagación y la precisión de las estampas de tiempo
+de los mensajes de eventos; sin embargo, estas variaciones están dentro de un rango
+aceptable, indicando que el reloj esclavo mantiene un buen sincronismo con el reloj maestro
+y el protocolo está operando eficazmente.
+
+Figura 3.3. Variación de offset del protocolo gPTP con el método de corrección de asimetrías
+[Elaboración propia].
+
+Capítulo 3
+
+48
+
+En resumen, el análisis de los datos graficados en la Figura 3.3 sugiere que el protocolo es
+robusto frente a las variaciones del entorno inalámbrico y logra reducir enseguida la
+diferencia inicial entre los relojes de los dispositivos. Igualmente, el comportamiento de los
+valores de offset alrededor de cero como valor central demuestra que la corrección de gPTP
+implementada es efectiva para lograr y mantener la sincronización con una rápida
+convergencia a un estado estable de sincronismo.
+Además, se comprobó la superioridad de la corrección establecida en la presente
+investigación más allá de los aspectos propios de la sincronización de tiempo analizados
+anteriormente, por lo que se realizó un experimento para observar y comparar el costo
+adicional en tiempo y recursos necesarios para ejecutar tareas computacionales
+(computational overhead). Este experimento se refiere al costo adicional en tiempo, recursos
+y rendimiento que se incurre al ejecutar operaciones computacionales, ya que esta sobrecarga
+puede afectar el rendimiento de los sistemas de comunicación, especialmente en aplicaciones
+de tiempo real o aquellas que requieren latencias bajas; por tanto, representa un aspecto
+considerable para tener en cuenta en el momento de implementar cualquier modificación al
+estándar IEEE 802.1AS. Ambos escenarios muestran, como es lógico, un incremento
+consistente en el tiempo de ejecución a medida que aumentan las iteraciones, esto refleja la
+carga computacional acumulativa inherente a las simulaciones repetidas. La implementación
+del método de corrección seleccionado exhibe tiempos de ejecución ligeramente superiores
+en cada punto evaluado; por ejemplo, para una sola simulación es aproximadamente un 67
+% más lento que el estándar (6.372 s frente a 3.819 s), para 10 iteraciones la diferencia
+porcentual es menor, cercana al 3 % (37.45 s frente a 36.39 s), mientras que para 100
+simulaciones tiene un valor de 3.65 % (365.9 s frente a 353 s), indicando que el overhead se
+estabiliza con el número de simulaciones. Aunque la corrección de gPTP implementada
+requiere un mayor tiempo de ejecución, dado por los algoritmos de corrección introducidos
+por el método seleccionado, el costo computacional adicional es relativamente pequeño en
+comparación con los beneficios que ofrece en cuanto a la precisión del sincronismo entre los
+relojes. Los resultados de esta evaluación son mostrados en la Figura 3.4, donde se grafica el
+costo computacional en tiempo de ejecución mientras se incrementa el número de
+simulaciones, y la Figura 3.5 que representa en porcentaje la diferencia en el tiempo de
+
+Capítulo 3
+
+49
+
+ejecución entre el método de corrección y el estándar para el número de simulaciones
+correspondiente.
+
+Figura 3.4. Tiempo de ejecución de gPTP estándar y gPTP con el método de corrección de
+asimetrías [Elaboración propia].
+
+Figura 3.5. Porcentaje de la diferencia en el tiempo de ejecución entre gPTP estándar y gPTP con el
+método de corrección de asimetrías [Elaboración propia].
+
+Capítulo 3
+
+50
+
+También se comprobó la existencia de los retardos asimétricos en los canales de
+comunicación inalámbricos tanto para el protocolo estándar como para la corrección
+implementada. Los tiempos de propagación de los mensajes de maestro a esclavo (tms) y en
+el sentido contrario (de esclavo a maestro, tsm) fueron calculados utilizando las Ecuaciones
+3.1 y 3.2. Para determinar las asimetrías (tasym) en el estándar se utilizó la Ecuación 3.3, donde
+se calcula la diferencia absoluta entre los tiempos de propagación en ambos sentidos;
+mientras que para la corrección implementada fue utilizada la Ecuación 3.4, que incluye los
+términos de los retardos p definidos en el método.
+t ms = t 2 − t1
+
+(3.1)
+
+t sm = t 4 − t 3
+
+(3.2)
+
+t asym = |t ms − t sm |
+
+(3.3)
+
+t asym = |(t ms − p1 − p2 ) − (t sm − p3 − p4 )|
+
+(3.4)
+
+La Figura 3.6 muestra el comportamiento de los retardos asimétricos calculados. En ambos
+escenarios las asimetrías oscilan aproximadamente entre 230 µs y 240 µs, por lo tanto, hay
+variaciones del retardo de propagación muy semejantes: de 10.2 µs en el protocolo estándar
+con una media de 235.1 µs, y de 8.5 µs para el método de corrección, teniendo este último
+como media un valor de 235.2 µs. Por consiguiente, la versión del protocolo gPTP
+implementada en la presente investigación no elimina las asimetrías presentes en el enlace,
+pero sí logra corregir el desfasaje que estas provocan alcanzando mayores niveles de
+precisión, lo cual constituye el objetivo fundamental del proceso de sincronismo. Esto se
+debe a que, tanto la presente investigación como el método seleccionado, están enfocados en
+determinar los retardos asimétricos, que ocurren en el estampado de tiempo por software y
+en el procesamiento de los mensajes, para utilizar esos valores en la corrección del cálculo
+de offset y no en eliminar las causas de las asimetrías en los canales inalámbricos.
+
+Capítulo 3

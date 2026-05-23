@@ -1,0 +1,17 @@
+% ===========================================================================
+% Abstract
+% ===========================================================================
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Time synchronization is one of the most studied research topics in wireless networks, especially for numerous applications in the IoT domain. Consequently, various synchronization protocols have been developed to meet the demands of contemporary networks, among which the Generalized Precision Time Protocol (gPTP) stands out; however, its synchronization efficiency is severely affected by the presence of asymmetries in communication channels.
+
+This research aims to mitigate the effect of asymmetric delays on synchronization in wireless networks using an enhanced version of the gPTP protocol. To achieve this, a review of the theoretical foundations and a systematic analysis of 15 existing methods for improving synchronization in wireless networks using gPTP were conducted, covering Kalman filters, robust estimation, fuzzy logic, and machine learning.
+
+As a result, a hybrid approach is proposed that combines Reinhard Exel's deterministic timestamp correction with a three-state Adaptive Kalman Filter (AKF) for joint estimation of offset, skew, and residual asymmetry. A discrete-event simulator of the gPTP protocol was implemented in MATLAB/GNU Octave and evaluated through 3000-run Monte Carlo simulation.
+
+The evaluations confirm that the Exel correction reduces the impact of asymmetries by an average value of 50.7~$\mu$s, representing a 33.31\% increase in synchronization effectiveness. The proposed hybrid Exel+AKF method is projected to achieve an additional 28.8\% improvement, for a total error reduction of 52.5\% compared to the uncorrected protocol, with moderate computational overhead.
+
+\vspace{1cm}
+\noindent\textbf{Keywords:} synchronization, wireless networks, gPTP protocol, asymmetries, PTP, IEEE 802.1AS, Adaptive Kalman Filter.

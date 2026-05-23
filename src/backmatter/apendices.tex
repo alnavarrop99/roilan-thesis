@@ -1,0 +1,57 @@
+% ===========================================================================
+% Apéndices
+% ===========================================================================
+
+\chapter{Código fuente de la implementación}
+\label{ap:codigo}
+
+El código fuente completo de la implementación desarrollada en MATLAB/GNU Octave se encuentra disponible en el directorio \texttt{matlab/} del proyecto. A continuación se enumeran los archivos que lo componen:
+
+\begin{itemize}
+\item \texttt{gptp\_referencia.m} --- Implementación de referencia: simulador de eventos discretos del protocolo gPTP con corrección Exel para tres escenarios (simétrico, asimétrico sin corrección, asimétrico con corrección).
+
+\item \texttt{gptp\_montecarlo.m} --- Motor de simulación Monte Carlo. Ejecuta 3000 simulaciones independientes por escenario y calcula métricas estadísticas agregadas (media, desviación estándar, intervalo de confianza del 95\%).
+
+\item \texttt{plot\_resultados.m} --- Visualización de resultados. Genera histogramas de precisión, diagramas de cajas comparativos, curvas de convergencia de Monte Carlo y distribuciones de offset estabilizado.
+
+\item \texttt{gptp\_asimetrico\_mejorado.m} --- Implementación mejorada: gPTP con corrección Exel (etapa 1) y Filtro de Kalman Adaptativo de tres estados (etapa 2) para la estimación conjunta de offset, skew y asimetría residual.
+
+\item \texttt{kalman\_filter.m} --- Implementación del Filtro de Kalman Adaptativo con adaptación de la varianza del ruido de medición $R_k$ mediante ventana deslizante. Incluye funciones auxiliares para la inicialización de parámetros.
+
+\item \texttt{README.md} --- Documentación del código: descripción de archivos, requisitos, instrucciones de ejecución y arquitectura del sistema.
+\end{itemize}
+
+\vspace{0.5cm}
+El código está diseñado para ser ejecutable tanto en MATLAB (R2020b o superior) como en GNU Octave (versión 8.x), sin dependencia de toolboxes adicionales.
+
+\chapter{Acrónimos}
+\label{ap:acronimos}
+
+\begin{tabular}{ll}
+AKF & \textit{Adaptive Kalman Filter} --- Filtro de Kalman Adaptativo \\
+BMCA & \textit{Best Master Clock Algorithm} --- Algoritmo de Mejor Reloj Maestro \\
+DMA & \textit{Direct Memory Access} --- Acceso Directo a Memoria \\
+DNN & \textit{Deep Neural Network} --- Red Neuronal Profunda \\
+EKF & \textit{Extended Kalman Filter} --- Filtro de Kalman Extendido \\
+gPTP & \textit{Generalized Precision Time Protocol} --- Protocolo de Tiempo de Precisión Generalizado \\
+IEEE & \textit{Institute of Electrical and Electronics Engineers} \\
+IoT & \textit{Internet of Things} --- Internet de las Cosas \\
+ISR & \textit{Interrupt Service Routine} --- Rutina de Servicio de Interrupción \\
+JIT & \textit{Just-in-Time} (compiler) \\
+MAC & \textit{Medium Access Control} --- Control de Acceso al Medio \\
+MLE & \textit{Maximum Likelihood Estimator} --- Estimador de Máxima Verosimilitud \\
+NLoS & \textit{Non-Line of Sight} --- Sin Visibilidad Directa \\
+PTP & \textit{Precision Time Protocol} --- Protocolo de Tiempo de Precisión \\
+QIDA & \textit{Queue-Induced Delay Asymmetry} --- Asimetría de Retardo Inducida por Colas \\
+QoS & \textit{Quality of Service} --- Calidad de Servicio \\
+RMSE & \textit{Root Mean Square Error} --- Error Cuadrático Medio \\
+RTT & \textit{Round-Trip Time} --- Tiempo de Ida y Vuelta \\
+SMC & \textit{Sequential Monte Carlo} --- Monte Carlo Secuencial \\
+SNR & \textit{Signal-to-Noise Ratio} --- Relación Señal-Ruido \\
+ToA & \textit{Time of Arrival} --- Tiempo de Llegada \\
+TSN & \textit{Time-Sensitive Networking} --- Redes Sensibles al Tiempo \\
+UKF & \textit{Unscented Kalman Filter} --- Filtro de Kalman \textit{Unscented} \\
+UTC & \textit{Universal Time Coordinated} --- Tiempo Universal Coordinado \\
+WLAN & \textit{Wireless Local Area Network} --- Red de Área Local Inalámbrica \\
+WSN & \textit{Wireless Sensor Network} --- Red Inalámbrica de Sensores \\
+\end{tabular}

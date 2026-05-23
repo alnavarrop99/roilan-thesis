@@ -1,0 +1,734 @@
+Capítulo 1
+
+5
+
+CAPÍTULO 1. APLICACIONES Y DESAFÍOS DEL SINCRONISMO EN REDES
+INALÁMBRICAS. ASIMETRÍA EN LOS CANALES INALÁMBRICOS Y
+PROTOCOLOS DE SINCRONISMO
+El sincronismo se define como el proceso de entrega de una "referencia común" a los
+elementos de red desde una fuente común dentro de una precisión y estabilidad dadas, a fin
+de controlar precisamente la tasa a la cual las señales digitales se transmiten y procesan a
+través de dicha red. Desde el Internet de las Cosas (Internet of Things, IoT) se imponen
+restricciones a las aplicaciones que requieren redes sincronizadas en el tiempo para un orden
+cronológico de la información o la ejecución sincrónica de algunas tareas [13]. A lo largo de
+los años, la sincronización de tiempo ha ganado relevancia en campos como las
+telecomunicaciones y la automatización industrial, impulsada por la necesidad de sistemas
+de comunicación más confiables y eficientes. En el presente capítulo se proporciona una
+visión general y exhaustiva de los conceptos claves relacionados con la sincronización de
+tiempo en redes inalámbricas, destacando su importancia crítica en numerosas aplicaciones
+de IoT y los desafíos técnicos específicos a los que se enfrentan estos sistemas. Además, se
+establece un marco sólido para comprender los principios fundamentales, las limitaciones y
+los protocolos de sincronización en entornos inalámbricos.
+1.1 Sincronismo en redes inalámbricas
+La sincronización de tiempo es un tema de mucha actualidad en las telecomunicaciones y
+otras aplicaciones industriales de IoT, y se requiere un sistema de sincronización fiable para
+satisfacer las demandas de una tecnología de comunicación de red mejorada [1]. La
+sincronización del reloj es uno de los servicios más importantes para coordinar el acceso
+distribuido a los recursos compartidos, comparar las marcas de tiempo establecidas en
+diferentes ubicaciones y medir el rendimiento de los sistemas distribuidos en tiempo real. El
+propósito de la misma es el establecimiento de una noción global del tiempo con una
+precisión predefinida asegurando desplazamientos máximos acotados entre dos nodos
+cualesquiera [14]. La sincronización horaria es un componente esencial de las redes sensibles
+al tiempo (Time Sensitive Network, TSN), en especial de las redes inalámbricas de sensores
+(Wireless Sensors Network, WSN), ya que una amplia gama de aplicaciones potenciales para
+estas redes requiere una sincronización precisa [15], [16].
+Según [17], los principales tipos de sincronización de relojes son:
+
+Capítulo 1
+
+6
+
+1. Reloj global: el Tiempo Universal Coordinado (UTC) es el estándar de tiempo
+comúnmente utilizado en todo el mundo. Los algoritmos tradicionales de
+sincronización de Internet utilizan el UTC para mantener esta hora global en todos
+los sistemas informáticos. Esta precisión del tiempo global es mantenida por un reloj
+atómico; sin embargo, mantener esta sincronización en las redes de sensores es
+significativamente más difícil, lo que impone una sobrecarga de comunicación.
+2. Reloj relativo: esta es la idea del tiempo relativo dentro de la red de sensores. Cada
+nodo se sincroniza con todos los demás nodos con una información de tiempo
+determinada, que puede ser diferente de UTC.
+3. Ordenamiento físico: este modelo se utiliza para ordenar los eventos de los procesos
+en un sistema que comparte el mismo reloj o tiene una memoria compartida.
+4. Noción relativa del tiempo: el tiempo también se puede acordar entre nodos sin usar
+un reloj en tiempo real, sino usando un tiempo lógico. Este modelo no tiene por qué
+coincidir con el reloj físico, es decir, cuando dos nodos establecen una conexión, este
+momento se establece como un tiempo lógico "cero" y, a partir de este momento, cada
+unidad de tiempo se incrementa por ambos nodos, y así se establece un sincronismo.
+La sincronización de tiempo tiene como objetivo crear o establecer una base de tiempo
+común entre los dispositivos o nodos de la red [3], [18], [19], con el fin de poder comparar
+eventos o sintonizar acciones [7], [20]. Esto es una necesidad para muchas aplicaciones;
+muchas investigaciones en torno a la comunicación inalámbrica demostraron el uso de la
+sincronización de tiempo en diferentes campos de la automatización industrial, incluida la
+robótica, las redes inteligentes, el monitoreo mediante redes de sensores de área amplia e
+incluso en entornos electromagnéticos muy desafiantes [21]. Existen muchos ejemplos de
+aplicaciones donde la sincronización temporal desempeña un papel fundamental, como los
+protocolos de Control de Acceso al Medio (Medium Access Control, MAC), la
+monitorización de la salud estructural (Structural Health Monitoring, SHM) y la medición
+inteligente [22]. Las técnicas de control de acceso al medio, como Acceso Múltiple por
+División de Tiempo (TDMA), requieren sincronización de tiempo para una programación
+precisa de los accesos al medio sin colisiones. Además, las WSN tienen recursos energéticos
+limitados, por lo que se utilizan técnicas de ahorro de energía para reducir el consumo de
+
+Capítulo 1
+
+7
+
+toda la red. Para que los nodos enciendan y apaguen sus transceptores en los momentos
+adecuados, se requiere una sincronización precisa entre los nodos de la red [3].
+Las técnicas de sincronización tradicionales que se han utilizado en redes cableadas no son
+adecuadas para redes inalámbricas. Para sincronizar los nodos en este tipo de redes, es
+necesario alcanzar una noción común del tiempo teniendo en cuenta que los relojes de los
+dispositivos pueden desviarse por múltiples razones, que los requisitos de tiempo de cada
+aplicación varían y que los parámetros objetivo a maximizar en la aplicación difieren en cada
+caso [12]. Los relojes tienen dos fuentes principales de imprecisión: el desfasaje (offset) y la
+desviación (skew); por tanto, estos son los principales objetos de corrección para lograr la
+sincronización de tiempo [7]. El desplazamiento de fase o desfasaje es la diferencia absoluta
+entre el valor de un reloj y el valor de otro, mientras que la desviación es la diferencia entre
+la frecuencia de los dos relojes. Debido a la desviación del reloj se produce un aumento
+constante del desfasaje con el paso del tiempo. Matemáticamente, el tiempo local tu en el
+nodo u está relacionado con el tiempo global t (desconocido) por la Ecuación 1.1:
+𝑡𝑢 = 𝛼𝑢 𝑡 + 𝛽𝑢
+
+(1.1)
+
+Donde αu y βu son la desviación y el desfasaje del reloj en el nodo u, respectivamente. El
+desfasaje relativo entre un par de nodos u y v en una red se puede medir (hasta algún error)
+intercambiando mensajes con marca de tiempo entre ellos [16].
+Los protocolos de sincronización de relojes se basan en la comunicación de la estación
+maestra de tiempo (master clock) a la estación esclava (slave), y pueden ser unidireccionales
+o bidireccionales (como se muestra en la Figura 1.1). En el primer caso, el maestro actúa
+como estación emisora y puede enviar señales de tiempo de forma continua o periódica, pero
+el tiempo de entrega de una señal de difusión no puede calcularse y, por lo tanto, se requiere
+otro método independiente para calcular el retardo de la transferencia de la señal. Los
+protocolos de sincronización bidireccionales implican la comunicación bidireccional entre
+las estaciones maestras y esclavas, permiten medir el tiempo de ida y vuelta de la señal de
+sincronización y la ganancia consiste en adquirir el retardo de propagación del trayecto que
+sufre un paquete en la transmisión. Este valor puede ser utilizado por las estaciones esclavas
+para calcular un valor más preciso a partir de los valores de reloj recibidos del maestro [7].
+
+Capítulo 1
+
+8
+
+Figura 1.1. Sincronización de reloj unidireccional y bidireccional [7].
+
+1.2 Aplicaciones del sincronismo en IoT
+Cada día se dispone de más aplicaciones y dispositivos inalámbricos para interconectarse y
+ayudar a resolver múltiples problemas en áreas como la salud, las infraestructuras críticas, el
+transporte inteligente, la industria, la adquisición coordinada de datos de sensores, acceso a
+canales distribuidos, etc. [11], [23]; para todas estas aplicaciones la sincronización de tiempo
+es vital, ya que constituye una condición previa para muchas aplicaciones desarrolladas sobre
+IoT [24]. Los protocolos de sincronización de reloj son uno de los factores fundamentales
+que pueden definir la calidad de la comunicación y un componente vital debido a las rigurosas
+necesidades de varias aplicaciones sensibles al tiempo, como la automatización industrial, la
+robótica y el Internet Industrial de las Cosas (IIoT). Las demandas de tiempo en los sistemas
+de control y redes se han vuelto cada vez más desafiantes, particularmente para aplicaciones
+en tiempo real como el control de fusión nuclear, la comunicación móvil, la automatización
+de subestaciones y las plantas de fabricación modernas [22]. Por ejemplo, en una fábrica
+inteligente, los robots de producción que trabajan juntos en una misma línea deben
+sincronizarse con precisión; la sincronización exacta del tiempo también es importante
+
+Capítulo 1
+
+9
+
+cuando varios motores mueven una carga mecánica. En una central eléctrica inteligente o en
+el ámbito del suministro de energía, la sincronización horaria es de importancia decisiva tanto
+para el análisis de apagones, el control de la estabilidad de la red eléctrica como para
+promover eficazmente la actualización y transformación de la industria. Asimismo, es
+esencial para la comunicación basada en TDMA debido a que esta técnica es utilizada en
+redes en tiempo real: a cada dispositivo se le asigna un intervalo de tiempo de transmisión
+exclusivo y el cumplimiento de estas franjas horarias evita colisiones; cuanto mejor se
+sincronicen los dispositivos se cumplen con mayor precisión dichos intervalos y, en
+consecuencia, el ancho de banda disponible se puede utilizar mejor [24], [25].
+Una estrategia adecuada de sincronización horaria permite que la red logre una comunicación
+confiable, energéticamente eficiente y de baja latencia, por tanto, la sincronización también
+está en el centro de muchos de los desafíos actuales de IoT, particularmente para redes de
+baja potencia y dispositivos finales [20]. Por otra parte, las redes de sensores y actuadores
+requieren una sincronización de reloj estricta, por ejemplo, debido a las severas restricciones
+en los presupuestos de energía de los dispositivos constituyentes de una red de sensores se
+programa el sueño de los mismos para maximizar su vida útil, dicha programación requiere
+que los relojes de los nodos de los sensores se sincronicen con precisión. Las tareas de
+procesamiento colaborativo, como la detección y advertencia de eventos, el seguimiento de
+objetivos y la fusión de sensores, también requieren sincronización en tiempo; además, para
+que el control de retroalimentación sobre las redes de comunicación sea una realidad, es
+importante que los diferentes nodos conectados estén sincronizados entre sí [16]. Los
+sistemas de medición y control distribuidos en red (sistemas de bus y configuraciones de
+automatización de fábricas) dependen del Protocolo de Tiempo de Precisión (Precision Time
+Protocol, PTP) debido a la necesidad de una sincronización muy precisa impulsada por la
+comunicación en tiempo real y con intervalos de tiempo, y la ejecución de tareas isócronas
+[26]. Por otra parte, la integración de la tecnología 5G con TSN es un factor clave para que
+la misma sea adecuada para futuros escenarios industriales, ya que TSN servirá como interfaz
+en tiempo real para 5G con el fin de establecer un plano de datos y control unificado para las
+redes de comunicación industriales. En lo que respecta a la transmisión activada por el
+tiempo, la asignación de recursos o el seguimiento de la secuencia de eventos, la
+sincronización de tiempo es un aspecto clave para las redes TSN y 5G [27]. El requisito de
+
+Capítulo 1
+
+10
+
+sincronización se ha considerado en varios estándares móviles, como LTE y 5G, y en
+802.11ax para permitir el acceso coordinado al medio [6].
+El sincronismo ha sido durante mucho tiempo uno de los temas más importantes en las
+aplicaciones de telecomunicaciones. En las comunicaciones móviles de Acceso Múltiple por
+División de Código (Code Division Multiple Access, CDMA), Sistema Global de
+Comunicaciones Móviles (Global System for Mobile Communications, GSM) y Sistema
+Universal de Telecomunicaciones Móviles (Universal Mobile Telecommunications System,
+UMTS) se requiere una sincronización estricta de frecuencia y tiempo entre las estaciones
+base vecinas para acelerar la transferencia de datos sin desbordamiento, subdesbordamiento,
+errores de bits u otros efectos adversos [28].
+1.3 Desafíos del sincronismo en redes inalámbricas
+Las técnicas tradicionales que se han utilizado en redes cableadas para el sincronismo no son
+adecuadas en redes inalámbricas, por ejemplo, el Protocolo de Tiempo de Red (Network Time
+Protocol, NTP), que se usa ampliamente en Internet, es demasiado complicado de
+implementar y no es eficiente desde el punto de vista energético; el Sistema de
+Posicionamiento Global (Global Positioning System, GPS), por otro lado, no es práctico ya
+que el dispositivo que se necesita conectar al nodo de red es grande y costoso. Además, dado
+que los sensores suelen desplegarse en entornos hostiles, las señales GPS suelen ser
+inaccesibles [3]. A diferencia de la comunicación basada en Ethernet, los enlaces
+inalámbricos introducen falta de fiabilidad, canales y latencias asimétricas, interferencia de
+canales y distorsión de la señal en la ruta de comunicación, lo que dificulta garantizar las
+características de rendimiento. Por lo tanto, los enlaces inalámbricos, por defecto, no son
+adecuados para aplicaciones críticas en tiempo real y de latencia ultra baja. Algunos de los
+estándares TSN ya incluyen soluciones propuestas para resolver ciertos desafíos en el
+momento de habilitar TSN para redes inalámbricas, como la adopción del estándar IEEE
+802.1AS, que utiliza IEEE 802.11 Timing Measurement (TM) para una sincronización de
+tiempo precisa sobre 802.11 [8]. Las limitaciones de la red inalámbrica imponen ciertos
+requisitos que deben cumplirse. Según [3] y [24], por lo general, se pueden definir las
+siguientes métricas para un enfoque de sincronización temporal adecuado:
+•
+
+Precisión: la diferencia de tiempo restante entre el maestro y el esclavo, que no puede
+compensarse con la sincronización, debe ser lo más pequeña posible.
+
+Capítulo 1
+•
+
+11
+
+Robustez: dependiendo del caso de uso, puede ser importante que un enfoque sea
+especialmente robusto. La robustez es muy relevante en escenarios de IoT altamente
+dinámicos (alta rotación de nodos y cambios frecuentes de topología).
+
+•
+
+Escalabilidad y eficiencia del ancho de banda: cualquier técnica de sincronización
+debe funcionar bien con cualquier número de nodos de la red. Los mensajes de
+sincronización siempre generan una sobrecarga. Si se utiliza menos ancho de banda
+para la sincronización hay más ancho de banda disponible para las tareas reales del
+sistema distribuido (control, adquisición de datos, intercambio de datos, etc.).
+
+•
+
+Eficiencia energética: los nodos de la red tienen recursos energéticos limitados. Todos
+los protocolos de red, incluidos los de sincronización, deben tener en cuenta esta
+limitación.
+
+•
+
+Costo: debido a las tecnologías avanzadas, los nodos de red se están volviendo muy
+pequeños y económicos. Cualquier algoritmo de sincronización no debe agregar
+costos ni aumentar el tamaño del nodo de red.
+
+•
+
+Eficiencia computacional: la sincronización horaria requiere potencia de cálculo
+adicional en los dispositivos. Cuanta menos potencia de cálculo adicional se requiera
+para la sincronización, más estará disponible para las tareas reales de los dispositivos.
+
+•
+
+Retardo: muchas aplicaciones, como la detección de fugas de gas, requieren una
+respuesta inmediata. Para ese tipo de aplicaciones, el tiempo total requerido para
+sincronizar la red debe ser lo más bajo posible.
+
+•
+
+Seguridad: esta es una de las principales preocupaciones en las redes modernas; en
+consecuencia, también es relevante para la sincronización. Especialmente en
+escenarios de IIoT, es crucial que los protocolos de sincronización de tiempo seguros
+estén a salvo de nodos maliciosos y ataques, ya que una sincronización fallida puede
+provocar un error en todo el sistema.
+
+Los métodos de sincronización de relojes no son perfectos, es decir, incluso después de un
+proceso de sincronización, los relojes participantes no están perfectamente sincronizados con
+un error nulo, porque el proceso en sí consume tiempo, que en la mayoría de los casos no se
+puede conocer con exactitud. Las causas que introducen tales errores pueden ser, por ejemplo,
+el retardo de propagación de las transmisiones, el procesamiento de estos mensajes o las
+interrupciones en los dispositivos; aunque existen enfoques para reducir los errores
+
+Capítulo 1
+
+12
+
+introducidos o incluso excluir fuentes de error específicas. El parámetro más importante que
+describe la eficacia de una sincronización de reloj es la precisión de sincronización, que es el
+valor mínimo al que se puede reducir el desfasaje de los relojes cuando se sincroniza un
+dispositivo esclavo con el reloj de un maestro. Además, otros factores pueden considerarse
+importantes dependiendo del caso de uso, como son: la sobrecarga de comunicación, los
+protocolos complejos, que requieren muchos intercambios de mensajes, pueden causar una
+sobrecarga considerable en la red; el tiempo de convergencia, que describe la cantidad de
+tiempo que transcurre entre el inicio de un proceso de sincronización y su finalización, o sea,
+el momento cuando el reloj de cada nodo esclavo participante está sincronizado con el reloj
+del maestro según la precisión posible del procedimiento utilizado [7]. Otro factor es la
+precisión de la estampa de tiempo de la capa de control de acceso al medio (MAC), que
+depende de la resolución del reloj de hardware local y de la latencia de la interrupción que se
+produce en el delimitador de inicio de trama [19].
+Los principales desafíos de la sincronización de tiempo en estas redes son que los osciladores
+(generadores de tiempo) y los canales de comunicación no son ideales en la realidad, esto
+conduce a imprecisiones que hay que compensar. En los osciladores hay que contar con la
+cuantificación, los cambios de frecuencia debido a los efectos de la temperatura [29], las
+variaciones aleatorias con cada tick (jitter), el cambio aleatorio de frecuencia y los efectos
+del envejecimiento (durante largos períodos de tiempo). En el caso de los canales de
+comunicación, las variaciones en el retardo de la red (por ejemplo, debido a las colas de
+conmutación) y los tiempos de procesamiento variables son particularmente problemáticos,
+especialmente para el procesamiento de software [24]. Los errores de cuantificación
+introducidos por la lógica aritmética con un número fijo de dígitos pueden causar errores de
+tiempo adicionales. Sin una cuidadosa consideración del cálculo digital, o el análisis
+numérico y el control de errores, la degradación de la precisión puede ser significativa porque
+incluso un pequeño error de cuantificación puede acumularse en una gran cantidad de error
+en un intervalo de mensajes de sincronismo [28].
+En una red inalámbrica, la comunicación se realiza por radio. En teoría, para enviar un
+mensaje, un nodo enciende su radio, transmite el mensaje y apaga la radio. En la práctica,
+por supuesto, se presentan una serie de problemas [19]. Para empeorar las cosas, la frecuencia
+de cada reloj varía con el tiempo, incluso si el tiempo se sincronizara exactamente al
+
+Capítulo 1
+
+13
+
+principio, y cada dispositivo contuviera una referencia de frecuencia de alta calidad, sin un
+método para medirlos y sincronizarlos, los relojes se desincronizarían casi de inmediato y
+continuarían a la deriva. Por esta razón, los protocolos deben ejecutarse periódicamente,
+primero sincronizando el tiempo y luego para compensar las diferencias en las referencias de
+frecuencia y los cambios en esas referencias [30].
+El intercambio de mensajes se utiliza en muchos algoritmos de sincronización de tiempo. Si
+un nodo envía un paquete con una estampa de tiempo, los retrasos no deterministas, como
+los tiempos de acceso y propagación, dificultan que el nodo receptor se sincronice con
+precisión con el nodo emisor. En general, los siguientes elementos contribuyen a los errores
+de sincronización: tiempo de envío, tiempo de acceso, tiempo de transmisión, tiempo de
+propagación y tiempo de recepción [15], como se muestra en la Figura 1.2. El tiempo de
+envío es el tiempo total de construcción del mensaje y de transferencia a la interfaz de red
+que se va a enviar, depende en gran medida de los sistemas operativos que se utilicen. El
+tiempo de acceso es el necesario para acceder al canal, cada red emplea un esquema de
+control de acceso al medio (MAC) y el tiempo total de acceso depende de ese esquema. El
+tiempo de transmisión es la cantidad de tiempo necesaria para empujar el paquete en el canal
+inalámbrico, este período de tiempo es determinista y depende principalmente del tamaño
+del paquete y de la velocidad de datos del canal. El tiempo de propagación es el tiempo
+necesario para propagar el mensaje por el aire desde la interfaz de red del emisor hasta la
+interfaz de red del receptor y, según [31], es generalmente insignificante en comparación con
+los otros retrasos. Por último, el tiempo de recepción es el tiempo empleado en recibir el
+mensaje por la interfaz de red y transferirlo a la capa de aplicación [3].
+
+Figura 1.2. Fuentes de error de sincronización [15].
+
+Capítulo 1
+
+14
+
+1.4 Asimetrías en los canales de comunicación
+Los retardos asimétricos en las TSN son una de las principales razones de la inexactitud del
+proceso de sincronización y la precisión se ve afectada por estos retardos de tal manera que
+el grado de precisión depende de la exactitud del retardo de trayecto calculado [14]. En la
+sincronización a través de redes inalámbricas basadas en paquetes, uno de los principales
+obstáculos para la precisión es la asimetría en el retardo de las comunicaciones entre
+dispositivos. Esta asimetría puede tener varias fuentes, como el uso de diferentes rutas,
+retrasos variables en las colas, diferentes anchos de banda de enlace, distintos tipos de
+proveedores de equipos, la capa física (PHY), los puentes y el enrutamiento; siendo estas tres
+últimas las principales fuentes [7], [23], [32]. Este retardo asimétrico en la comunicación
+entre dispositivos en una red inalámbrica está compuesto fundamentalmente por [23]:
+•
+
+Retardo de procesamiento: el retardo de procesamiento en cada nodo incluye los
+retrasos experimentados en la búsqueda de la tabla de enrutamiento, la ejecución de
+procesos por parte del sistema operativo, etc.
+
+•
+
+Retardo de cola: dependiendo de la intensidad del tráfico entrante desde un nodo que
+pasa por otro nodo en una interfaz de red dada, se experimentan retrasos variables en
+la cola debido a la longitud variable de la misma. Este componente de retardo es
+difícil de estimar, ya que depende de la carga de tráfico.
+
+•
+
+Retardo de transmisión: el retardo de transmisión depende de la velocidad de datos
+de un canal determinado y de la longitud de trama. Hay que tener presente que la
+velocidad de datos puede variar de un enlace a otro, lo que puede dar lugar a retardos
+asimétricos.
+
+•
+
+Retardo de control por paquete/trama: en muchas redes, especialmente en las
+inalámbricas, la transmisión de trama tiene un retardo de control adicional fijo o
+variable para disminuir la probabilidad de colisión.
+
+•
+
+Retardo de propagación: el retardo de propagación es el tiempo físico necesario para
+transmitir una trama dada de un nodo a otro. Este componente de retardo es
+generalmente inferior a un microsegundo para una distancia de unos pocos metros y
+crece significativamente para distancias de unos pocos kilómetros.
+
+Los protocolos de sincronización utilizados en redes reales generalmente asumen que los
+retrasos en la ruta determinista son iguales en ambos sentidos [33]. Sin embargo, los medios
+
+Capítulo 1
+
+15
+
+de uso común, como Ethernet conmutado o redes inalámbricas, imponen diferentes retrasos
+para la ruta de recepción y transmisión, por lo que se crea asimetría. Cuando existe una mayor
+asimetría en la velocidad del enlace, protocolos como PTP que comúnmente se emplean en
+redes cableadas, sin ninguna corrección, crean un desfasaje de reloj significativo [11]. El
+desfasaje y la desviación del reloj se pueden estimar correctamente en cualquier protocolo de
+sincronización de tiempo basado en el esquema de intercambio de mensajes bidireccional
+solo si existe una relación previamente conocida entre los retrasos de la ruta maestro a esclavo
+(directa) y la ruta de esclavo a maestro (inversa) [10]. Sin embargo, la presencia de una
+asimetría desconocida puede degradar significativamente el rendimiento de los esquemas de
+estimación del desfasaje y la desviación del reloj, y el uso de más mediciones no tiene por
+qué conducir a estimaciones más precisas, ya que la varianza del error de la estimación
+resultante puede aumentar al considerar más mediciones [16], [33]. Además, la asimetría del
+retardo de propagación causada por diferentes tamaños de trama y el esquema de modulación
+y codificación puede dañar potencialmente la sincronización [34], [35], lo que se traduce
+entonces en una desviación del reloj [36].
+La asimetría del retardo de propagación es la cuestión más importante para determinar la
+calidad de sincronización de todo el sistema. Los dispositivos, en la mayoría de los protocolos
+utilizados, estiman el retardo de propagación asumiendo que es simétrico para ambas
+direcciones. Esta suposición, sin embargo, generalmente no es cierta en una red operativa.
+La diferencia entre los retardos en cada dirección se debe principalmente a los retardos
+aleatorios de las colas en los conmutadores de red y las latencias específicas del proveedor
+en los chips transceptores. Se puede resaltar que el error de tiempo debido a los retardos
+asimétricos en las colas supera a cualquier otro componente cuando viajan paquetes grandes
+por la red [28]. Para la comunicación inalámbrica que utiliza estampas de tiempo por software
+basadas en interrupciones, una fuente importante de asimetría es la multidifusión de paquetes
+desde un nodo [37]. Desgraciadamente, la asimetría no puede medirse en un sistema de
+sincronización por pares ni siquiera con un número infinito de mediciones de ida y vuelta,
+como se demuestra en [10]. Debido a esta limitación fundamental, los protocolos no pueden
+mitigar el desfasaje de reloj creado por una asimetría desconocida [12].
+El algoritmo de sincronización convencional IEEE 1588 (PTP) asume enlaces de
+comunicación simétricos, lo que provoca errores en la sincronización de reloj de enlaces
+
+Capítulo 1
+
+16
+
+asimétricos debido a la diferencia de tiempo entre el reloj maestro y el reloj esclavo [38]. Por
+su parte, el protocolo de sincronización estándar 802.1AS, conocido como Generalized
+Precision Time Protocol (gPTP) y también diseñado principalmente para redes Ethernet,
+igualmente supone que los enlaces de comunicación entre nodos son simétricos, por lo tanto,
+la determinación del retraso de la ruta es sencillo, basta con calcular el valor de retardo medio
+para los mensajes DelayReq y DelayRep. Sin embargo, en redes inalámbricas o híbridas, esta
+no es una solución óptima, especialmente en redes inalámbricas asimétricas. Condiciones
+adicionales, como la velocidad de datos variable y la movilidad de los nodos, afectan
+negativamente a la precisión de la sincronización y, para empeorar esta situación, los retrasos
+asimétricos pueden variar según el entorno circundante [14]. Debido a esto, varios
+investigadores se han dedicado a mejorar estos protocolos de manera que tengan en cuenta
+los efectos que provocan las asimetrías y puedan lograr una mayor precisión en cuanto a
+sincronismo. La forma de resolver estos problemas que la asimetría incorpora son la
+respuesta a cómo aumentar la precisión de sincronización de reloj en este tipo de redes [39].
+Varias han sido las técnicas propuestas para estimar la asimetría de retardo en una red PTP,
+como la estimación de retardo offline, servo clock, mecanismos basados en sondeo, mejora
+de la precisión del estampado de tiempo, etc. [23]. En [40], dado que el IEEE 1588
+convencional no puede proporcionar una sincronización precisa para sistemas inalámbricos
+asimétricos que cambian dinámicamente, se propone un algoritmo de sincronización IEEE
+1588 mejorado que sí lo hace. El algoritmo propuesto permite el desplazamiento exacto del
+tiempo y puede reducir el error de desviación para la sincronización de tiempo. En [14] se
+define la expresión de relación de grados simétricos (Symmetric Degree Ratio, SDR) con el
+fin de medir la relación entre los retrasos de los mensajes DelayReq y DelayRep durante el
+mecanismo de computación del retardo entre pares. Si su valor es la unidad o muy cercano a
+la unidad significa que los retrasos de los mensajes son simétricos; en cambio, si su valor se
+desvía de la unidad significa que se deben considerar las características ambientales
+asimétricas en la red dinámica inalámbrica. Esta solución proporciona una ganancia
+significativa en términos de precisión de sincronización, pero sigue presentando dificultades
+ante algunas clases de asimetrías que pueden aparecer en este tipo de redes y que ya se han
+mencionado anteriormente.
+
+Capítulo 1
+
+17
+
+1.5 Protocolos de sincronismo
+La gran variabilidad del retardo de las comunicaciones en las WSN, sumada a las limitaciones
+de los nodos, elevan la complejidad de la tarea de implementar una correcta sincronización.
+Sin embargo, en la práctica se suma también que la frecuencia del reloj varía de forma
+impredecible debido a diversos efectos físicos, esto se conoce como deriva del reloj. Los
+diferentes retos a los que se tiene que hacer frente al diseñar, implementar y probar un
+protocolo de sincronismo en este tipo de redes son los siguientes [41]:
+•
+
+Deriva rápida: una de las características más influyentes de los relojes utilizados en
+los nodos de sensores actuales, esto se debe a la reducción de costos de los circuitos
+que inevitablemente requiere el uso de componentes baratos, pero menos fiables.
+
+•
+
+Limitaciones de los nodos: consisten en codificar los mecanismos de sincronismo
+para una computadora estándar, ejecutar y recopilar los resultados para el análisis de
+estimadores complejos, pero costosos desde el punto de vista computacional. Sin
+embargo, ignoran por completo que este código para calcular los estimadores debe
+ser ejecutado por nodos sensores cuya memoria y capacidad de cálculo son limitadas.
+
+•
+
+Variaciones de retardo: todos los protocolos de sincronización se basan en algún tipo
+de intercambio de mensajes entre nodos. La variación del retardo es una característica
+heredada del entorno inalámbrico, a la que se añaden largas fluctuaciones (jitters)
+para el procesamiento de mensajes en los nodos de sensores que se deben a la
+limitación e inestabilidad de los mismos.
+
+•
+
+Tolerancia a fallos y seguridad: la mayoría de las evaluaciones teóricas y basadas en
+simulaciones suponen escenarios ideales y descuidan aspectos como la pérdida de
+paquetes y el fallo temporal o permanente de algún nodo, lo que hace que la tolerancia
+a errores sea imprescindible antes de la implementación real.
+
+•
+
+Medición de la precisión: para medir la precisión de un protocolo de sincronización
+(el error de sincronización), los tiempos locales instantáneos (o estimaciones) en los
+nodos sincronizados implicados en la medición deben ser lo más exactas posibles. La
+tendencia en la mayoría de las mediciones es utilizar un hardware externo.
+
+La precisión de la sincronización reside en tres procesos: el protocolo utilizado para
+intercambiar mensajes de sincronización entre un maestro y varios esclavos (mensajería); el
+tiempo de salida y entrada de los mensajes (estampas de tiempo) utilizados para calcular el
+
+Capítulo 1
+
+18
+
+error; y el cálculo del desfasaje y ajuste de la hora local (ajuste). La precisión de una
+determinada solución está determinada por las técnicas aplicadas en estos procesos [6]. El
+uso de protocolos de sincronización permite corregir dinámicamente la desviación del reloj
+y, por tanto, limitar el error de la red. La mayoría de los métodos de sincronización basados
+en IEEE 802.11 intentan sincronizar los relojes con el retardo de propagación de trama
+bidireccional [34], como en las redes cableadas. Sin embargo, al contrario que en una red
+cableada, donde el tiempo de propagación es relativamente estable, en un escenario
+inalámbrico el retardo puede variar, especialmente sin una línea de visión directa entre dos
+nodos [42]. A lo largo de los años se han desarrollado una gran cantidad de protocolos y
+estándares con respecto a la sincronización de reloj, todos ellos con su propio enfoque para
+hacer frente a ciertas condiciones límite, para lograr una precisión particular o para ser
+ejecutados de forma efectiva [7]. Entre los más relevantes en el ámbito de la sincronización
+de reloj en redes inalámbricas se encuentran: Protocolo de Tiempo de Red (Network Time
+Protocol, NTP), Sincronización por Difusión de Referencia (Reference Broadcast Time
+Synchronization, RBS), Protocolo de Sincronización Temporal para Redes de Sensores
+(Timing-sync Protocol for Sensor Networks, TPSN), Protocolo de Tiempo de Precisión
+(Precise Time Protocol, PTP) y Protocolo de Tiempo de Precisión Generalizado (Generalized
+Precision Time Protocol, gPTP).
+NTP, RBS y TPSN no proporcionan compatibilidad y dan como resultado una partición de
+red, por tanto, es necesaria la estandarización para la sincronización de tiempo en WSN, así
+como en aplicaciones distribuidas. Por consiguiente, las técnicas de sincronismo más exactas
+y útiles son PTP y gPTP. El Protocolo de Tiempo de Precisión (PTP) proporciona un método
+estándar para sincronizar dispositivos en una red con una alta precisión [43]. Hoy en día, el
+Protocolo de Tiempo de Precisión (PTP) IEEE 1588 se ha convertido en un estándar de facto
+para la sincronización de relojes en varios dominios de aplicaciones, como la automatización
+industrial, las telecomunicaciones y el entretenimiento, debido a su estructura simple y su
+capacidad para lograr un alto rendimiento de sincronización en un rango de nanosegundos
+utilizando marcas de tiempo de hardware y elementos de red dedicados [34]. En [7] y [22] se
+realiza una evaluación de los distintos protocolos mencionados (vale destacar que no se
+incluye gPTP) y se concluye que PTP es, en general, superior dada su compatibilidad con
+TSN, aunque existen desafíos que requieren esfuerzos reflexivos y modificaciones, sobre
+
+Capítulo 1
+
+19
+
+todo en el ámbito de las redes inalámbricas. Debido a eso surge gPTP, pues constituye una
+mejora de PTP y es mucho más adecuado para entornos inalámbricos, siendo más robusto
+ante los desafíos propios del sincronismo. Por tanto, a continuación, se explican con más
+detalle el protocolo PTP y la versión derivada del mismo, gPTP.
+1.5.1 Protocolo de Tiempo de Precisión (PTP)
+El Protocolo de Tiempo de Precisión (PTP) [44] especificado en IEEE 1588 utiliza el tiempo
+de ida y vuelta (RTT) o una simple suma como estimador y alcanza una precisión inferior a
+1 µs. Sin embargo, PTP requiere hardware especializado para alcanzar esta precisión (al
+menos en los nodos finales). Está disponible tanto en versión hardware como software. La
+sincronización PTP comienza con la determinación del dispositivo que tiene la hora más
+estable y precisa. El nodo con la hora de referencia (el llamado reloj Gran Maestro) se
+selecciona utilizando el Algoritmo del Mejor Reloj Maestro (BMCA). Las horas de referencia
+se envían a los esclavos, que las comparan con su propia hora. Los esclavos responden al
+maestro con sus propias horas a intervalos regulares. El retardo del maestro al esclavo y el
+retardo del esclavo al maestro pueden determinarse a partir de las estampas de tiempo de los
+mensajes para poder sincronizar a los esclavos. Sin embargo, PTP asume que el retardo de la
+red es constante y simétrico, por tanto, las variaciones de retardo reducen la precisión de PTP,
+como se ha medido, por ejemplo, en [45], [46]. Tales variaciones pueden ocurrir cuando los
+conmutadores no soportan PTP en la capa de Control de Acceso al Medio (MAC). La
+sincronización se consigue mediante un intercambio de mensajes bidireccional entre el
+maestro y los esclavos [47].
+Para que los esclavos conscientes del tiempo ajusten sus relojes a una hora común, PTP utiliza
+un principio de cálculo más o menos sencillo. El reloj maestro inicia una sincronización
+enviando un mensaje de sincronización con una estampa de tiempo de su propio reloj. Los
+esclavos receptores añaden el retardo de propagación que el paquete sufre en el camino
+utilizado, compensado por el factor de la inexactitud de su propio reloj. Para ello, PTP
+describe dos mecanismos: la transmisión de información de sincronización temporal y la
+medición del retardo de propagación. El mensaje de sincronismo es creado inicialmente por
+el Gran Maestro y cada mensaje Sync consta de la estampa de tiempo de origen preciso (la
+estampa de tiempo del Gran Maestro). En el caso más sencillo, los mensajes PTP se pueden
+enviar directamente a través de WLAN y se puede monitorizar la precisión de sincronización
+
+Capítulo 1
+
+20
+
+resultante. Este esquema es muy similar al introducido en [48], donde se ha utilizado una pila
+PTP cableada normal, pero el medio cableado se sustituye por un enlace WLAN. Incluso
+después de la sincronización pueden existir errores debido a los retardos asimétricos de los
+canales inalámbricos, además, los dispositivos necesitan sincronizarse periódicamente y esta
+periodicidad depende de la estabilidad del reloj y la precisión requerida [26].
+1.5.2 Protocolo de Tiempo de Precisión Generalizado (gPTP)
+De todos los protocolos de sincronización que utilizan estampas de tiempo, PTP es el más
+utilizado. En consecuencia, el comité IEEE-TSN utilizó PTP para derivar gPTP [48]
+(Generalized Precision Time Protocol) como subestándar TSN. Como se puede ver, el
+protocolo PTP está diseñado para su uso en redes cableadas, aunque con algunos ajustes
+mediante IEEE 802.1AS o más concretamente gPTP, también es adecuado para trabajar con
+enlaces de capa física inalámbricos IEEE 802.11. Utiliza el RTT o una simple suma como
+estimador y consigue una precisión inferior a 1 µs, pero está limitado a 7 saltos [32], [48].
+Sin embargo, gPTP requiere un hardware especializado; a diferencia de PTP, no solo lo
+requiere en los nodos finales, sino también en los conmutadores [49]. Básicamente, la
+sincronización de gPTP es similar a PTP. Un puente o una estación final que cumpla los
+requisitos de IEEE 802.1AS se denomina sistema sensible al tiempo. Todos los nodos de la
+red (puentes y estaciones finales) deben ser sistemas sensibles al tiempo. A diferencia de PTP,
+gPTP también está especificado para redes inalámbricas [48]. Para este tipo de enlaces
+inalámbricos 802.11, gPTP define métodos para transferir tiempo utilizando los protocolos
+Timing Measurement (TM, definido en IEEE 802.11-2012 [50]) o Fine Timing Measurement
+(FTM, definido en IEEE 802.11-2016 [51]), que se diseñaron para realizar mediciones de ida
+y vuelta a un nivel tan bajo en la pila de protocolos que están por debajo de la retransmisión
+y la agregación, y son inmunes a los cambios de velocidad [30].
+Este protocolo es mucho más robusto frente a variaciones de retardo, ya que exige que cada
+conmutador de la red soporte gPTP en la capa MAC. En consecuencia, solo se requiere un
+retardo de propagación constante y ningún retardo de cola [49]. La sincronización temporal
+del estándar se basa en el principio maestro-esclavo. Cada puerto de un sistema en un
+dominio gPTP se encuentra en uno de los estados mencionados a continuación [52]:
+
+Capítulo 1
+•
+
+21
+
+Un puerto maestro: es un puerto que envía información de sincronización horaria al
+puerto esclavo de un sistema con conciencia del tiempo situado en el otro extremo
+del enlace físico.
+
+•
+
+Un puerto esclavo: es un puerto que recibe información de sincronización horaria del
+puerto maestro.
+
+•
+
+Un puerto pasivo: es un puerto que no tiene capacidad gPTP.
+
+Además, en un dominio gPTP existen tres tipos diferentes de sistema con capacidad de
+sincronización de tiempo [52]. El gran maestro (GM): solo existe una vez en el dominio;
+inicializa la sincronización del reloj periódicamente y tiene un puerto maestro conectado al
+dominio para enviar mensajes de sincronización. Puede haber varios puentes en el dominio:
+los puentes constan de un puerto esclavo conectado al puerto maestro de otro sistema
+consciente del tiempo y posiblemente varios puertos maestros dependiendo de la topología
+de la red. En el dominio pueden existir varios esclavos: cada uno de los cuales solo tiene un
+puerto esclavo. La medición del retardo de propagación es un mecanismo dependiente del
+medio para medir el retardo entre el llamado solicitante de retardo y el respondedor de retardo
+en cada enlace conectado a los puertos de un sistema consciente del tiempo. Si un puerto es
+compatible con gPTP, la medición del retardo funciona de la siguiente manera, como se
+muestra en la Figura 1.3.
+
+Figura 1.3. Medición del retardo en gPTP [48].
+
+Capítulo 1
+
+22
+
+1. El solicitante de retardo, la estación final 1, envía un mensaje PdelayReq al
+respondedor de retardo, el puente 1, a su hora local t1 y registra t1.
+2. El mensaje PdelayReq es recibido por el respondedor de retardo, puente 1, a su hora
+local t2, y t2 se registra en el respondedor de retardo.
+3. El respondedor de retardo responde a su hora local t3 enviando un mensaje
+PdelayResp. Luego t3 se registra en el respondedor de retardo.
+4. El solicitante de retardo recibe un mensaje PdelayResp en su hora local t4, y t4 se
+registra en el solicitante de retraso.
+5. A continuación, el respondedor de retardo envía un mensaje de seguimiento
+PdelayRespFollowUp que contiene la hora de salida t3 del mensaje PdelayResp. t3 se
+registra en el solicitante de retardo.
+Al final de los intercambios de mensajes, el solicitante de retardo conoce las cuatro estampas
+de tiempo (t1, t2, t3 y t4) que lee de los mensajes intercambiados. El retardo de propagación
+se calcula entonces mediante la Ecuación 1.2 [48], [52]. El retardo es igual a la mitad de la
+diferencia entre los intervalos (t4–t1) y (t3–t2). Sin embargo, los relojes locales tienen una
+variación de frecuencia definida como deriva del reloj, que da lugar a valores de tiempo
+diferentes entre los sistemas distribuidos con conciencia del tiempo. Por lo tanto, ambos
+intervalos deben basarse en una base temporal común y el intervalo de respuesta de retardo
+(t3–t2) debe corregirse multiplicando el intervalo por la relación de velocidad (r) o rate ratio
+del solicitante de retardo respecto a la frecuencia del reloj del respondedor de retardo.
+Pdelay =
+
+(𝑡4 − 𝑡1 ) − 𝑟(𝑡3 − 𝑡2 )
+2
+
+(1.2)
+
+La ecuación anterior se basa en el supuesto de que el enlace es simétrico. Como se indica en
+la Ecuación 1.2, la relación de velocidad (r) es el factor decisivo para la medición del retardo.
+De acuerdo con la norma, es la relación entre la frecuencia del reloj local del solicitante y la
+frecuencia del reloj local del respondedor para determinar la diferencia relativa entre dos
+frecuencias de reloj local [52]. En la Figura 1.4 se puede ver una adaptación del mecanismo
+antes visto para determinar el retardo de propagación y el impacto de la deriva en las
+frecuencias de los relojes.
+
+Capítulo 1
+
+23
+
+Figura 1.4. (a) Procedimiento para calcular el retardo de propagación, (b) Impacto de la deriva de
+los relojes en el tiempo de arribo de los mensajes [52].
+
+Luego, el tiempo de sincronización es igual a la suma de la estampa de tiempo de origen, el
+retardo de propagación, la corrección y el tiempo de transmisión entre dos puntos finales del
+enlace físico, como se observa en la Ecuación 1.3 [52].
+TimeSync = PreciseTimestamp + Pdelay + Correction + TransTime
+
+(1.3)
+
+En el caso del tiempo de transmisión se calcula mediante la Ecuación 1.4. La corrección es
+el campo que describe el retardo que sufre un mensaje en su transmisión. Está compuesto por
+el tiempo de propagación (tiempo en el medio de transmisión) y el tiempo de permanencia
+(el procesamiento dentro del sistema consciente del tiempo) y es actualizado por cada sistema
+consciente del tiempo [7].
+TransTime =
+
+PacketSize
+DataRate
+
+(1.4)
+
+Dentro de los protocolos de sincronismo se puede afirmar que NTP es el más utilizado, ya
+que no necesita ningún hardware especial. Por su parte, PTP consigue una precisión mayor
+que NTP utilizando un hardware especial al menos en los nodos finales. Como PTP asume
+que el retardo de la red es constante y simétrico, las variaciones de retardo pueden reducir su
+
+Capítulo 1
+
+24
+
+precisión. El protocolo gPTP (parte de los estándares TSN) exige hardware especial en todas
+los dispositivos finales y conmutadores. Por lo tanto, se puede suponer que el retardo en una
+red gPTP es constante. Una ventaja de gPTP y PTP en cuanto a robustez es que ambos utilizan
+el BMCA, el cual elige de forma adaptativa un nuevo reloj de referencia si el original falla.
+Finalmente, gPTP es el único de los protocolos encontrados en la literatura que se destina
+también para su empleo en redes inalámbricas [12].
+1.6 Conclusiones del capítulo
+La sincronización es un componente fundamental en las redes inalámbricas, especialmente
+en el contexto del IoT, que no solo facilita la coordinación de recursos compartidos, sino que
+también optimiza el rendimiento de sistemas distribuidos. Sin embargo, los métodos de
+sincronización tradicionales a menudo resultan inadecuados debido a la falta de fiabilidad
+inherente a los enlaces inalámbricos y a la variabilidad de los retardos en la comunicación.
+Las asimetrías en los retardos de propagación representan un desafío significativo, ya que
+pueden provocar errores considerables en el sincronismo de los relojes.
+Por otra parte, la implementación de protocolos de sincronización en redes inalámbricas es
+compleja debido a la variabilidad de los retardos y las limitaciones de los nodos. En este
+sentido se ha verificado que el protocolo gPTP es el más adecuado para estas redes,
+ofreciendo una mayor precisión y robustez ante los desafíos del sincronismo.
+
+Capítulo 2
+
+25
+

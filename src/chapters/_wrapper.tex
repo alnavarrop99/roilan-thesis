@@ -1,0 +1,21 @@
+% ===========================================================================
+% Standalone chapter compilation wrapper
+% Used by: all chapters/*/XX-name.tex
+% ===========================================================================
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{array}
+\bibliographystyle{ieeetr}
+
+% Point to the main bib file
+\newcommand{\bibpath}{../../thesis}
+
+\begin{document}
+\input{__CHAPTER__}
+\bibliography{\bibpath}
+\end{document}

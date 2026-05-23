@@ -1,0 +1,2805 @@
+1
+
+Departamento de Electrónica y Telecomunicaciones
+
+Título: Mejora del sincronismo en redes inalambricas empleando
+el protocolo gPTP
+Autor: Malcolm Daniel Eupierre Oquendo
+Tutor: M. Sc. Juan Carlos Oliva Perez
+
+, noviembre 2024
+
+2
+
+Academic Departament of Electronics and Telecommunications
+
+Title: Improving synchronization in wireless networks using
+the gPTP protocol
+Author: Malcolm Daniel Eupierre Oquendo
+Thesis Director: M. Sc. Juan Carlos Oliva Perez
+
+, November 2024
+
+III
+
+Este documento es de titularidad de la Universidad Central “Marta Abreu” de Las Villas,
+y se encuentra depositado en los fondos de la Biblioteca Universitaria “Chiqui Gomez
+Lubian” subordinada a la Direccion de Informacion Científico Tecnica de la mencionada
+casa de altos estudios.
+Se autoriza su utilizacion bajo la licencia siguiente:
+Atribucion- No Comercial- Sin Obras Derivadas (CC-BY-NC-ND)
+
+Para cualquier informacion contacte con:
+Direccion de Informacion Científico Tecnica. Universidad Central “Marta Abreu” de Las
+Villas. Carretera a Camajuaní. Km 5½. Santa Clara. Villa Clara. Cuba. CP. 54 830
+Telefonos.: +53 01 42281503-1419
+
+IV
+ACTA DE CONFORMIDAD PARA ESTUDIANTES DE PREGRADO
+Universidad Central "Marta Abreu" de Las Villas
+Por una parte: __________________________________________________________________________
+Malcolm Daniel Eupierre Oquendo
+Ingeniería en Telecomunicaciones y Electrónica
+estudiante de la carrera de:_________________________________________________________________
+Ingeniería Eléctrica
+en la facultad de:_________________________________________________________________________,
+01042872002
+en lo adelante El ESTUDIANTE. Con número de identidad permanente: __________________________
+o
+pasaporte:______________________; y por otra parte:___________________________________________
+M. Sc. Rafael Alejandro Olivera Solís
+Jefe del Departamento Docente de:__________________________________________________________
+Electrónica y Telecomunicaciones
+en la ya mencionada facultad, en lo adelante EL JEFE DE DEPARTAMENTO, y ___________________
+M. Sc. Juan Carlos
+_______________________________
+profesor(es) encargado(s) de tutorar el Trabajo de Diploma DEL
+Oliva Pérez
+ESTUDIANTE, en lo adelante EL TUTOR.
+Reconocen que:
+I. A EL ESTUDIANTE se le ha aprobado como tema de investigación para su Trabajo de Diploma el
+titulado____________________________________________________________________________.
+Mejora del sincronismo en redes inalámbricas empleando el protocolo gPTP
+II. EL ESTUDIANTE no divulgará información concerniente a la investigación, tanto durante el desarrollo como
+tras la culminación de esta sin la debida autorización DEL TUTOR o EL JEFE DE DEPARTAMENTO.
+III. Que el Trabajo de Diploma fruto de la labor investigativa de EL ESTUDIANTE y la asesoría de EL TUTOR,
+resulta de TITULARIDAD EXCLUSIVA de la Universidad Central “Marta Abreu” de las Villas.
+IV. El ESTUDIANTE una vez aprobada su tesis para la defensa, depositará una copia electrónica de la misma
+en el Repositorio Digital Institucional de la Universidad Central “Marta Abreu” de Las Villas.
+V. A partir de la defensa y aprobación del Trabajo de Diploma, la publicación total, parcial o la elaboración de
+cualquier obra que se derive de esta investigación por parte de EL ESTUDIANTE, contará con la coautoría
+de EL TUTOR y viceversa, resultando de referencia obligada esta obra en cualquier otra que se elabore. El
+incumplimiento de esta cláusula, puede llevar consigo el inicio de procesos de plagio. Todo lo anterior de
+acuerdo a la normativa de Derecho de Autor vigente en Cuba.
+Filiación Institucional (solo para tutores externos a la UCLV, nombre completo de la institución de cada tutor):
+_______________________________________________________________________________________
+_______________________________________________________________________________________
+Y para que así conste se firma la presente en la Universidad Central “Marta Abreu” de Las Villas, a los _____días
+26
+noviembre
+24
+del mes de ________________del
+año 20____.
+
+__________________________
+EL ESTUDIANTE
+
+_________________________
+JEFE DE DEPARTAMENTO
+
+__________________________
+TUTOR
+
+______________________
+TUTOR
+
+V
+
+PENSAMIENTO
+
+La historia de la civilización es, en cierto sentido, la historia de la ingeniería: esa larga y
+ardua lucha por hacer que las fuerzas de la naturaleza trabajen para el bien del hombre.
+Lyon Sprague de Camp
+
+VI
+
+DEDICATORIA
+
+A mis padres, Milagros y Arsenio, quienes han sido el ejemplo a seguir en la vida y me han
+dado todo el apoyo necesario para cumplir este sueño, el logro es de ellos.
+
+VII
+
+AGRADECIMIENTOS
+
+A mis hermanos, por depositar toda su confianza en mí y brindarme siempre su ayuda
+incondicional.
+A mi novia, por ser mi amiga, hacerme feliz y estar a mi lado durante todo este proceso.
+A los amigos que conocí en estos años y los que han estado desde antes, por todos esos
+momentos de risas, fútbol, abrazos y estudio.
+A mi primo Dianyi, por ser mi referente como ingeniero desde niño.
+A mi tutor, Juan Carlos, por su guía y estar disponible en todo momento, ha sido un placer
+trabajar con él.
+A todos aquellos maestros y profesores que han sido parte de mi formación.
+A todos, gracias infinitas.
+
+VIII
+
+RESUMEN
+El sincronismo de tiempo constituye uno de los temas de investigación más estudiados en las
+redes inalámbricas, especialmente para numerosas aplicaciones en el ámbito del IoT. En
+consecuencia, se han desarrollado diversos protocolos de sincronismo para satisfacer las
+demandas de las redes contemporáneas, entre los que sobresale el Protocolo de Tiempo de
+Precisión Generalizado (gPTP), sin embargo, su eficiencia en el sincronismo se ve
+grandemente afectada ante la presencia de asimetrías. Por ello, la presente investigación tiene
+el objetivo de mitigar el efecto de los retardos asimétricos en el sincronismo en redes
+inalámbricas empleando una versión del protocolo gPTP. Para su cumplimiento se realizó
+una revisión de las bases teóricas relacionadas con el tema y se analizaron los métodos
+existentes para mejorar el sincronismo en redes inalámbricas empleando gPTP, siendo la
+antesala para la implementación de una versión de dicho protocolo, a partir de las
+correcciones planteadas en el método de Reinhard Exel, que logra mitigar el efecto de los
+retardos asimétricos en el sincronismo en estas redes. El estudio se desarrolló utilizando
+métodos científicos de carácter teórico y empírico como analítico-sintético, inductivodeductivo, estadístico-matemáticos, medición y modelación. Las evaluaciones realizadas
+demuestran que la implementación desarrollada mejora considerablemente la precisión del
+sincronismo en el protocolo gPTP, reduciendo el efecto de las asimetrías en un valor medio
+de 50.7 µs, lo que representa un aumento en la efectividad del sincronismo en un 33.31 %.
+
+Palabras claves: sincronismo, redes inalámbricas, protocolo gPTP, asimetrías.
+
+IX
+
+ABSTRACT
+Time synchronization is one of the most studied research topics in wireless networks,
+especially for numerous applications in the field of IoT. Consequently, various
+synchronization protocols have been developed to satisfy the demands of contemporary
+networks, among which the Generalized Precision Timing Protocol (gPTP) stands out;
+however, its synchronization efficiency is greatly affected by the presence of asymmetries.
+Therefore, the present research aims to mitigate the effect of asymmetric delays on
+synchronization in wireless networks using a version of the gPTP protocol. In order to ensure
+its compliance, a review of the theoretical bases related to the topic was conducted and the
+existing methods for improving synchronism in wireless networks using gPTP were analyzed.
+This was done in preparation for the implementation of a version of the said protocol based
+on the proposed corrections in the Reinhard Exel method. The study was developed using
+scientific methods of a theoretical and empirical nature such as analytical-synthetic,
+inductive-deductive, statistical-mathematical, measurement and modeling. The evaluations
+carried out demonstrate that the developed implementation considerably improves the
+precision of synchronization in the gPTP protocol, reducing the effect of asymmetries by an
+average value of 50.7 µs, which represents an increase in the effectiveness of synchronism
+by 33.31%.
+Keywords: synchronization, wireless networks, gPTP protocol, asymmetries.
+
+X
+
+ÍNDICE
+RESUMEN......................................................................................................................................VIII
+ÍNDICE ...............................................................................................................................................X
+INTRODUCCIÓN .............................................................................................................................. 1
+CAPÍTULO
+
+1. APLICACIONES
+
+Y
+
+DESAFÍOS
+
+DEL
+
+SINCRONISMO
+
+EN
+
+REDES
+
+INALÁMBRICAS. ASIMETRÍA EN LOS CANALES INALÁMBRICOS Y PROTOCOLOS DE
+SINCRONISMO ................................................................................................................................. 5
+1.1
+
+Sincronismo en redes inalámbricas.................................................................................... 5
+
+1.2
+
+Aplicaciones del sincronismo en IoT................................................................................. 8
+
+1.3
+
+Desafíos del sincronismo en redes inalámbricas ............................................................. 10
+
+1.4
+
+Asimetrías en los canales de comunicación ..................................................................... 14
+
+1.5
+
+Protocolos de sincronismo ............................................................................................... 17
+
+1.5.1
+
+Protocolo de Tiempo de Precisión (PTP) ................................................................ 19
+
+1.5.2
+
+Protocolo de Tiempo de Precisión Generalizado (gPTP) ........................................ 20
+
+1.6
+
+Conclusiones del capítulo ................................................................................................ 24
+
+CAPÍTULO 2. ANÁLISIS DE MÉTODOS Y HERRAMIENTAS PARA MEJORAR EL
+SINCRONISMO EN REDES INALÁMBRICAS EMPLEANDO EL PROTOCOLO GPTP ......... 25
+2.1 Sistemas de estampado por Software...................................................................................... 25
+2.2 Análisis de los modelos, metodologías y procedimientos existentes para el diseño de protocolos
+más robustos ante los retardos asimétricos ................................................................................... 28
+2.3 Descripción del método seleccionado para reducir los efectos de los retardos asimétricos en el
+protocolo gPTP ............................................................................................................................. 31
+2.4 MATLAB ................................................................................................................................ 35
+2.4.1 Archivos-M...................................................................................................................... 36
+2.4.2 Graficado en 2-D ............................................................................................................. 38
+2.4.3 Ventajas y desventajas de la programación en MATLAB ............................................... 39
+2.5 Conclusiones del capítulo ....................................................................................................... 41
+
+XI
+CAPÍTULO 3. IMPLEMENTACIÓN DE LA CORRECCIÓN DEL PROTOCOLO GPTP ANTE
+LOS RETARDOS ASIMÉTRICOS EN REDES INALÁMBRICAS. RESULTADOS.................... 42
+3.1 Características de la implementación ..................................................................................... 42
+3.2 Análisis de los resultados obtenidos en la implementación del método de corrección de
+asimetrías en el protocolo gPTP ................................................................................................... 45
+3.3 Conclusiones del capítulo ....................................................................................................... 52
+CONCLUSIONES ............................................................................................................................ 53
+RECOMENDACIONES ................................................................................................................... 54
+REFERENCIAS BIBLIOGRÁFICAS .............................................................................................. 55
+
+Introducción
+
+1
+
+INTRODUCCIÓN
+El Internet de las cosas (Internet of Things, IoT) ha revolucionado la vida cotidiana al permitir
+el intercambio de datos sin interrupciones entre varios dispositivos a través de Internet. Sin
+embargo, ha traído consigo desafíos significativos para las aplicaciones que requieren una
+temporización sincronizada, como garantizar la secuencia ordenada de los datos o el
+rendimiento sincronizado de las actividades. Las redes de IoT suelen estar compuestas por
+entidades con recursos variables, lo que dificulta la implementación de métodos de
+sincronización de tiempo tradicionales en dispositivos con recursos limitados. Por otro lado,
+es posible que las soluciones que funcionan para sistemas restringidos no sean escalables en
+diversas implementaciones de IoT [1]. Las aplicaciones de IoT cubren una amplia gama de
+necesidades humanas y vitales, desde entornos inteligentes (ciudades, hogar, transporte, etc.)
+hasta la salud y la calidad de vida [2].
+En este ámbito, las redes inalámbricas de sensores (Wireless Sensors Network, WSN) han
+adquirido un papel importante en una amplia gama de aplicaciones, atribuidas principalmente
+a su rentabilidad, capacidades funcionales, adaptabilidad y amplia cobertura. Estas redes son
+un tipo especial de red, donde los dispositivos inalámbricos (generalmente denominados
+nodos de la red) trabajan juntos para formar espontáneamente una red sin la necesidad de
+ninguna infraestructura. Los nodos pueden enviar datos, recibirlos o actuar como enrutadores
+en la red [3]. Sin embargo, la eficacia de las WSN se ve comprometida por obstrucciones que
+perjudican la intensidad de la señal y afectan el sincronismo. En consecuencia, la
+sincronización de reloj es esencial para el funcionamiento de las aplicaciones en redes
+inalámbricas de sensores, ya que logra mediciones confiables, facilita la coordinación de
+acciones y garantiza un intercambio de datos fluido entre dispositivos [4], [5]. WSN son
+utilizadas en muchas aplicaciones en las que se requiere una sincronización parcial o
+completa en la red, como el control de fusión nuclear, la automatización de plantas de
+fabricación, la comunicación móvil, el diagnóstico de fallos mecánicos, la robótica, Big Data,
+el diagnóstico médico y la educación [1], [3], [5].
+Los sistemas de control industriales en la era de la Industria 4.0 presentan desafíos
+significativos desde el punto de vista de la comunicación, es decir, baja latencia, confiabilidad
+y sincronización precisa. En este sentido, las redes sensibles al tiempo (Time Sensitive
+Network, TSN) se han convertido en la principal solución de estos desafíos; por tanto, un
+
+Introducción
+
+2
+
+requisito estratégico de la sincronización para TSN inalámbricas es lograr que la solución sea
+autónoma, es decir, que las funcionalidades sean realizadas por la propia red, sin depender
+de una infraestructura externa [6]. Las TSN se han desarrollado para permitir la
+comunicación en tiempo real y la unificación de partes de la red antes separadas [7],
+prestando especial atención a las aplicaciones industriales, puentes de audio y video, así como
+redes corporativas. Las redes sensibles al tiempo se basan en cuatro conceptos claves:
+sincronización de tiempo precisa, baja latencia garantizada, ultra confiabilidad y gestión de
+recursos. Para cada uno de estos pilares fundamentales, el Grupo de Trabajo (TG) de Redes
+Sensibles al Tiempo (TSN) del Instituto de Ingenieros Eléctricos y Electrónicos (IEEE) ha
+definido varios estándares para proporcionar la funcionalidad correspondiente. La tecnología
+inalámbrica ha aportado nuevas posibilidades y ventajas a las comunicaciones de red, en
+contraste con las redes cableadas, pero, a diferencia de la comunicación basada en Ethernet,
+los enlaces inalámbricos introducen falta de fiabilidad, canales y latencias asimétricas,
+interferencia de canal y distorsión de la señal en la ruta de comunicación, lo que dificulta el
+desarrollo de normas e implementaciones adecuadas para hacer posible el sincronismo en
+redes inalámbricas [8].
+La sincronización de reloj es uno de los temas de investigación más populares en los sistemas
+distribuidos de medición y control de estas redes, ya que en ellas hay un gran número de
+nodos controlados por relojes independientes y se requiere que cada nodo tenga una
+referencia de tiempo común [9]. Por consiguiente, muchos estándares internacionales han
+sido diseñados para satisfacer las demandas de sincronización de las redes contemporáneas
+[1], siendo ampliamente estudiados y desarrollados para abordar diversas tareas dentro del
+ámbito de IoT. Al diseñar protocolos de sincronismo, las limitaciones de la red inalámbrica
+imponen ciertos requisitos que deben cumplirse, debido a esto los protocolos tradicionales
+no son prácticos para lograr los altos niveles de precisión que requieren estas redes [3]. Una
+de las limitaciones más acuciantes es la presencia de retardos asimétricos en los canales de
+comunicación, ya que son una de las principales razones de la inexactitud del proceso de
+sincronismo. La presencia de asimetrías puede degradar significativamente el rendimiento de
+los esquemas de estimación del desfasaje y la desviación del reloj y, desafortunadamente, no
+pueden ser medidas en un sistema de sincronización por pares ni siquiera intercambiando un
+número infinito de mensajes [10]. Los protocolos de sincronismo tradicionales generalmente
+
+Introducción
+
+3
+
+asumen que los retardos son simétricos, por consiguiente, cuando surge una asimetría en el
+enlace, estos protocolos crean un desfasaje de reloj significativo. Debido a esta limitación
+fundamental, los protocolos convencionales no pueden mitigar el desfasaje de reloj creado
+por una asimetría desconocida [11], [12].
+Dentro de los protocolos existentes, el Protocolo de Tiempo de Precisión Generalizado
+(Generalized Precision Time Protocol, gPTP) destaca por ser uno de los pocos que está
+especificado para su uso en redes inalámbricas, además de obtener una eficiencia en cuanto
+a sincronización en el orden de los nanosegundos. Sin embargo, asume que el retardo de la
+red es constante, por tanto, ante la presencia de asimetrías se ve afectada su eficiencia, lo que
+puede provocar errores de sincronismo.
+En correspondencia con lo expuesto anteriormente se propone el siguiente problema de
+investigación: ¿Cómo mejorar el sincronismo en redes inalámbricas ante la presencia de
+retardos de propagación asimétricos empleando el protocolo gPTP? A partir de esta
+problemática se define como objetivo general: Mitigar el efecto de los retardos asimétricos
+en el sincronismo en redes inalámbricas empleando una versión del protocolo gPTP. Para dar
+cumplimiento al objetivo general se plantean los objetivos específicos siguientes:
+1. Realizar una revisión de las bases teóricas relacionadas con el sincronismo en redes
+inalámbricas, a partir del estudio de la literatura.
+2. Analizar herramientas empleadas y métodos existentes para mejorar el sincronismo
+en redes inalámbricas empleando el protocolo gPTP.
+3. Implementar una versión del protocolo gPTP en redes inalámbricas que mitigue el
+efecto de los retardos asimétricos en el sincronismo.
+4. Evaluar el rendimiento de la implementación en la mejora del sincronismo a través
+de distintas métricas.
+La hipótesis de la investigación se formula de la siguiente manera: si se emplea una versión
+adaptada del protocolo gPTP en redes inalámbricas, entonces se logra mitigar los efectos
+negativos de los retardos de propagación asimétricos, lo que resulta en una mejora
+significativa en la precisión del sincronismo entre los dispositivos en comparación con la
+precisión alcanzada por el protocolo estándar. Para esta hipótesis se propone trabajar con la
+variable independiente: empleo de una versión del protocolo gPTP en redes inalámbricas, y
+con la variable dependiente: precisión del sincronismo entre los dispositivos.
+
+Introducción
+
+4
+
+En el desarrollo de la investigación se utilizaron los siguientes métodos científicos: analíticosintético, inductivo-deductivo, estadístico-matemáticos, medición y modelación.
+Para su presentación, este trabajo de diploma cuenta con una estructura lógica que se
+compone del resumen de la investigación, el índice, la introducción donde se explica la
+importancia del tema y la metodología utilizada, y tres capítulos donde se desarrolla la
+investigación. En el Capítulo 1 se realiza una revisión bibliográfica del tema y aborda
+aspectos tales como el sincronismo en redes inalámbricas y cuáles son sus principales
+aplicaciones en IoT, los desafíos que presenta lograr la sincronización de tiempo en este tipo
+de redes, así como el efecto de las asimetrías en el retardo de propagación y una
+caracterización de los protocolos de precisión de tiempo que pueden ser empleados en esta
+investigación. En el segundo capítulo se hace un análisis de los procedimientos y
+metodologías existentes para mitigar el efecto de los retardos asimétricos en el sincronismo,
+incluyendo una descripción del método seleccionado; además, se realiza la caracterización
+de las herramientas que se utilizan en la implementación. El Capítulo 3 explica las
+características de la implementación que se desarrolla y las modificaciones al estándar como
+parte de la aplicación del método de corrección; igualmente, se exponen los resultados
+obtenidos y se describen las evaluaciones que se llevaron a cabo para probar la efectividad
+de la implementación de la versión de gPTP desarrollada. Finalmente, se expresan las
+conclusiones y recomendaciones para trabajos futuros derivadas de la investigación
+realizada; además, se incluyen las referencias bibliográficas conformando un listado de toda
+la bibliografía consultada según la norma IEEE.
+
+Capítulo 1
+
+5
+
+CAPÍTULO 1. APLICACIONES Y DESAFÍOS DEL SINCRONISMO EN REDES
+INALÁMBRICAS. ASIMETRÍA EN LOS CANALES INALÁMBRICOS Y
+PROTOCOLOS DE SINCRONISMO
+El sincronismo se define como el proceso de entrega de una "referencia común" a los
+elementos de red desde una fuente común dentro de una precisión y estabilidad dadas, a fin
+de controlar precisamente la tasa a la cual las señales digitales se transmiten y procesan a
+través de dicha red. Desde el Internet de las Cosas (Internet of Things, IoT) se imponen
+restricciones a las aplicaciones que requieren redes sincronizadas en el tiempo para un orden
+cronológico de la información o la ejecución sincrónica de algunas tareas [13]. A lo largo de
+los años, la sincronización de tiempo ha ganado relevancia en campos como las
+telecomunicaciones y la automatización industrial, impulsada por la necesidad de sistemas
+de comunicación más confiables y eficientes. En el presente capítulo se proporciona una
+visión general y exhaustiva de los conceptos claves relacionados con la sincronización de
+tiempo en redes inalámbricas, destacando su importancia crítica en numerosas aplicaciones
+de IoT y los desafíos técnicos específicos a los que se enfrentan estos sistemas. Además, se
+establece un marco sólido para comprender los principios fundamentales, las limitaciones y
+los protocolos de sincronización en entornos inalámbricos.
+1.1 Sincronismo en redes inalámbricas
+La sincronización de tiempo es un tema de mucha actualidad en las telecomunicaciones y
+otras aplicaciones industriales de IoT, y se requiere un sistema de sincronización fiable para
+satisfacer las demandas de una tecnología de comunicación de red mejorada [1]. La
+sincronización del reloj es uno de los servicios más importantes para coordinar el acceso
+distribuido a los recursos compartidos, comparar las marcas de tiempo establecidas en
+diferentes ubicaciones y medir el rendimiento de los sistemas distribuidos en tiempo real. El
+propósito de la misma es el establecimiento de una noción global del tiempo con una
+precisión predefinida asegurando desplazamientos máximos acotados entre dos nodos
+cualesquiera [14]. La sincronización horaria es un componente esencial de las redes sensibles
+al tiempo (Time Sensitive Network, TSN), en especial de las redes inalámbricas de sensores
+(Wireless Sensors Network, WSN), ya que una amplia gama de aplicaciones potenciales para
+estas redes requiere una sincronización precisa [15], [16].
+Según [17], los principales tipos de sincronización de relojes son:
+
+Capítulo 1
+
+6
+
+1. Reloj global: el Tiempo Universal Coordinado (UTC) es el estándar de tiempo
+comúnmente utilizado en todo el mundo. Los algoritmos tradicionales de
+sincronización de Internet utilizan el UTC para mantener esta hora global en todos
+los sistemas informáticos. Esta precisión del tiempo global es mantenida por un reloj
+atómico; sin embargo, mantener esta sincronización en las redes de sensores es
+significativamente más difícil, lo que impone una sobrecarga de comunicación.
+2. Reloj relativo: esta es la idea del tiempo relativo dentro de la red de sensores. Cada
+nodo se sincroniza con todos los demás nodos con una información de tiempo
+determinada, que puede ser diferente de UTC.
+3. Ordenamiento físico: este modelo se utiliza para ordenar los eventos de los procesos
+en un sistema que comparte el mismo reloj o tiene una memoria compartida.
+4. Noción relativa del tiempo: el tiempo también se puede acordar entre nodos sin usar
+un reloj en tiempo real, sino usando un tiempo lógico. Este modelo no tiene por qué
+coincidir con el reloj físico, es decir, cuando dos nodos establecen una conexión, este
+momento se establece como un tiempo lógico "cero" y, a partir de este momento, cada
+unidad de tiempo se incrementa por ambos nodos, y así se establece un sincronismo.
+La sincronización de tiempo tiene como objetivo crear o establecer una base de tiempo
+común entre los dispositivos o nodos de la red [3], [18], [19], con el fin de poder comparar
+eventos o sintonizar acciones [7], [20]. Esto es una necesidad para muchas aplicaciones;
+muchas investigaciones en torno a la comunicación inalámbrica demostraron el uso de la
+sincronización de tiempo en diferentes campos de la automatización industrial, incluida la
+robótica, las redes inteligentes, el monitoreo mediante redes de sensores de área amplia e
+incluso en entornos electromagnéticos muy desafiantes [21]. Existen muchos ejemplos de
+aplicaciones donde la sincronización temporal desempeña un papel fundamental, como los
+protocolos de Control de Acceso al Medio (Medium Access Control, MAC), la
+monitorización de la salud estructural (Structural Health Monitoring, SHM) y la medición
+inteligente [22]. Las técnicas de control de acceso al medio, como Acceso Múltiple por
+División de Tiempo (TDMA), requieren sincronización de tiempo para una programación
+precisa de los accesos al medio sin colisiones. Además, las WSN tienen recursos energéticos
+limitados, por lo que se utilizan técnicas de ahorro de energía para reducir el consumo de
+
+Capítulo 1
+
+7
+
+toda la red. Para que los nodos enciendan y apaguen sus transceptores en los momentos
+adecuados, se requiere una sincronización precisa entre los nodos de la red [3].
+Las técnicas de sincronización tradicionales que se han utilizado en redes cableadas no son
+adecuadas para redes inalámbricas. Para sincronizar los nodos en este tipo de redes, es
+necesario alcanzar una noción común del tiempo teniendo en cuenta que los relojes de los
+dispositivos pueden desviarse por múltiples razones, que los requisitos de tiempo de cada
+aplicación varían y que los parámetros objetivo a maximizar en la aplicación difieren en cada
+caso [12]. Los relojes tienen dos fuentes principales de imprecisión: el desfasaje (offset) y la
+desviación (skew); por tanto, estos son los principales objetos de corrección para lograr la
+sincronización de tiempo [7]. El desplazamiento de fase o desfasaje es la diferencia absoluta
+entre el valor de un reloj y el valor de otro, mientras que la desviación es la diferencia entre
+la frecuencia de los dos relojes. Debido a la desviación del reloj se produce un aumento
+constante del desfasaje con el paso del tiempo. Matemáticamente, el tiempo local tu en el
+nodo u está relacionado con el tiempo global t (desconocido) por la Ecuación 1.1:
+𝑡𝑢 = 𝛼𝑢 𝑡 + 𝛽𝑢
+
+(1.1)
+
+Donde αu y βu son la desviación y el desfasaje del reloj en el nodo u, respectivamente. El
+desfasaje relativo entre un par de nodos u y v en una red se puede medir (hasta algún error)
+intercambiando mensajes con marca de tiempo entre ellos [16].
+Los protocolos de sincronización de relojes se basan en la comunicación de la estación
+maestra de tiempo (master clock) a la estación esclava (slave), y pueden ser unidireccionales
+o bidireccionales (como se muestra en la Figura 1.1). En el primer caso, el maestro actúa
+como estación emisora y puede enviar señales de tiempo de forma continua o periódica, pero
+el tiempo de entrega de una señal de difusión no puede calcularse y, por lo tanto, se requiere
+otro método independiente para calcular el retardo de la transferencia de la señal. Los
+protocolos de sincronización bidireccionales implican la comunicación bidireccional entre
+las estaciones maestras y esclavas, permiten medir el tiempo de ida y vuelta de la señal de
+sincronización y la ganancia consiste en adquirir el retardo de propagación del trayecto que
+sufre un paquete en la transmisión. Este valor puede ser utilizado por las estaciones esclavas
+para calcular un valor más preciso a partir de los valores de reloj recibidos del maestro [7].
+
+Capítulo 1
+
+8
+
+Figura 1.1. Sincronización de reloj unidireccional y bidireccional [7].
+
+1.2 Aplicaciones del sincronismo en IoT
+Cada día se dispone de más aplicaciones y dispositivos inalámbricos para interconectarse y
+ayudar a resolver múltiples problemas en áreas como la salud, las infraestructuras críticas, el
+transporte inteligente, la industria, la adquisición coordinada de datos de sensores, acceso a
+canales distribuidos, etc. [11], [23]; para todas estas aplicaciones la sincronización de tiempo
+es vital, ya que constituye una condición previa para muchas aplicaciones desarrolladas sobre
+IoT [24]. Los protocolos de sincronización de reloj son uno de los factores fundamentales
+que pueden definir la calidad de la comunicación y un componente vital debido a las rigurosas
+necesidades de varias aplicaciones sensibles al tiempo, como la automatización industrial, la
+robótica y el Internet Industrial de las Cosas (IIoT). Las demandas de tiempo en los sistemas
+de control y redes se han vuelto cada vez más desafiantes, particularmente para aplicaciones
+en tiempo real como el control de fusión nuclear, la comunicación móvil, la automatización
+de subestaciones y las plantas de fabricación modernas [22]. Por ejemplo, en una fábrica
+inteligente, los robots de producción que trabajan juntos en una misma línea deben
+sincronizarse con precisión; la sincronización exacta del tiempo también es importante
+
+Capítulo 1
+
+9
+
+cuando varios motores mueven una carga mecánica. En una central eléctrica inteligente o en
+el ámbito del suministro de energía, la sincronización horaria es de importancia decisiva tanto
+para el análisis de apagones, el control de la estabilidad de la red eléctrica como para
+promover eficazmente la actualización y transformación de la industria. Asimismo, es
+esencial para la comunicación basada en TDMA debido a que esta técnica es utilizada en
+redes en tiempo real: a cada dispositivo se le asigna un intervalo de tiempo de transmisión
+exclusivo y el cumplimiento de estas franjas horarias evita colisiones; cuanto mejor se
+sincronicen los dispositivos se cumplen con mayor precisión dichos intervalos y, en
+consecuencia, el ancho de banda disponible se puede utilizar mejor [24], [25].
+Una estrategia adecuada de sincronización horaria permite que la red logre una comunicación
+confiable, energéticamente eficiente y de baja latencia, por tanto, la sincronización también
+está en el centro de muchos de los desafíos actuales de IoT, particularmente para redes de
+baja potencia y dispositivos finales [20]. Por otra parte, las redes de sensores y actuadores
+requieren una sincronización de reloj estricta, por ejemplo, debido a las severas restricciones
+en los presupuestos de energía de los dispositivos constituyentes de una red de sensores se
+programa el sueño de los mismos para maximizar su vida útil, dicha programación requiere
+que los relojes de los nodos de los sensores se sincronicen con precisión. Las tareas de
+procesamiento colaborativo, como la detección y advertencia de eventos, el seguimiento de
+objetivos y la fusión de sensores, también requieren sincronización en tiempo; además, para
+que el control de retroalimentación sobre las redes de comunicación sea una realidad, es
+importante que los diferentes nodos conectados estén sincronizados entre sí [16]. Los
+sistemas de medición y control distribuidos en red (sistemas de bus y configuraciones de
+automatización de fábricas) dependen del Protocolo de Tiempo de Precisión (Precision Time
+Protocol, PTP) debido a la necesidad de una sincronización muy precisa impulsada por la
+comunicación en tiempo real y con intervalos de tiempo, y la ejecución de tareas isócronas
+[26]. Por otra parte, la integración de la tecnología 5G con TSN es un factor clave para que
+la misma sea adecuada para futuros escenarios industriales, ya que TSN servirá como interfaz
+en tiempo real para 5G con el fin de establecer un plano de datos y control unificado para las
+redes de comunicación industriales. En lo que respecta a la transmisión activada por el
+tiempo, la asignación de recursos o el seguimiento de la secuencia de eventos, la
+sincronización de tiempo es un aspecto clave para las redes TSN y 5G [27]. El requisito de
+
+Capítulo 1
+
+10
+
+sincronización se ha considerado en varios estándares móviles, como LTE y 5G, y en
+802.11ax para permitir el acceso coordinado al medio [6].
+El sincronismo ha sido durante mucho tiempo uno de los temas más importantes en las
+aplicaciones de telecomunicaciones. En las comunicaciones móviles de Acceso Múltiple por
+División de Código (Code Division Multiple Access, CDMA), Sistema Global de
+Comunicaciones Móviles (Global System for Mobile Communications, GSM) y Sistema
+Universal de Telecomunicaciones Móviles (Universal Mobile Telecommunications System,
+UMTS) se requiere una sincronización estricta de frecuencia y tiempo entre las estaciones
+base vecinas para acelerar la transferencia de datos sin desbordamiento, subdesbordamiento,
+errores de bits u otros efectos adversos [28].
+1.3 Desafíos del sincronismo en redes inalámbricas
+Las técnicas tradicionales que se han utilizado en redes cableadas para el sincronismo no son
+adecuadas en redes inalámbricas, por ejemplo, el Protocolo de Tiempo de Red (Network Time
+Protocol, NTP), que se usa ampliamente en Internet, es demasiado complicado de
+implementar y no es eficiente desde el punto de vista energético; el Sistema de
+Posicionamiento Global (Global Positioning System, GPS), por otro lado, no es práctico ya
+que el dispositivo que se necesita conectar al nodo de red es grande y costoso. Además, dado
+que los sensores suelen desplegarse en entornos hostiles, las señales GPS suelen ser
+inaccesibles [3]. A diferencia de la comunicación basada en Ethernet, los enlaces
+inalámbricos introducen falta de fiabilidad, canales y latencias asimétricas, interferencia de
+canales y distorsión de la señal en la ruta de comunicación, lo que dificulta garantizar las
+características de rendimiento. Por lo tanto, los enlaces inalámbricos, por defecto, no son
+adecuados para aplicaciones críticas en tiempo real y de latencia ultra baja. Algunos de los
+estándares TSN ya incluyen soluciones propuestas para resolver ciertos desafíos en el
+momento de habilitar TSN para redes inalámbricas, como la adopción del estándar IEEE
+802.1AS, que utiliza IEEE 802.11 Timing Measurement (TM) para una sincronización de
+tiempo precisa sobre 802.11 [8]. Las limitaciones de la red inalámbrica imponen ciertos
+requisitos que deben cumplirse. Según [3] y [24], por lo general, se pueden definir las
+siguientes métricas para un enfoque de sincronización temporal adecuado:
+•
+
+Precisión: la diferencia de tiempo restante entre el maestro y el esclavo, que no puede
+compensarse con la sincronización, debe ser lo más pequeña posible.
+
+Capítulo 1
+•
+
+11
+
+Robustez: dependiendo del caso de uso, puede ser importante que un enfoque sea
+especialmente robusto. La robustez es muy relevante en escenarios de IoT altamente
+dinámicos (alta rotación de nodos y cambios frecuentes de topología).
+
+•
+
+Escalabilidad y eficiencia del ancho de banda: cualquier técnica de sincronización
+debe funcionar bien con cualquier número de nodos de la red. Los mensajes de
+sincronización siempre generan una sobrecarga. Si se utiliza menos ancho de banda
+para la sincronización hay más ancho de banda disponible para las tareas reales del
+sistema distribuido (control, adquisición de datos, intercambio de datos, etc.).
+
+•
+
+Eficiencia energética: los nodos de la red tienen recursos energéticos limitados. Todos
+los protocolos de red, incluidos los de sincronización, deben tener en cuenta esta
+limitación.
+
+•
+
+Costo: debido a las tecnologías avanzadas, los nodos de red se están volviendo muy
+pequeños y económicos. Cualquier algoritmo de sincronización no debe agregar
+costos ni aumentar el tamaño del nodo de red.
+
+•
+
+Eficiencia computacional: la sincronización horaria requiere potencia de cálculo
+adicional en los dispositivos. Cuanta menos potencia de cálculo adicional se requiera
+para la sincronización, más estará disponible para las tareas reales de los dispositivos.
+
+•
+
+Retardo: muchas aplicaciones, como la detección de fugas de gas, requieren una
+respuesta inmediata. Para ese tipo de aplicaciones, el tiempo total requerido para
+sincronizar la red debe ser lo más bajo posible.
+
+•
+
+Seguridad: esta es una de las principales preocupaciones en las redes modernas; en
+consecuencia, también es relevante para la sincronización. Especialmente en
+escenarios de IIoT, es crucial que los protocolos de sincronización de tiempo seguros
+estén a salvo de nodos maliciosos y ataques, ya que una sincronización fallida puede
+provocar un error en todo el sistema.
+
+Los métodos de sincronización de relojes no son perfectos, es decir, incluso después de un
+proceso de sincronización, los relojes participantes no están perfectamente sincronizados con
+un error nulo, porque el proceso en sí consume tiempo, que en la mayoría de los casos no se
+puede conocer con exactitud. Las causas que introducen tales errores pueden ser, por ejemplo,
+el retardo de propagación de las transmisiones, el procesamiento de estos mensajes o las
+interrupciones en los dispositivos; aunque existen enfoques para reducir los errores
+
+Capítulo 1
+
+12
+
+introducidos o incluso excluir fuentes de error específicas. El parámetro más importante que
+describe la eficacia de una sincronización de reloj es la precisión de sincronización, que es el
+valor mínimo al que se puede reducir el desfasaje de los relojes cuando se sincroniza un
+dispositivo esclavo con el reloj de un maestro. Además, otros factores pueden considerarse
+importantes dependiendo del caso de uso, como son: la sobrecarga de comunicación, los
+protocolos complejos, que requieren muchos intercambios de mensajes, pueden causar una
+sobrecarga considerable en la red; el tiempo de convergencia, que describe la cantidad de
+tiempo que transcurre entre el inicio de un proceso de sincronización y su finalización, o sea,
+el momento cuando el reloj de cada nodo esclavo participante está sincronizado con el reloj
+del maestro según la precisión posible del procedimiento utilizado [7]. Otro factor es la
+precisión de la estampa de tiempo de la capa de control de acceso al medio (MAC), que
+depende de la resolución del reloj de hardware local y de la latencia de la interrupción que se
+produce en el delimitador de inicio de trama [19].
+Los principales desafíos de la sincronización de tiempo en estas redes son que los osciladores
+(generadores de tiempo) y los canales de comunicación no son ideales en la realidad, esto
+conduce a imprecisiones que hay que compensar. En los osciladores hay que contar con la
+cuantificación, los cambios de frecuencia debido a los efectos de la temperatura [29], las
+variaciones aleatorias con cada tick (jitter), el cambio aleatorio de frecuencia y los efectos
+del envejecimiento (durante largos períodos de tiempo). En el caso de los canales de
+comunicación, las variaciones en el retardo de la red (por ejemplo, debido a las colas de
+conmutación) y los tiempos de procesamiento variables son particularmente problemáticos,
+especialmente para el procesamiento de software [24]. Los errores de cuantificación
+introducidos por la lógica aritmética con un número fijo de dígitos pueden causar errores de
+tiempo adicionales. Sin una cuidadosa consideración del cálculo digital, o el análisis
+numérico y el control de errores, la degradación de la precisión puede ser significativa porque
+incluso un pequeño error de cuantificación puede acumularse en una gran cantidad de error
+en un intervalo de mensajes de sincronismo [28].
+En una red inalámbrica, la comunicación se realiza por radio. En teoría, para enviar un
+mensaje, un nodo enciende su radio, transmite el mensaje y apaga la radio. En la práctica,
+por supuesto, se presentan una serie de problemas [19]. Para empeorar las cosas, la frecuencia
+de cada reloj varía con el tiempo, incluso si el tiempo se sincronizara exactamente al
+
+Capítulo 1
+
+13
+
+principio, y cada dispositivo contuviera una referencia de frecuencia de alta calidad, sin un
+método para medirlos y sincronizarlos, los relojes se desincronizarían casi de inmediato y
+continuarían a la deriva. Por esta razón, los protocolos deben ejecutarse periódicamente,
+primero sincronizando el tiempo y luego para compensar las diferencias en las referencias de
+frecuencia y los cambios en esas referencias [30].
+El intercambio de mensajes se utiliza en muchos algoritmos de sincronización de tiempo. Si
+un nodo envía un paquete con una estampa de tiempo, los retrasos no deterministas, como
+los tiempos de acceso y propagación, dificultan que el nodo receptor se sincronice con
+precisión con el nodo emisor. En general, los siguientes elementos contribuyen a los errores
+de sincronización: tiempo de envío, tiempo de acceso, tiempo de transmisión, tiempo de
+propagación y tiempo de recepción [15], como se muestra en la Figura 1.2. El tiempo de
+envío es el tiempo total de construcción del mensaje y de transferencia a la interfaz de red
+que se va a enviar, depende en gran medida de los sistemas operativos que se utilicen. El
+tiempo de acceso es el necesario para acceder al canal, cada red emplea un esquema de
+control de acceso al medio (MAC) y el tiempo total de acceso depende de ese esquema. El
+tiempo de transmisión es la cantidad de tiempo necesaria para empujar el paquete en el canal
+inalámbrico, este período de tiempo es determinista y depende principalmente del tamaño
+del paquete y de la velocidad de datos del canal. El tiempo de propagación es el tiempo
+necesario para propagar el mensaje por el aire desde la interfaz de red del emisor hasta la
+interfaz de red del receptor y, según [31], es generalmente insignificante en comparación con
+los otros retrasos. Por último, el tiempo de recepción es el tiempo empleado en recibir el
+mensaje por la interfaz de red y transferirlo a la capa de aplicación [3].
+
+Figura 1.2. Fuentes de error de sincronización [15].
+
+Capítulo 1
+
+14
+
+1.4 Asimetrías en los canales de comunicación
+Los retardos asimétricos en las TSN son una de las principales razones de la inexactitud del
+proceso de sincronización y la precisión se ve afectada por estos retardos de tal manera que
+el grado de precisión depende de la exactitud del retardo de trayecto calculado [14]. En la
+sincronización a través de redes inalámbricas basadas en paquetes, uno de los principales
+obstáculos para la precisión es la asimetría en el retardo de las comunicaciones entre
+dispositivos. Esta asimetría puede tener varias fuentes, como el uso de diferentes rutas,
+retrasos variables en las colas, diferentes anchos de banda de enlace, distintos tipos de
+proveedores de equipos, la capa física (PHY), los puentes y el enrutamiento; siendo estas tres
+últimas las principales fuentes [7], [23], [32]. Este retardo asimétrico en la comunicación
+entre dispositivos en una red inalámbrica está compuesto fundamentalmente por [23]:
+•
+
+Retardo de procesamiento: el retardo de procesamiento en cada nodo incluye los
+retrasos experimentados en la búsqueda de la tabla de enrutamiento, la ejecución de
+procesos por parte del sistema operativo, etc.
+
+•
+
+Retardo de cola: dependiendo de la intensidad del tráfico entrante desde un nodo que
+pasa por otro nodo en una interfaz de red dada, se experimentan retrasos variables en
+la cola debido a la longitud variable de la misma. Este componente de retardo es
+difícil de estimar, ya que depende de la carga de tráfico.
+
+•
+
+Retardo de transmisión: el retardo de transmisión depende de la velocidad de datos
+de un canal determinado y de la longitud de trama. Hay que tener presente que la
+velocidad de datos puede variar de un enlace a otro, lo que puede dar lugar a retardos
+asimétricos.
+
+•
+
+Retardo de control por paquete/trama: en muchas redes, especialmente en las
+inalámbricas, la transmisión de trama tiene un retardo de control adicional fijo o
+variable para disminuir la probabilidad de colisión.
+
+•
+
+Retardo de propagación: el retardo de propagación es el tiempo físico necesario para
+transmitir una trama dada de un nodo a otro. Este componente de retardo es
+generalmente inferior a un microsegundo para una distancia de unos pocos metros y
+crece significativamente para distancias de unos pocos kilómetros.
+
+Los protocolos de sincronización utilizados en redes reales generalmente asumen que los
+retrasos en la ruta determinista son iguales en ambos sentidos [33]. Sin embargo, los medios
+
+Capítulo 1
+
+15
+
+de uso común, como Ethernet conmutado o redes inalámbricas, imponen diferentes retrasos
+para la ruta de recepción y transmisión, por lo que se crea asimetría. Cuando existe una mayor
+asimetría en la velocidad del enlace, protocolos como PTP que comúnmente se emplean en
+redes cableadas, sin ninguna corrección, crean un desfasaje de reloj significativo [11]. El
+desfasaje y la desviación del reloj se pueden estimar correctamente en cualquier protocolo de
+sincronización de tiempo basado en el esquema de intercambio de mensajes bidireccional
+solo si existe una relación previamente conocida entre los retrasos de la ruta maestro a esclavo
+(directa) y la ruta de esclavo a maestro (inversa) [10]. Sin embargo, la presencia de una
+asimetría desconocida puede degradar significativamente el rendimiento de los esquemas de
+estimación del desfasaje y la desviación del reloj, y el uso de más mediciones no tiene por
+qué conducir a estimaciones más precisas, ya que la varianza del error de la estimación
+resultante puede aumentar al considerar más mediciones [16], [33]. Además, la asimetría del
+retardo de propagación causada por diferentes tamaños de trama y el esquema de modulación
+y codificación puede dañar potencialmente la sincronización [34], [35], lo que se traduce
+entonces en una desviación del reloj [36].
+La asimetría del retardo de propagación es la cuestión más importante para determinar la
+calidad de sincronización de todo el sistema. Los dispositivos, en la mayoría de los protocolos
+utilizados, estiman el retardo de propagación asumiendo que es simétrico para ambas
+direcciones. Esta suposición, sin embargo, generalmente no es cierta en una red operativa.
+La diferencia entre los retardos en cada dirección se debe principalmente a los retardos
+aleatorios de las colas en los conmutadores de red y las latencias específicas del proveedor
+en los chips transceptores. Se puede resaltar que el error de tiempo debido a los retardos
+asimétricos en las colas supera a cualquier otro componente cuando viajan paquetes grandes
+por la red [28]. Para la comunicación inalámbrica que utiliza estampas de tiempo por software
+basadas en interrupciones, una fuente importante de asimetría es la multidifusión de paquetes
+desde un nodo [37]. Desgraciadamente, la asimetría no puede medirse en un sistema de
+sincronización por pares ni siquiera con un número infinito de mediciones de ida y vuelta,
+como se demuestra en [10]. Debido a esta limitación fundamental, los protocolos no pueden
+mitigar el desfasaje de reloj creado por una asimetría desconocida [12].
+El algoritmo de sincronización convencional IEEE 1588 (PTP) asume enlaces de
+comunicación simétricos, lo que provoca errores en la sincronización de reloj de enlaces
+
+Capítulo 1
+
+16
+
+asimétricos debido a la diferencia de tiempo entre el reloj maestro y el reloj esclavo [38]. Por
+su parte, el protocolo de sincronización estándar 802.1AS, conocido como Generalized
+Precision Time Protocol (gPTP) y también diseñado principalmente para redes Ethernet,
+igualmente supone que los enlaces de comunicación entre nodos son simétricos, por lo tanto,
+la determinación del retraso de la ruta es sencillo, basta con calcular el valor de retardo medio
+para los mensajes DelayReq y DelayRep. Sin embargo, en redes inalámbricas o híbridas, esta
+no es una solución óptima, especialmente en redes inalámbricas asimétricas. Condiciones
+adicionales, como la velocidad de datos variable y la movilidad de los nodos, afectan
+negativamente a la precisión de la sincronización y, para empeorar esta situación, los retrasos
+asimétricos pueden variar según el entorno circundante [14]. Debido a esto, varios
+investigadores se han dedicado a mejorar estos protocolos de manera que tengan en cuenta
+los efectos que provocan las asimetrías y puedan lograr una mayor precisión en cuanto a
+sincronismo. La forma de resolver estos problemas que la asimetría incorpora son la
+respuesta a cómo aumentar la precisión de sincronización de reloj en este tipo de redes [39].
+Varias han sido las técnicas propuestas para estimar la asimetría de retardo en una red PTP,
+como la estimación de retardo offline, servo clock, mecanismos basados en sondeo, mejora
+de la precisión del estampado de tiempo, etc. [23]. En [40], dado que el IEEE 1588
+convencional no puede proporcionar una sincronización precisa para sistemas inalámbricos
+asimétricos que cambian dinámicamente, se propone un algoritmo de sincronización IEEE
+1588 mejorado que sí lo hace. El algoritmo propuesto permite el desplazamiento exacto del
+tiempo y puede reducir el error de desviación para la sincronización de tiempo. En [14] se
+define la expresión de relación de grados simétricos (Symmetric Degree Ratio, SDR) con el
+fin de medir la relación entre los retrasos de los mensajes DelayReq y DelayRep durante el
+mecanismo de computación del retardo entre pares. Si su valor es la unidad o muy cercano a
+la unidad significa que los retrasos de los mensajes son simétricos; en cambio, si su valor se
+desvía de la unidad significa que se deben considerar las características ambientales
+asimétricas en la red dinámica inalámbrica. Esta solución proporciona una ganancia
+significativa en términos de precisión de sincronización, pero sigue presentando dificultades
+ante algunas clases de asimetrías que pueden aparecer en este tipo de redes y que ya se han
+mencionado anteriormente.
+
+Capítulo 1
+
+17
+
+1.5 Protocolos de sincronismo
+La gran variabilidad del retardo de las comunicaciones en las WSN, sumada a las limitaciones
+de los nodos, elevan la complejidad de la tarea de implementar una correcta sincronización.
+Sin embargo, en la práctica se suma también que la frecuencia del reloj varía de forma
+impredecible debido a diversos efectos físicos, esto se conoce como deriva del reloj. Los
+diferentes retos a los que se tiene que hacer frente al diseñar, implementar y probar un
+protocolo de sincronismo en este tipo de redes son los siguientes [41]:
+•
+
+Deriva rápida: una de las características más influyentes de los relojes utilizados en
+los nodos de sensores actuales, esto se debe a la reducción de costos de los circuitos
+que inevitablemente requiere el uso de componentes baratos, pero menos fiables.
+
+•
+
+Limitaciones de los nodos: consisten en codificar los mecanismos de sincronismo
+para una computadora estándar, ejecutar y recopilar los resultados para el análisis de
+estimadores complejos, pero costosos desde el punto de vista computacional. Sin
+embargo, ignoran por completo que este código para calcular los estimadores debe
+ser ejecutado por nodos sensores cuya memoria y capacidad de cálculo son limitadas.
+
+•
+
+Variaciones de retardo: todos los protocolos de sincronización se basan en algún tipo
+de intercambio de mensajes entre nodos. La variación del retardo es una característica
+heredada del entorno inalámbrico, a la que se añaden largas fluctuaciones (jitters)
+para el procesamiento de mensajes en los nodos de sensores que se deben a la
+limitación e inestabilidad de los mismos.
+
+•
+
+Tolerancia a fallos y seguridad: la mayoría de las evaluaciones teóricas y basadas en
+simulaciones suponen escenarios ideales y descuidan aspectos como la pérdida de
+paquetes y el fallo temporal o permanente de algún nodo, lo que hace que la tolerancia
+a errores sea imprescindible antes de la implementación real.
+
+•
+
+Medición de la precisión: para medir la precisión de un protocolo de sincronización
+(el error de sincronización), los tiempos locales instantáneos (o estimaciones) en los
+nodos sincronizados implicados en la medición deben ser lo más exactas posibles. La
+tendencia en la mayoría de las mediciones es utilizar un hardware externo.
+
+La precisión de la sincronización reside en tres procesos: el protocolo utilizado para
+intercambiar mensajes de sincronización entre un maestro y varios esclavos (mensajería); el
+tiempo de salida y entrada de los mensajes (estampas de tiempo) utilizados para calcular el
+
+Capítulo 1
+
+18
+
+error; y el cálculo del desfasaje y ajuste de la hora local (ajuste). La precisión de una
+determinada solución está determinada por las técnicas aplicadas en estos procesos [6]. El
+uso de protocolos de sincronización permite corregir dinámicamente la desviación del reloj
+y, por tanto, limitar el error de la red. La mayoría de los métodos de sincronización basados
+en IEEE 802.11 intentan sincronizar los relojes con el retardo de propagación de trama
+bidireccional [34], como en las redes cableadas. Sin embargo, al contrario que en una red
+cableada, donde el tiempo de propagación es relativamente estable, en un escenario
+inalámbrico el retardo puede variar, especialmente sin una línea de visión directa entre dos
+nodos [42]. A lo largo de los años se han desarrollado una gran cantidad de protocolos y
+estándares con respecto a la sincronización de reloj, todos ellos con su propio enfoque para
+hacer frente a ciertas condiciones límite, para lograr una precisión particular o para ser
+ejecutados de forma efectiva [7]. Entre los más relevantes en el ámbito de la sincronización
+de reloj en redes inalámbricas se encuentran: Protocolo de Tiempo de Red (Network Time
+Protocol, NTP), Sincronización por Difusión de Referencia (Reference Broadcast Time
+Synchronization, RBS), Protocolo de Sincronización Temporal para Redes de Sensores
+(Timing-sync Protocol for Sensor Networks, TPSN), Protocolo de Tiempo de Precisión
+(Precise Time Protocol, PTP) y Protocolo de Tiempo de Precisión Generalizado (Generalized
+Precision Time Protocol, gPTP).
+NTP, RBS y TPSN no proporcionan compatibilidad y dan como resultado una partición de
+red, por tanto, es necesaria la estandarización para la sincronización de tiempo en WSN, así
+como en aplicaciones distribuidas. Por consiguiente, las técnicas de sincronismo más exactas
+y útiles son PTP y gPTP. El Protocolo de Tiempo de Precisión (PTP) proporciona un método
+estándar para sincronizar dispositivos en una red con una alta precisión [43]. Hoy en día, el
+Protocolo de Tiempo de Precisión (PTP) IEEE 1588 se ha convertido en un estándar de facto
+para la sincronización de relojes en varios dominios de aplicaciones, como la automatización
+industrial, las telecomunicaciones y el entretenimiento, debido a su estructura simple y su
+capacidad para lograr un alto rendimiento de sincronización en un rango de nanosegundos
+utilizando marcas de tiempo de hardware y elementos de red dedicados [34]. En [7] y [22] se
+realiza una evaluación de los distintos protocolos mencionados (vale destacar que no se
+incluye gPTP) y se concluye que PTP es, en general, superior dada su compatibilidad con
+TSN, aunque existen desafíos que requieren esfuerzos reflexivos y modificaciones, sobre
+
+Capítulo 1
+
+19
+
+todo en el ámbito de las redes inalámbricas. Debido a eso surge gPTP, pues constituye una
+mejora de PTP y es mucho más adecuado para entornos inalámbricos, siendo más robusto
+ante los desafíos propios del sincronismo. Por tanto, a continuación, se explican con más
+detalle el protocolo PTP y la versión derivada del mismo, gPTP.
+1.5.1 Protocolo de Tiempo de Precisión (PTP)
+El Protocolo de Tiempo de Precisión (PTP) [44] especificado en IEEE 1588 utiliza el tiempo
+de ida y vuelta (RTT) o una simple suma como estimador y alcanza una precisión inferior a
+1 µs. Sin embargo, PTP requiere hardware especializado para alcanzar esta precisión (al
+menos en los nodos finales). Está disponible tanto en versión hardware como software. La
+sincronización PTP comienza con la determinación del dispositivo que tiene la hora más
+estable y precisa. El nodo con la hora de referencia (el llamado reloj Gran Maestro) se
+selecciona utilizando el Algoritmo del Mejor Reloj Maestro (BMCA). Las horas de referencia
+se envían a los esclavos, que las comparan con su propia hora. Los esclavos responden al
+maestro con sus propias horas a intervalos regulares. El retardo del maestro al esclavo y el
+retardo del esclavo al maestro pueden determinarse a partir de las estampas de tiempo de los
+mensajes para poder sincronizar a los esclavos. Sin embargo, PTP asume que el retardo de la
+red es constante y simétrico, por tanto, las variaciones de retardo reducen la precisión de PTP,
+como se ha medido, por ejemplo, en [45], [46]. Tales variaciones pueden ocurrir cuando los
+conmutadores no soportan PTP en la capa de Control de Acceso al Medio (MAC). La
+sincronización se consigue mediante un intercambio de mensajes bidireccional entre el
+maestro y los esclavos [47].
+Para que los esclavos conscientes del tiempo ajusten sus relojes a una hora común, PTP utiliza
+un principio de cálculo más o menos sencillo. El reloj maestro inicia una sincronización
+enviando un mensaje de sincronización con una estampa de tiempo de su propio reloj. Los
+esclavos receptores añaden el retardo de propagación que el paquete sufre en el camino
+utilizado, compensado por el factor de la inexactitud de su propio reloj. Para ello, PTP
+describe dos mecanismos: la transmisión de información de sincronización temporal y la
+medición del retardo de propagación. El mensaje de sincronismo es creado inicialmente por
+el Gran Maestro y cada mensaje Sync consta de la estampa de tiempo de origen preciso (la
+estampa de tiempo del Gran Maestro). En el caso más sencillo, los mensajes PTP se pueden
+enviar directamente a través de WLAN y se puede monitorizar la precisión de sincronización
+
+Capítulo 1
+
+20
+
+resultante. Este esquema es muy similar al introducido en [48], donde se ha utilizado una pila
+PTP cableada normal, pero el medio cableado se sustituye por un enlace WLAN. Incluso
+después de la sincronización pueden existir errores debido a los retardos asimétricos de los
+canales inalámbricos, además, los dispositivos necesitan sincronizarse periódicamente y esta
+periodicidad depende de la estabilidad del reloj y la precisión requerida [26].
+1.5.2 Protocolo de Tiempo de Precisión Generalizado (gPTP)
+De todos los protocolos de sincronización que utilizan estampas de tiempo, PTP es el más
+utilizado. En consecuencia, el comité IEEE-TSN utilizó PTP para derivar gPTP [48]
+(Generalized Precision Time Protocol) como subestándar TSN. Como se puede ver, el
+protocolo PTP está diseñado para su uso en redes cableadas, aunque con algunos ajustes
+mediante IEEE 802.1AS o más concretamente gPTP, también es adecuado para trabajar con
+enlaces de capa física inalámbricos IEEE 802.11. Utiliza el RTT o una simple suma como
+estimador y consigue una precisión inferior a 1 µs, pero está limitado a 7 saltos [32], [48].
+Sin embargo, gPTP requiere un hardware especializado; a diferencia de PTP, no solo lo
+requiere en los nodos finales, sino también en los conmutadores [49]. Básicamente, la
+sincronización de gPTP es similar a PTP. Un puente o una estación final que cumpla los
+requisitos de IEEE 802.1AS se denomina sistema sensible al tiempo. Todos los nodos de la
+red (puentes y estaciones finales) deben ser sistemas sensibles al tiempo. A diferencia de PTP,
+gPTP también está especificado para redes inalámbricas [48]. Para este tipo de enlaces
+inalámbricos 802.11, gPTP define métodos para transferir tiempo utilizando los protocolos
+Timing Measurement (TM, definido en IEEE 802.11-2012 [50]) o Fine Timing Measurement
+(FTM, definido en IEEE 802.11-2016 [51]), que se diseñaron para realizar mediciones de ida
+y vuelta a un nivel tan bajo en la pila de protocolos que están por debajo de la retransmisión
+y la agregación, y son inmunes a los cambios de velocidad [30].
+Este protocolo es mucho más robusto frente a variaciones de retardo, ya que exige que cada
+conmutador de la red soporte gPTP en la capa MAC. En consecuencia, solo se requiere un
+retardo de propagación constante y ningún retardo de cola [49]. La sincronización temporal
+del estándar se basa en el principio maestro-esclavo. Cada puerto de un sistema en un
+dominio gPTP se encuentra en uno de los estados mencionados a continuación [52]:
+
+Capítulo 1
+•
+
+21
+
+Un puerto maestro: es un puerto que envía información de sincronización horaria al
+puerto esclavo de un sistema con conciencia del tiempo situado en el otro extremo
+del enlace físico.
+
+•
+
+Un puerto esclavo: es un puerto que recibe información de sincronización horaria del
+puerto maestro.
+
+•
+
+Un puerto pasivo: es un puerto que no tiene capacidad gPTP.
+
+Además, en un dominio gPTP existen tres tipos diferentes de sistema con capacidad de
+sincronización de tiempo [52]. El gran maestro (GM): solo existe una vez en el dominio;
+inicializa la sincronización del reloj periódicamente y tiene un puerto maestro conectado al
+dominio para enviar mensajes de sincronización. Puede haber varios puentes en el dominio:
+los puentes constan de un puerto esclavo conectado al puerto maestro de otro sistema
+consciente del tiempo y posiblemente varios puertos maestros dependiendo de la topología
+de la red. En el dominio pueden existir varios esclavos: cada uno de los cuales solo tiene un
+puerto esclavo. La medición del retardo de propagación es un mecanismo dependiente del
+medio para medir el retardo entre el llamado solicitante de retardo y el respondedor de retardo
+en cada enlace conectado a los puertos de un sistema consciente del tiempo. Si un puerto es
+compatible con gPTP, la medición del retardo funciona de la siguiente manera, como se
+muestra en la Figura 1.3.
+
+Figura 1.3. Medición del retardo en gPTP [48].
+
+Capítulo 1
+
+22
+
+1. El solicitante de retardo, la estación final 1, envía un mensaje PdelayReq al
+respondedor de retardo, el puente 1, a su hora local t1 y registra t1.
+2. El mensaje PdelayReq es recibido por el respondedor de retardo, puente 1, a su hora
+local t2, y t2 se registra en el respondedor de retardo.
+3. El respondedor de retardo responde a su hora local t3 enviando un mensaje
+PdelayResp. Luego t3 se registra en el respondedor de retardo.
+4. El solicitante de retardo recibe un mensaje PdelayResp en su hora local t4, y t4 se
+registra en el solicitante de retraso.
+5. A continuación, el respondedor de retardo envía un mensaje de seguimiento
+PdelayRespFollowUp que contiene la hora de salida t3 del mensaje PdelayResp. t3 se
+registra en el solicitante de retardo.
+Al final de los intercambios de mensajes, el solicitante de retardo conoce las cuatro estampas
+de tiempo (t1, t2, t3 y t4) que lee de los mensajes intercambiados. El retardo de propagación
+se calcula entonces mediante la Ecuación 1.2 [48], [52]. El retardo es igual a la mitad de la
+diferencia entre los intervalos (t4–t1) y (t3–t2). Sin embargo, los relojes locales tienen una
+variación de frecuencia definida como deriva del reloj, que da lugar a valores de tiempo
+diferentes entre los sistemas distribuidos con conciencia del tiempo. Por lo tanto, ambos
+intervalos deben basarse en una base temporal común y el intervalo de respuesta de retardo
+(t3–t2) debe corregirse multiplicando el intervalo por la relación de velocidad (r) o rate ratio
+del solicitante de retardo respecto a la frecuencia del reloj del respondedor de retardo.
+Pdelay =
+
+(𝑡4 − 𝑡1 ) − 𝑟(𝑡3 − 𝑡2 )
+2
+
+(1.2)
+
+La ecuación anterior se basa en el supuesto de que el enlace es simétrico. Como se indica en
+la Ecuación 1.2, la relación de velocidad (r) es el factor decisivo para la medición del retardo.
+De acuerdo con la norma, es la relación entre la frecuencia del reloj local del solicitante y la
+frecuencia del reloj local del respondedor para determinar la diferencia relativa entre dos
+frecuencias de reloj local [52]. En la Figura 1.4 se puede ver una adaptación del mecanismo
+antes visto para determinar el retardo de propagación y el impacto de la deriva en las
+frecuencias de los relojes.
+
+Capítulo 1
+
+23
+
+Figura 1.4. (a) Procedimiento para calcular el retardo de propagación, (b) Impacto de la deriva de
+los relojes en el tiempo de arribo de los mensajes [52].
+
+Luego, el tiempo de sincronización es igual a la suma de la estampa de tiempo de origen, el
+retardo de propagación, la corrección y el tiempo de transmisión entre dos puntos finales del
+enlace físico, como se observa en la Ecuación 1.3 [52].
+TimeSync = PreciseTimestamp + Pdelay + Correction + TransTime
+
+(1.3)
+
+En el caso del tiempo de transmisión se calcula mediante la Ecuación 1.4. La corrección es
+el campo que describe el retardo que sufre un mensaje en su transmisión. Está compuesto por
+el tiempo de propagación (tiempo en el medio de transmisión) y el tiempo de permanencia
+(el procesamiento dentro del sistema consciente del tiempo) y es actualizado por cada sistema
+consciente del tiempo [7].
+TransTime =
+
+PacketSize
+DataRate
+
+(1.4)
+
+Dentro de los protocolos de sincronismo se puede afirmar que NTP es el más utilizado, ya
+que no necesita ningún hardware especial. Por su parte, PTP consigue una precisión mayor
+que NTP utilizando un hardware especial al menos en los nodos finales. Como PTP asume
+que el retardo de la red es constante y simétrico, las variaciones de retardo pueden reducir su
+
+Capítulo 1
+
+24
+
+precisión. El protocolo gPTP (parte de los estándares TSN) exige hardware especial en todas
+los dispositivos finales y conmutadores. Por lo tanto, se puede suponer que el retardo en una
+red gPTP es constante. Una ventaja de gPTP y PTP en cuanto a robustez es que ambos utilizan
+el BMCA, el cual elige de forma adaptativa un nuevo reloj de referencia si el original falla.
+Finalmente, gPTP es el único de los protocolos encontrados en la literatura que se destina
+también para su empleo en redes inalámbricas [12].
+1.6 Conclusiones del capítulo
+La sincronización es un componente fundamental en las redes inalámbricas, especialmente
+en el contexto del IoT, que no solo facilita la coordinación de recursos compartidos, sino que
+también optimiza el rendimiento de sistemas distribuidos. Sin embargo, los métodos de
+sincronización tradicionales a menudo resultan inadecuados debido a la falta de fiabilidad
+inherente a los enlaces inalámbricos y a la variabilidad de los retardos en la comunicación.
+Las asimetrías en los retardos de propagación representan un desafío significativo, ya que
+pueden provocar errores considerables en el sincronismo de los relojes.
+Por otra parte, la implementación de protocolos de sincronización en redes inalámbricas es
+compleja debido a la variabilidad de los retardos y las limitaciones de los nodos. En este
+sentido se ha verificado que el protocolo gPTP es el más adecuado para estas redes,
+ofreciendo una mayor precisión y robustez ante los desafíos del sincronismo.
+
+Capítulo 2
+
+25
+
+CAPÍTULO 2. ANÁLISIS DE MÉTODOS Y HERRAMIENTAS PARA MEJORAR
+EL
+
+SINCRONISMO
+
+EN
+
+REDES
+
+INALÁMBRICAS
+
+EMPLEANDO
+
+EL
+
+PROTOCOLO GPTP
+En el capítulo anterior se realizó una revisión bibliográfica de los principales conceptos,
+desafíos y protocolos existentes en el ámbito de la sincronización de tiempo, concluyendo
+que el protocolo gPTP presenta las mejores cualidades para ser adaptado al entorno
+inalámbrico. De ahí que surja la necesidad de implementar una versión de este estándar que
+contrarreste los efectos negativos que provocan los retardos asimétricos en estas redes.
+Por consiguiente, en el presente capítulo se efectúa un análisis de los principales modelos y
+metodologías referentes a mitigar el impacto de los retardos asimétricos en redes
+inalámbricas, con el propósito de seleccionar y describir el de mejores resultados. Asimismo,
+se realiza una descripción del software especializado MATLAB y sus principales
+herramientas que posibilitan un ambiente de desarrollo adecuado para el estudio de esta
+problemática.
+2.1 Sistemas de estampado por Software
+La clave para obtener una sincronización de tiempo de alto rendimiento está estrechamente
+relacionada con la calidad de las estampas de tiempo (Timestamping, TS) [53], [54]. Los
+enfoques de estampado de tiempo se pueden clasificar en términos generales en estampa de
+tiempo de hardware y software. Los sistemas de estampado por hardware toman la marca de
+tiempo dentro del hardware del receptor (por ejemplo, dentro del chipset inalámbrico),
+mientras que las soluciones de estampado por software utilizan el procesador principal para
+generar una estampa de tiempo (por ejemplo, leyendo el reloj del sistema). Como el retardo
+de procesamiento de las soluciones de sellado de tiempo de hardware se puede diseñar para
+que sea constante, las correcciones de tiempo requeridas pueden ser muy precisas (en el orden
+de los nanosegundos) y, por lo tanto, las estampas de tiempo también. Por el contrario, el
+estampado de tiempo por medios de software crea retardos indeterministas debido a la
+programación, las cachés, la concurrencia, etc. y, por lo tanto, la estampa de tiempo debe
+estar lo más cerca posible del medio [55]. En la Figura 2.1 se muestran las posibles
+ubicaciones donde se pueden tomar estampas de tiempo; por ende, los protocolos de
+sincronismo, como PTP y gPTP, suelen mejorarse en términos de rendimiento si se utiliza la
+estampa de tiempo de hardware. Sin embargo, para llevar a cabo el sellado de tiempo por
+
+Capítulo 2
+
+26
+
+hardware, se requieren dispositivos dedicados o modificaciones dentro de los chipsets
+WLAN. Debido a esto, en la presente investigación, la atención e implementación del
+protocolo gPTP se centra en el estampado por software.
+
+Figura 2.1. Ubicaciones para la estampa de tiempo (TS) en redes orientadas a paquetes [56].
+
+Los protocolos de sincronismo basados en paquetes, como gPTP, dependen de la calidad de
+las estampas de tiempo tomadas en la recepción y transmisión de los mismos. Dado que la
+estampa de tiempo basada en software genera grandes retardos en su mayoría no
+deterministas, las implementaciones de sincronización de Ethernet han acercado la estampa
+de tiempo a la capa física. Sin embargo, la mayoría de los enfoques de sincronización
+inalámbrica se limitan a la estampa de tiempo de software debido a la falta de funciones de
+sellado de tiempo por hardware. Los protocolos de sincronización inalámbrica toman sus
+estampas de tiempo en el software, independientemente de la tecnología de comunicación
+subyacente; sin embargo, esto conduce a un aumento de la fluctuación de la estampa de
+tiempo y, por lo tanto, degrada la precisión de la sincronización [56]. Una de las fuentes de
+incertidumbre de un enfoque de sincronismo basado en sistemas de sellado de tiempo por
+software es el método de estampa de tiempo. Según [57], entre las diversas fuentes de
+imprecisión en el sellado de tiempo por software se tienen:
+•
+
+Capacidad de sellado de tiempo del maestro: este término incluye las capacidades de
+estampa de tiempo de los mensajes de eventos gPTP (mensaje de sincronización Sync
+y de solicitud de retardo PdelayReq) en el lado maestro. La incertidumbre en la
+
+Capítulo 2
+
+27
+
+identificación de t1 y t4 (ver Figura 1.3) afecta a la estimación tanto del PDelay (en
+Ecuación 1.2) como del desfasaje (offset).
+•
+
+Capacidad de sellado de tiempo del esclavo: este término incluye las capacidades de
+estampa de tiempo de los mensajes de eventos gPTP en el lado esclavo (mensaje de
+respuesta a la solicitud de retardo PdelayResp y de seguimiento PdelayResp
+FollowUp). Estas estampas de tiempo, t2 y t3 (ver Figura 1.3), también son utilizadas
+para estimar el PDelay y el desfasaje.
+
+•
+
+Capacidad de sellado de tiempo de la infraestructura: la exactitud de la información
+de tiempo contenida en la sincronización depende también de la capacidad de los
+dispositivos de red para transferir correctamente la hora. El uso de conmutadores de
+red
+
+que
+
+soporten
+
+gPTP
+
+puede
+
+reducir
+
+esta
+
+fuente
+
+de
+
+incertidumbre
+
+independientemente de la complejidad de la topología de la red o la carga de tráfico.
+•
+
+Variabilidad y comportamiento asimétrico del retardo de propagación: el retardo de
+propagación en la red no es constante y puede verse afectado por el tráfico, los
+dispositivos de red en la ruta seguida por los mensajes de sincronización y la carga
+de la red.
+
+Las estampas de tiempo basadas en detectores de inicio de trama convencionales (o estampas
+de tiempo convencionales) tienen dos problemas principales en los sistemas inalámbricos: en
+primer lugar, no pueden garantizar una precisión de transferencia de tiempo mejor que el
+período de muestreo y, en segundo lugar, la propagación por trayectos múltiples y el carácter
+de variación temporal del canal inalámbrico reducen la precisión del tiempo de llegada (Time
+of Arrival, ToA) de las tramas, lo que introduce un componente de error en la sincronización
+de tiempo. Esto es especialmente crítico en condiciones sin visibilidad directa (Non-Line of
+Sight, NLoS), donde no existe un trayecto de propagación prevalente, por lo que el ToA puede
+tener fuertes variaciones [53]. Por otro lado, en el esquema de sincronización basado en
+interrupciones, donde las estampas de tiempo son tomadas mediante rutina de servicio de
+interrupción (Interrupt Service Routine, ISR) el retardo de estampa de tiempo y la fluctuación
+se limitan principalmente al tiempo de recepción del paquete, que es el tiempo que tarda el
+receptor en recibir el paquete una vez que la transmisión ha comenzado; y al tiempo de
+notificación de interrupción, que es el tiempo que tarda en notificar a la CPU del dispositivo
+a través de una interrupción que un paquete se ha recibido o transmitido con éxito [37].
+
+Capítulo 2
+
+28
+
+El escenario tomado en cuenta en esta investigación es una red de sincronización sencilla,
+compuesta por un dispositivo maestro y un dispositivo esclavo que realizan el estampado de
+tiempo a nivel de software.
+2.2 Análisis de los modelos, metodologías y procedimientos existentes para el diseño de
+protocolos más robustos ante los retardos asimétricos
+Para desarrollar una implementación de cualquier índole es imprescindible y necesario
+escoger la tecnología o modelo que se empleará en dicho proceso, lo que demanda
+necesariamente un estudio profundo de la bibliografía que se relaciona con este aspecto. En
+el análisis de la literatura se pueden encontrar diferentes metodologías y procedimientos
+empleados; cada uno de los métodos definidos posee ciertas limitaciones que fomentan y
+ofrecen argumentos para su crítica, por lo tanto, para seleccionar una propuesta metodológica
+se analizaron algunos modelos, tal y como se explica a continuación.
+En [33] se aborda el problema de la estimación de la desviación y el desfasaje del reloj para
+PTP (o cualquier protocolo de sincronización de reloj basado en el intercambio de mensajes
+bidireccional) en presencia de posibles asimetrías desconocidas y se presenta un enfoque para
+aumentar la robustez de este protocolo ante esa problemática. Para ello, los autores
+elaboraron un esquema iterativo de baja complejidad computacional basado en el algoritmo
+de maximización de expectativas (EM) que les permite estimar los valores de desviación y
+desfasaje de reloj sin tener toda la información sobre las distribuciones estadísticas de los
+retardos de cola. Sin embargo, no se define con exactitud la precisión alcanzada al aplicar
+este esquema, solo lo valoran en función del error de estimación cuadrático medio
+normalizado de desviación (NRMSE); el hecho de que no sea el error cuadrático medio
+(RMSE) común hace difícil clasificar la precisión, pero debería estar en el intervalo de
+microsegundos.
+Por otro lado, los autores de [49] introducen un enfoque para aumentar la precisión de
+sincronización de PTP usando la programación lineal (PTP-LP). Este método es totalmente
+compatible tanto con PTP como con gPTP, y se ha demostrado que PTP-LP es muy robusto
+frente a retardos de paquetes variables. En la evaluación se tuvo en cuenta diferentes
+estabilidades de reloj, estampado de tiempo por hardware y software, así como distintas
+distribuciones de retardos de paquetes. El enfoque propuesto supera a los dos procedimientos
+
+Capítulo 2
+
+29
+
+comparados (PTP estándar [44] y PTP con filtrado de Kalman [58]) y aumenta la precisión
+de la sincronización en un factor de hasta 104.
+Un algoritmo de sincronización IEEE 1588 mejorado que tiene como objetivo resolver los
+desplazamientos de reloj inducidos por asimetría basados en mediciones de velocidad de
+enlace fue propuesto en [59]. El algoritmo permite un cálculo preciso del valor de desfasaje
+(offset) en el reloj esclavo mediante el tiempo de ida y vuelta (RTT) estimado en el
+intercambio de mensajes y la relación de velocidad (r), como se define en la Ecuación 2.1:
+t offset = t 2 −
+
+t RTT
+1+r
+
+(2.1)
+
+Cuando no existe asimetría el protocolo distribuye el RTT uniformemente entre el tiempo de
+la ruta maestro a esclavo (tms) y viceversa (tsm), equivalente a r = 1. Por tanto, utilizando la
+Ecuación 2.1 el enfoque propuesto asume que la relación de las latencias de transmisión
+(maestro a esclavo e inversa) corresponde a la relación de asimetría tsm/tms. Este algoritmo es
+superior al estándar convencional en cuanto a precisión; no obstante, el autor, Sungwon Lee,
+presentó una versión actualizada para redes inalámbricas con velocidades de enlace
+asimétricas [40], donde propone calcular los retardos de transmisión (u) individuales de los
+mensajes de sincronismo (Sync) y solicitud de retardo (PDelay_Req) mediante la relación
+entre el tamaño del mensaje (B) y la velocidad de transmisión actual (R), como u=B/R; en
+consecuencia, estos retardos son utilizados para corregir las estampas de tiempo. A diferencia
+del algoritmo anterior que corrige el desfasaje de reloj por el tiempo de ida y vuelta y la
+relación de velocidad estimados, la versión actualizada utiliza el tamaño de la carga útil
+(payload) y la velocidad de datos nominal de la trama.
+Además, [14] propone una extensión del protocolo IEEE 802.1AS (gPTP) para mejorar la
+sincronización del reloj en redes híbridas, incluidos los segmentos inalámbricos y cableados.
+Este enfoque considera los retardos deterministas, la deriva de los relojes y el problema que
+causan los retardos asimétricos en la transmisión de los paquetes de temporización del
+protocolo de sincronismo. La mejora se basa en introducir un filtro de retraso de desviación
+de ruta (Path Deviation Delay, PDD) para monitorear el comportamiento del tráfico de los
+paquetes de temporización, así como para excluir valores atípicos que pueden ocurrir como
+resultado de escenarios dinámicos y asimétricos. Además, se establece la Relación de Grados
+Simétricos (SDR) como la relación entre los mensajes de solicitud de retardo (Delay_request)
+
+Capítulo 2
+
+30
+
+y su respuesta (Delay_reply), como se muestra en la Ecuación 2.2. Si su valor es la unidad o
+muy cercano a la unidad significa que los retardos de estos mensajes son simétricos; en
+cambio, si su valor se desvía de la unidad expresa que hay asimetrías que deben ser
+compensadas y se define un procedimiento para ello.
+SDR =
+
+𝐷𝑒𝑙𝑎𝑦_𝑟𝑒𝑞𝑢𝑒𝑠𝑡
+𝐷𝑒𝑙𝑎𝑦_𝑟𝑒𝑝𝑙𝑦
+
+(2.2)
+
+El enfoque propuesto supera al estándar IEEE 802.1AS y proporciona una ganancia
+significativa en términos de precisión de sincronización, pero presenta dificultades ante
+algunas clases de asimetrías que pueden aparecer en este tipo de redes.
+En [60] se analizan las influencias que pueden tener un efecto negativo en la precisión de
+PTP y gPTP; además, se presentan contramedidas y un enfoque original. El procedimiento
+propuesto cumple con la norma y utiliza un filtro de Kalman como estimador, obteniendo
+una precisión en el rango de los 100 ns y 1 µs. No obstante, los autores creen que es
+obligatorio adherirse estrictamente a los estándares respectivos para garantizar la máxima
+interoperabilidad al implementar soluciones de transferencia de tiempo para grandes sistemas
+de múltiples proveedores. Por su parte, los autores de [61] proponen el Protocolo de Tiempo
+de Precisión Inalámbrico (WPTP) como una extensión de PTP para redes inalámbricas. En
+este enfoque solo se requieren tres paquetes para calcular y corregir el desplazamiento del
+reloj; para tener en cuenta el retardo en la transmisión del mensaje, se utiliza un segundo
+conjunto de mensajes SYNC y FOLLOWUP con el reloj corregido. WPTP reduce el tiempo
+total de convergencia en un 50 % y también el número de paquetes necesarios para la
+sincronización sin comprometer la precisión de la misma.
+Asimismo, en [23] se propone un mecanismo de mitigación de asimetría por paquete (PerPacket Asymmetry Mitigation, PPAM), cuyo objetivo es estimar los componentes de retardo
+por paquete. El protocolo sigue una estructura similar al algoritmo de Lee explicado
+anteriormente [59], pero logra una mayor precisión. Los extensos resultados de la simulación
+muestran que el enfoque propuesto, el mecanismo PPAM, supera al protocolo PTP estándar
+y al algoritmo elaborado por Lee, principalmente a cargas de red bajas a medias; sin embargo,
+bajo ciertas condiciones, el protocolo estándar proporciona un rendimiento y una precisión
+de sincronización más estable que ambos mecanismos mencionados.
+
+Capítulo 2
+
+31
+
+De igual manera, otro método de sincronización de tiempo enfocado en mejorar el
+sincronismo ante la presencia de retardos asimétricos es propuesto en [38]. El algoritmo
+adquiere elementos de las propuestas de Lee; sin embargo, se amplían las correcciones de la
+estampa de tiempo con términos para el almacenamiento en búfer y los retardos de
+propagación. Además, a diferencia de Lee en [40] y [59], este enfoque establece
+explícitamente retardos de propagación simétricos y constantes (tms = tsm) y compensa la
+asimetría debido al estampado de tiempo, pero exige conmutadores que sean capaces de
+retrasar los mensajes de eventos por una latencia definida. De acuerdo con los resultados de
+la simulación, el método propuesto mejora la precisión de la sincronización con respecto al
+protocolo estándar, independientemente de si los enlaces de comunicación son simétricos o
+no.
+En conclusión, los procedimientos y métodos explicados anteriormente presentan algunas
+limitaciones, pues varios de ellos necesitan utilizar más mensajes (esto puede cargar la red y
+ralentiza el proceso de sincronismo) o las modificaciones en cálculos y ecuaciones no logran
+resultados considerables en cuanto a mejora. Por tal motivo, en la presente investigación se
+decidió seleccionar el procedimiento propuesto por Reinhard Exel en [11], pues el método se
+ajusta a las características de la investigación y a las particularidades del protocolo gPTP, con
+un enfoque flexible y adaptable.
+2.3 Descripción del método seleccionado para reducir los efectos de los retardos
+asimétricos en el protocolo gPTP
+Como se explica en el análisis anterior, para efectos del diseño de una versión del protocolo
+gPTP más precisa ante los retardos asimétricos en redes inalámbricas, en la presente
+investigación se ha decidido emplear como procedimiento el método elaborado por Exel en
+[11]. Este posee mayor adaptabilidad que el resto y puede mitigar las asimetrías sin requerir
+ningún cambio en el protocolo estándar ni el uso de mensajes adicionales dentro del
+mecanismo de retardo entre pares.
+El estándar IEEE 802.1AS, más conocido como gPTP, es un subestándar TSN derivado de
+PTP, que está diseñado para su uso en redes cableadas, aunque también es adecuado para
+trabajar en el entorno de las redes inalámbricas. Este protocolo brinda un mecanismo de
+sincronización de reloj para redes basadas en paquetes; sin embargo, la precisión y el
+rendimiento tanto de PTP como gPTP dependen de varios factores, tales como: la calidad de
+
+Capítulo 2
+
+32
+
+las estampas de tiempo, la variación del retardo de los paquetes, la estabilidad del reloj y la
+asimetría. Debido a esto, el método seleccionado propone un esquema de mitigación de los
+retardos asimétricos basado en la corrección de la estampa de tiempo por software y logra
+aumentar la precisión del protocolo sin modificaciones al mismo, ni el uso de mensajes
+adicionales.
+El procedimiento de Exel se ajusta a la norma del protocolo gPTP, es decir, es compatible
+con el estándar; además, no usa ningún estimador especial en el cálculo del desfasaje ni del
+retardo de propagación, solo el RTT. Como se ha explicado en el capítulo anterior, el
+mecanismo de sincronismo del protocolo gPTP está basado en estampas de tiempo tomadas
+al enviar o recibir los correspondientes mensajes de eventos, a saber: solicitud de retardo
+(PDelay_Req), respuesta a la solicitud de retardo (PDelay_Resp), seguimiento a la respuesta
+(Follow_Up) y mensaje de sincronismo (Sync). De acuerdo con la sección 11.3.9 de IEEE
+802.1AS [48], el punto de estampa de tiempo para un mensaje de evento PTP será el
+comienzo del primer símbolo después del delimitador de inicio de trama (Start of Frame,
+SOF). Por tanto, el autor del enfoque seleccionado, basándose en que los algoritmos
+propuestos generalmente asumen que los tamaños de trama y las velocidades de enlace están
+fuertemente vinculados a la asimetría, investigó la validez de esta suposición y propuso
+resolver el problema de la asimetría basado en las funciones de corrección en el controlador
+del dispositivo.
+El funcionamiento del modelo de estampa de tiempo de software en el protocolo se muestra
+en la Figura 2.2, la transmisión es emitida en t̂1 o t̂3 (t̂1 para PDelay_Req y t̂3 para
+PDelay_Resp) y después de cierta latencia (p1 o p3, respectivamente) el primer bit del
+mensaje es entregado al medio. Después del retardo de propagación (tms, tsm), ese primer bit
+del mensaje llega al receptor y, una vez recibida la trama completa, pasa a través de la pila
+de protocolo; posteriormente, la carga útil del mensaje (payload) es presentada al nivel de
+aplicación (recepción completa), donde son tomadas las estampas de tiempo t̂2 y t̂4,
+respectivamente [11].
+
+Capítulo 2
+
+33
+
+Figura 2.2. Latencias de estampa de tiempo de software [11].
+
+Entonces, siendo t̂1 a t̂4 las estampas de tiempo tomadas por el software y t1 a t4 las estampas
+de tiempo para un mensaje de evento según la sección 11.3.9 del estándar, el procedimiento
+seleccionado plantea que estas pueden ser calculadas aplicando las correcciones de retardo
+de la Ecuación 2.3 a 2.6, donde las variables p1 y p3 corresponden a los retardos de
+procesamiento de salida, p2 y p4 a los retardos de entrada y la variación de los signos se debe
+a que todas las latencias p > 0.
+t1 = t̂1 + p1
+
+(2.3)
+
+t 2 = t̂2 − p2
+
+(2.4)
+
+t 3 = t̂3 + p3
+
+(2.5)
+
+t 4 = t̂4 − p4
+
+(2.6)
+
+Por consiguiente, el verdadero valor de corrección del desfasaje (toffset) y el RTT (tRTT) quedan
+definidos en la Ecuación 2.7 y la Ecuación 2.8 respectivamente, donde t̂offset y t̂RTT son los
+correspondientes valores sin aplicar las correcciones a las estampas de tiempo.
+t̂offset = t offset −
+
+(p1 + p2 ) − (p3 + p4 )
+2
+
+t̂RTT = t RTT + (p1 + p2 + p3 + p4 )
+
+(2.7)
+
+(2.8)
+
+Capítulo 2
+
+34
+
+En los sistemas de estampado por software, se toma una estampa de tiempo en el transmisor
+cuando se entrega un paquete a la pila de red del sistema operativo (SO) y, en el receptor,
+cuando se recupera el paquete del sistema operativo. Esto se muestra mediante las estampas
+de tiempo de salida, t̂1 y t̂3, y las estampas de tiempo de entrada, t̂2 y t̂4, en la Figura 2.2. Por
+lo tanto, los retardos de procesamiento de salida, p1 y p3, dependen de la pila de red en el
+maestro y el esclavo; mientras que, cuando el enlace es asimétrico, los retardos de
+procesamiento de entrada, p2 y p4, son diferentes, lo que da lugar a un desfasaje (offset) [11].
+Por consiguiente, los retardos asimétricos de procesamiento p se componen de términos
+deterministas y no deterministas, en la mayoría de los casos existen grandes retardos
+asimétricos deterministas que se pueden corregir aplicando el método descrito y que abarca
+también otros como la velocidad de datos, el tamaño del encabezado, la modulación, el
+tamaño de transferencia de acceso directo a memoria (Direct Memory Access, DMA) y la
+velocidad de la interfaz DMA. Para los retardos asimétricos desconocidos se plantea que, en
+el caso genérico de sincronización por pares con retrasos desconocidos de maestro a esclavo
+y de esclavo a maestro, se sabe por la literatura que la sincronización es imposible, incluso
+con un número infinito de intercambios de mensajes por pares. Debido a esto, Exel propone
+que el controlador del dispositivo realice las correcciones necesarias dentro de la rutina de
+servicio de interrupción (ISR) para los mensajes de entrada y salida individualmente, de
+acuerdo con la Ecuación 2.3 a 2.6. Además, para que el enfoque sea interoperable entre
+múltiples dispositivos PTP o gPTP de diferentes proveedores y con estampas de tiempo tanto
+de software como hardware, cada nodo debe corregir solo sus propias estampas de tiempo,
+es decir, el maestro corrige t1 y t3, mientras que el esclavo hace lo mismo con t2 y t4.
+El método seleccionado alcanza una precisión de entre 10 y 100 ns, siendo superior al resto
+de los métodos y procedimientos analizados. Asimismo, esos algoritmos asumen
+inherentemente que las estampas de tiempo de entrada y salida son tomadas con respecto al
+plano de referencia estándar; esto provoca que esos retardos asimétricos que pueden ser
+conocidos, también formen parte de asimetrías no deterministas, afectando el cálculo del
+desfasaje entre los relojes. Por tanto, el enfoque seleccionado ya elimina retardos asimétricos
+en su origen y mitiga entonces el efecto que puede tener la asimetría sobre el proceso de
+sincronismo, aunque no puede lograr la precisión de las estampas de tiempo de hardware,
+pero casi puede eliminar el desfasaje en una red inalámbrica a través de un salto.
+
+Capítulo 2
+
+35
+
+2.4 MATLAB
+MATLAB (abreviatura de MATrix LABoratory, Laboratorio de Matrices en español) es un
+programa informático de propósito especial optimizado para realizar cálculos científicos y
+de ingeniería, con funciones integradas para cumplir una amplia gama de tareas, desde
+operaciones matemáticas hasta imágenes tridimensionales [62], [63]. Comenzó su vida como
+un programa diseñado para realizar matemáticas matriciales, pero a lo largo de los años se
+ha convertido en un sistema informático flexible y fácil de usar, capaz de resolver
+esencialmente cualquier problema técnico; por ello, en la actualidad, es una herramienta muy
+popular entre estudiantes, ingenieros y científicos de universidades, institutos de
+investigación e industrias alrededor del mundo [64].
+Además, el programa implementa un lenguaje propio (lenguaje MATLAB) y proporciona
+una amplia biblioteca de funciones predefinidas para facilitar y hacer más eficientes las tareas
+de programación técnica. Esta amplísima variedad de funciones hace que sea mucho más
+fácil resolver problemas técnicos en MATLAB que en otros lenguajes de programación. El
+producto básico ofrece más de mil funciones y, por si fuera poco, cuenta con varios kits de
+herramientas (toolbox) que amplían esta capacidad con muchas más funciones en diversas
+especialidades, desde circuitos electrónicos hasta machine learning. Por ende, MATLAB
+posibilita resolver problemas muy complejos en pocos pasos (mediante ecuaciones
+diferenciales, inversión de matrices, etc.) ahorrando grandes cantidades de tiempo [63], [65].
+La unidad fundamental de datos en cualquier herramienta de MATLAB es la matriz. Una
+matriz es una colección de valores de datos organizados en filas y columnas, y conocidos por
+un solo nombre. Los vectores se pueden considerar como matrices especiales, un vector fila
+se registra como una matriz de 1×n y un vector columna se registra como una matriz m×1;
+incluso un escalar es analizado como una matriz de 1×1 [66]. Igualmente, se puede acceder
+a los valores de datos individuales dentro de una matriz incluyendo el nombre de la matriz
+seguido de subíndices entre paréntesis que identifican la fila y la columna del valor en
+particular.
+Cuando el software MATLAB se ejecuta, puede mostrar varios tipos de ventanas que reflejan
+información o aceptan comandos, siendo las tres ventanas principales: Ventana de Comandos
+(Command Window), se utiliza para introducir comandos y datos; Ventana de Figuras (Figure
+Window), se utiliza para mostrar gráficos y figuras; Ventana de Edición (Edit Window), se
+
+Capítulo 2
+
+36
+
+utiliza para crear y editar archivos [67]. En la Figura 2.3 se ilustran varias ventanas del
+escritorio MATLAB, como el Área de trabajo (Workspace, permite examinar los valores de
+las variables definidas en la memoria) y Carpeta actual (Current Folder, muestra los archivos
+en el directorio actual).
+
+Figura 2.3. Vista del escritorio MATLAB por defecto [Elaboración propia].
+
+2.4.1 Archivos-M
+MATLAB ofrece una buena combinación de funciones de programación prácticas con
+potentes capacidades numéricas integradas. Por un lado, su entorno de programación de
+archivos-M permite implementar algoritmos moderadamente complicados de forma
+estructurada y coherente. Por otro lado, sus capacidades numéricas incorporadas posibilitan
+resolver problemas difíciles de una manera más sencilla. Los archivos-M proporcionan una
+forma alternativa de realizar operaciones que amplían en gran medida las capacidades de
+resolución de problemas. Vale destacar que la nomenclatura dada proviene de que estos
+archivos se guardan con una extensión “.m”. Existen dos tipos de archivos-M: scripts y
+funciones [63], [66], [67].
+Una vez que se ha analizado un problema y definido el algoritmo para su solución, se escribe
+en un lenguaje de programación particular; MATLAB utiliza lo que se denomina archivos de
+script o archivos de código de MATLAB. Es decir, un archivo de script no es más que una
+
+Capítulo 2
+
+37
+
+serie de comandos de MATLAB que se guardan en un fichero y son útiles para retener una
+serie de comandos que se quieren ejecutar en más de una ocasión. Los scripts comparten el
+área de trabajo (workspace) de la ventana de comandos, por lo que las variables que se
+definieron antes de que se iniciara el archivo de script son visibles para él, y las variables que
+crea al finalizar permanecen en el área de trabajo después de que termine de ejecutarse. Un
+archivo de script no tiene argumentos de entrada y no devuelve resultados, pero puede
+comunicarse con otros scripts a través de los datos que quedan en el área de trabajo [62].
+Entre las características fundamentales de un script se tiene que: MATLAB ejecuta los
+comandos en el orden en que aparecen; cuando tiene un comando que genera una salida (por
+ejemplo, la asignación de un valor a una variable sin punto y coma al final), esta se muestra
+en la ventana de comandos; su uso es conveniente porque se puede editar y ejecutar muchas
+veces, incluso se pueden escribir y modificar en cualquier editor de texto y, posteriormente,
+pegar en el editor de MATLAB [66], [67].
+Por el contrario, una función de MATLAB es un tipo especial de archivo-M que se ejecuta
+en su propio espacio de trabajo independiente, recibe datos de entrada a través de una lista
+de argumentos de entrada y devuelve los resultados al autor de la llamada mediante una lista
+de argumentos de salida [63]. Por tanto, son análogas a las funciones definidas por el usuario
+en otros lenguajes de programación. Una función definida por el usuario es un fichero de
+MATLAB creado por él, guardado como un archivo de función y utilizado como una función
+integrada; en la mayoría de los casos es, en realidad, un subprograma dentro de un programa
+informático [64]. Las funciones pueden llamar a otras funciones; aunque estas pueden existir
+como archivos-M separados también pueden estar contenidas en un mismo archivo-M. En
+tales casos, la primera función se denomina función principal o primaria y es la única a la
+que se puede acceder desde la ventana de comandos o desde otras funciones y scripts. Todas
+las demás funciones se denominan subfunciones y solo son accesibles para la función
+principal y otras subfunciones dentro del archivo-M en el que ella reside [67]. Asimismo,
+MATLAB tiene un mecanismo especial diseñado para que cada función pueda probarse y
+depurarse independientemente del resto del programa, esto posibilita que estén bien
+diseñadas y reduce enormemente el esfuerzo requerido en un proyecto de programación de
+gran tamaño [63]. Entre los elementos esenciales de una función se tiene que: comienzan con
+la palabra function; tienen una lista de entrada y una de salida; la salida, el nombre de la
+
+Capítulo 2
+
+38
+
+función y la entrada deben aparecer en la primera línea y en ese orden; el cuerpo de la función
+debe asignar valor a la salida; no puede acceder a las variables en el área de trabajo actual a
+menos que sean de entrada; sus variables internas no aparecen en el espacio de trabajo; debe
+guardarse en un archivo de extensión “.m” con el mismo nombre (incluidas las mayúsculas)
+[66].
+2.4.2 Graficado en 2-D
+Los gráficos son una herramienta muy útil para presentar información, especialmente en la
+ciencia y la ingeniería, donde se utiliza principalmente MATLAB. El mismo tiene muchos
+comandos que se pueden utilizar para crear diferentes tipos de gráficas, estos incluyen
+gráficos estándar con ejes lineales, gráficos con ejes logarítmicos y semilogarítmicos,
+gráficos de barras y escaleras, gráficos polares, gráficos tridimensionales de superficie de
+contorno y malla, y muchos más [64]. Estas amplias capacidades de trazado independientes
+son una de sus características más potentes y hacen que sea muy fácil trazar datos en cualquier
+momento. Para ello, basta con crear dos vectores que contengan valores y utilizar la función
+plot, el gráfico aparece en la Ventana de Figuras y se puede imprimir o transferir a través del
+portapapeles a otros programas. El comando anterior muestra una línea azul fina y sólida de
+forma predeterminada, pero puede ser modificado con las funciones title, xlabel y ylabel para
+agregar títulos y etiquetas a los ejes de la figura. El gráfico se construye conectando los
+puntos de datos con las líneas rectas, por lo que es lineal por tramos, mientras que parece una
+curva ya que los puntos de datos se recopilan densamente [68]. Si desea trazar cada punto
+con un símbolo, puede incluir un especificador entre comillas simples en la función plot,
+también puede combinar varios especificadores y controlar el ancho de línea, así como el
+tamaño del marcador y sus colores de borde y cara (es decir, interior). En la Tabla 2.1 se
+enumeran los especificadores disponibles para color, estilo de línea y marcadores.
+Tabla 2.1. Especificadores para el color, los marcadores y el estilo de las líneas [69].
+Colores
+
+Marcadores
+
+Estilo de líneas
+
+Amarillo
+Magenta
+Cian
+
+y
+m
+c
+
+Punto
+Círculo
+Marca x
+
+.
+o
+x
+
+Rojo
+Verde
+
+r
+g
+
+Más
+Estrella
+
++
+*
+
+Sólida
+Punteada
+Punto
+de
+guion
+Discontinua
+
+:
+-.
+--
+
+Capítulo 2
+Azul
+Blanco
+Negro
+
+b
+w
+k
+
+Cuadrado
+Diamante
+Triángulo (abajo)
+Triángulo (arriba)
+Triángulo
+(izquierda)
+Triángulo (derecha)
+Pentagrama
+Hexagrama
+
+39
+
+s
+d
+v
+^
+<
+>
+p
+h
+
+Igualmente, aunque de forma predeterminada los gráficos anteriores se borran cada vez que
+se ejecuta el comando plot, MATLAB permite mostrar más de un conjunto de datos en la
+misma gráfica. Para lograr esto se utiliza el comando hold on, que retiene el contenido de la
+gráfica y todas las propiedades del eje para que se puedan agregar comandos de
+representación gráfica adicionales; mientras que el comando hold off vuelve al modo
+predeterminado. Otras funciones útiles en el graficado son subplot, que permite dividir la
+ventana en subventanas o paneles, y grid on/off, que agrega o elimina las líneas de cuadrícula
+en la figura [62], [67].
+2.4.3 Ventajas y desventajas de la programación en MATLAB
+La programación técnica en MATLAB y su uso en la resolución de problemas complejos de
+las matemáticas y la ingeniería tiene muchas ventajas en comparación con los lenguajes
+informáticos convencionales. Según [63], entre ellas se encuentran:
+•
+
+Facilidad de uso: MATLAB es un lenguaje interpretado y muy fácil de usar. Los
+programas se pueden escribir y modificar fácilmente con el entorno de desarrollo
+integrado que incorpora la herramienta y depurar con el depurador propio. Esta
+facilidad es ideal para uso educativo y para la creación rápida de prototipos de nuevos
+programas. Además de incluir un editor y depurador integrado, también ofrece
+documentación y manuales en línea, así como una potente consulta de ayuda con
+explicaciones precisas y demostraciones extensas.
+
+•
+
+Independencia de la plataforma: MATLAB es compatible con muchos sistemas
+informáticos diferentes, lo que proporciona un gran grado de independencia de la
+plataforma. El software es compatible con las versiones actuales de Windows, Linux
+y Mac; los archivos escritos en cualquier plataforma pueden leerse y ejecutarse en
+
+Capítulo 2
+
+40
+
+cualquier otra, por lo que el usuario puede migrar a nuevas plataformas y sistemas
+operativos sin problema alguno.
+•
+
+Funciones predefinidas: MATLAB incluye una amplia biblioteca de funciones
+predefinidas que proporcionan soluciones probadas para muchas tareas técnicas
+básicas; en cambio, en cualquier otro lenguaje se tendrían que implementar o importar
+bibliotecas de terceros. Igualmente, cuenta con kits de herramientas de propósito
+especial disponibles para ayudar a resolver problemas complejos en áreas específicas,
+como el procesamiento de señales y de imágenes, las comunicaciones, las redes
+neuronales, los sistemas de control, entre muchos otros.
+
+•
+
+Trazado independiente del dispositivo: a diferencia de otros lenguajes informáticos,
+MATLAB tiene muchos comandos integrales de trazado e imagen. Los gráficos y las
+imágenes se pueden mostrar en cualquier dispositivo de salida gráfica compatible con
+el ordenador en el que se está ejecutando. Esta capacidad convierte a MATLAB en
+una herramienta excepcional para la visualización de datos técnicos.
+
+•
+
+Interfaz gráfica de usuario (Graphical User Interface, GUI): MATLAB incluye
+herramientas que permiten a los programadores construir de forma interactiva una
+interfaz gráfica de usuario para su programa. Con esta capacidad, se pueden diseñar
+sofisticados programas de análisis de datos que pueden ser operados por usuarios
+relativamente inexpertos.
+
+Sin embargo, MATLAB tiene dos dificultades principales. La primera viene dada por ser un
+lenguaje interpretado y, por tanto, puede ejecutarse de manera más lenta que los lenguajes
+compilados; esta desventaja se puede mitigar estructurando correctamente el programa para
+maximizar el rendimiento del código vectorizado y utilizando el compilador justo a tiempo
+(Just-in-Time, JIT). La segunda desventaja es el costo, una copia completa de MATLAB es
+de cinco a diez veces más cara que un compilador convencional de C. Este costo
+relativamente alto se compensa con la reducción del tiempo necesario para que un ingeniero
+o científico cree un programa de trabajo, por lo que MATLAB es rentable para las empresas.
+Sin embargo, es demasiado caro para que la mayoría de las personas consideren comprarlo;
+aunque existe una edición económica para estudiantes que es esencialmente idéntica a la
+edición completa.
+
+Capítulo 2
+
+41
+
+2.5 Conclusiones del capítulo
+Los sistemas de estampado de tiempo por software más sofisticados, junto a cálculos precisos
+de retardos a través de la pila de software, posibilitan obtener estampas de tiempo más
+precisas, aunque no más precisas que por medios de hardware, que a su vez conducen a una
+mejor sincronización. Los procedimientos y métodos estudiados en el capítulo presentan
+limitaciones e inconvenientes para su implementación en la presente investigación, pues
+algunos utilizan mensajes adicionales o no logran resultados considerables de precisión al
+aplicar sus modificaciones.
+Por consiguiente, el método seleccionado es más factible de implementar en el protocolo
+gPTP para redes inalámbricas, no requiere de ningún tipo de mensaje adicional ni realiza
+cambios en la pila de protocolo, logrando precisiones altísimas en el rango de entre 10 y 100
+ns. Las estimaciones de retardo en la estampa de tiempo se ven perjudicadas por retardos
+asimétricos que pueden ser determinados y se ha demostrado que pueden ser corregidos por
+el controlador del dispositivo aplicando las correcciones de estampado de tiempo definidas;
+sin embargo, la solución descrita no puede alcanzar el determinismo y la precisión de los
+enfoques de estampa de tiempo de hardware.
+Por su parte, la herramienta MATLAB es uno de los paquetes de software más desarrollados
+disponibles en la actualidad, siendo muy fácil de usar, incluso para personas sin experiencia
+previa en programación. MATLAB constituye una potente herramienta de resolución de
+problemas en diversos campos de la matemática, la ciencia y la ingeniería, y un valioso
+instrumento para estudiantes, profesores y profesionales en su desempeño laboral.
+
+Capítulo 3
+
+42
+
+CAPÍTULO 3. IMPLEMENTACIÓN DE LA CORRECCIÓN DEL PROTOCOLO
+GPTP ANTE LOS RETARDOS ASIMÉTRICOS EN REDES INALÁMBRICAS.
+RESULTADOS
+Sobre la base de haber analizado los métodos existentes en la literatura para contrarrestar el
+efecto negativo de las asimetrías en el sincronismo de redes inalámbricas y seleccionado el
+método de Exel por ofrecer alta compatibilidad con el estándar y obtener excelentes
+resultados de precisión; el presente capítulo está enfocado en dos líneas fundamentales: por
+un lado, desarrollar una correcta implementación del protocolo gPTP para redes inalámbricas
+que mitigue el efecto de los retardos asimétricos en el sincronismo, empleando la herramienta
+MATLAB y el procedimiento seleccionado; y, por otro parte, comparar los resultados de la
+implementación con el comportamiento del protocolo estándar en enlaces simétricos y
+asimétricos, respectivamente.
+3.1 Características de la implementación
+Se ha implementado una instancia del protocolo gPTP, tal y como se describe en el estándar
+IEEE 802.1AS [48], para ello se utiliza como código fuente el presentado en [70], donde la
+implementación se realiza a través de un simulador de eventos discretos en MATLAB y el
+protocolo se efectúa mediante una función llamada gPTPSim, que tiene como parámetros de
+entrada: la duración de la simulación, la frecuencia con la que se mide el desfasaje de los
+relojes y la frecuencia con la que se ejecuta el intercambio de mensajes del protocolo; y de
+salida: el desfasaje de los relojes una vez aplicada la corrección establecida en gPTP y el
+valor de offset calculado por el protocolo para la sincronización. Las características generales
+de la implementación son:
+•
+
+El escenario para la investigación está compuesto por dos dispositivos, cuya distancia
+se establece mediante una variable.
+
+•
+
+No se aplica el Algoritmo de Mejor Reloj Maestro (BMCA) que utiliza gPTP, por lo
+que se definen el dispositivo maestro y el dispositivo esclavo previamente.
+
+•
+
+La resolución de tiempo del reloj de ambos dispositivos es de 1 ms y, mediante el uso
+de funciones de MATLAB para la generación de números aleatorios, se crea un
+tiempo de inicio diferente y se asigna una deriva distinta para cada reloj. Esto permite
+simular los procesos de desfasaje y desviación entre los relojes que aparecen en los
+dispositivos reales.
+
+Capítulo 3
+•
+
+43
+
+Se analiza el desfasaje entre los relojes de los dispositivos y se ejecuta la corrección
+de tiempo en el dispositivo esclavo cada un segundo (como define el protocolo) y
+durante un minuto de simulación.
+
+•
+
+Cada evento presenta tres parámetros: tipo de evento, dispositivo y tiempo de evento.
+El simulador compara en cada instante el tiempo de los eventos que están sucediendo
+y los organiza cronológicamente; mientras el tiempo de evento sea menor que el
+tiempo de simulación, que se estableció como parámetro de entrada de la función,
+seguirá el protocolo ejecutándose e intercambiado los mensajes de evento.
+
+•
+
+Las variables de entrada, la llamada de la función y la adquisición de los datos de
+salida para su posterior análisis son definidas en otro script, donde también se
+establece el número de simulaciones a realizar.
+
+•
+
+Los retardos asimétricos son generados aleatoriamente mediante el uso de la función
+rand y se agregan a los tiempos de propagación en ambos sentidos del enlace.
+
+Uno de los principales aportes de la presente investigación al código fuente fue la
+implementación de la relación de velocidad (rate ratio, r) en el cálculo del retardo de
+propagación (PDelay, ver Ecuación 1.2), este factor es introducido para contrarrestar el
+efecto de la deriva de los relojes y es decisivo para la medición del retardo; r se define como
+la frecuencia del solicitante entre la frecuencia del respondedor, por lo que en este caso sería
+r = fdev1/fdev2. También se puede calcular usando estampas de tiempo de dos mensajes
+consecutivos en la misma dirección, los mensajes de eventos PDelay_Resp y Follow_Up
+cumplen esta condición, pues ambos son mensajes consecutivos en la dirección del esclavo
+hacia el maestro. Por consiguiente, una vez recibido el Follow_Up en el dispositivo maestro,
+se conocen todas las estampas de tiempo del intercambio de mensajes y puede ser calculado
+el rate ratio para ser usado en la medición del retardo. Además, se decidió implementar un
+tiempo de procesamiento en los dispositivos para reflejar el retardo que presentan los
+dispositivos reales procesando la información que será enviada o que acaba de recibirse, para
+ello se utiliza la función rand que genera números aleatorios.
+Para una adecuada implementación del método de corrección de estampas de tiempo
+seleccionado para mitigar el efecto de las asimetrías en el sincronismo de redes inalámbricas
+se tuvo en cuenta que las correcciones necesarias que indica Exel sean realizadas por el
+controlador del dispositivo dentro del ISR, se pueden realizar en MATLAB en el momento
+
+Capítulo 3
+
+44
+
+de tomar la estampa de tiempo, ya que el software almacena esa hora en un arreglo definido
+por el usuario. Como parte de las modificaciones son creadas cuatro variables (p1-p4) de
+números aleatorios, que representan el término determinista de los retardos de procesamiento
+asimétricos p definidos en el método y también incluye los retardos provocados por factores
+como la velocidad de datos, el tamaño del encabezado, la modulación, el tamaño de
+transferencia y la velocidad de la interfaz DMA. De manera similar son implementadas las
+asimetrías desconocidas. Todos estos retardos son incorporados, como corresponde según el
+estándar, al tiempo de generación del siguiente evento, de tal modo que el intercambio de
+mensajes del protocolo muestre aleatoriedades asimétricas y las estampas de tiempo se vean
+afectadas como sucede en el estampado por software en dispositivos reales. Finalmente, en
+el momento de calcular el valor de offset para el ajuste del reloj en el dispositivo esclavo, se
+procede mediante la Ecuación 2.7, tal y como establece el procedimiento.
+En la Figura 3.1 se muestra un esquema de la implementación desarrollada, donde Tms y Tsm
+representan, respectivamente, los tiempos de propagación de maestro a esclavo y viceversa,
+d es la distancia entre los dispositivos, c la velocidad de la luz (3x108 m/s) y ta el término no
+determinista de los retardos asimétricos (asimetrías desconocidas).
+
+Figura 3.1. Esquema de la implementación desarrollada [Elaboración Propia].
+
+Capítulo 3
+
+45
+
+3.2 Análisis de los resultados obtenidos en la implementación del método de corrección
+de asimetrías en el protocolo gPTP
+Para poder comprobar los resultados de la implementación del método seleccionado en el
+protocolo gPTP se realizó la simulación del estándar en condiciones de enlace simétrico
+(ideales) y ante la presencia de asimetrías (enlace asimétrico). Posteriormente, la
+implementación del método descrito en la presente investigación fue evaluado bajo las
+mismas condiciones de enlace asimétrico. Los tres escenarios fueron simulados 3000 veces
+siguiendo el método de Monte Carlo [71], por lo que los análisis realizados tomaron como
+datos la media de los resultados obtenidos en las simulaciones. En la Figura 3.2 se aprecian
+los resultados obtenidos en cuanto a precisión para cada escenario evaluado durante un
+minuto de simulación.
+En el primer escenario, una vez estabilizados los relojes, la precisión tiene un rango simétrico
+entre 56.17 µs y 112.4 µs, con una media de 83.82 µs y una desviación estándar de 28.33 µs,
+esto indica que el protocolo logra una precisión notable con un rango de error muy pequeño
+cuando no se consideran retardos asimétricos. En cambio, cuando el estándar se enfrenta a
+asimetrías en los enlaces inalámbricos se ve empeorada grandemente la precisión con valores
+oscilando en el rango de 140.4 µs y 167 µs, en este caso el valor medio es 152.2 µs; por tanto,
+se comprueba que la presencia de retardos asimétricos en los canales de comunicación, que
+pueden derivar de diferencias en la velocidad de propagación de la señal en diferentes
+trayectorias o en la capacidad de procesamiento de los dispositivos, introduce un error
+significativo en la sincronización. Por último, al incorporar el procedimiento de corrección
+seleccionado, se verifica una mejora notable de la precisión de sincronismo en el protocolo
+gPTP alcanzando resultados en el rango de 85.51 µs y 118.4 µs, con una desviación estándar
+de 14,78 µs, valor menor al alcanzado por el estándar en condiciones de enlace simétrico, y
+una media de 101.5 µs; por consiguiente, el método de corrección implementado es efectivo
+para reducir el impacto de los retardos asimétricos en el sincronismo.
+Como se puede apreciar, el comportamiento obtenido tiende a ser sumamente estable y logra
+mantener siempre el sincronismo por debajo de los 120 µs, aunque es cierto que lo ideal
+cuando se implementa gPTP sería que los valores de precisión estuviesen en el orden de los
+nanosegundos, los resultados obtenidos se califican de muy positivos dada la precisión del
+tic de los relojes en la simulación. Del análisis de los resultados en la Figura 3.2 se obtiene
+
+Capítulo 3
+
+46
+
+que la versión del protocolo gPTP implementada para mitigar el efecto de los retardos
+asimétricos en el sincronismo de redes inalámbricas reduce el impacto de las asimetrías en
+un valor medio de 50.7 µs, aumentando la efectividad del sincronismo que logra el protocolo
+ante los retardos asimétricos en un 33.31 %. Por otro lado, los resultados indican que el
+algoritmo gPTP es capaz de lograr estabilidad más rápido en condiciones de enlace simétrico
+(2 s) demorando solo un período de gPTP, puesto que la presencia de retardos asimétricos en
+el enlace dificulta la corrección del desfasaje entre los relojes alcanzándose los 4 s de
+inestabilidad en la fase inicial, es decir, dos períodos de gPTP.
+
+Figura 3.2. Precisión del sincronismo entre los dispositivos para cada escenario evaluado
+[Elaboración propia].
+
+Asimismo, también fue analizada la variación de los valores de corrección del desfasaje
+(offset) durante el estudio de la implementación, pues proporciona información relevante
+sobre la precisión y estabilidad del proceso de sincronización de los relojes. La Figura 3.3
+muestra una gráfica del comportamiento del valor de offset en el tiempo para la corrección
+implementada del protocolo gPTP ante la presencia de retardos asimétricos. En los momentos
+
+Capítulo 3
+
+47
+
+iniciales de la simulación existe un valor notablemente alto de offset (13.43 ms), esta
+desviación significativa se debe a la sincronización inicial entre los dispositivos donde el
+reloj esclavo ajusta su tiempo para alinearse con el reloj maestro, por ende, las grandes
+fluctuaciones iniciales son esperadas y representan el proceso de corrección inicial. Tras este
+ajuste inicial que dura dos períodos de gPTP (4 s), los valores de corrección del desfasaje se
+estabilizan rápidamente, oscilando dentro de un rango estrecho entre -2.554 µs y 6.675 µs,
+con un valor medio de 1.265 µs, como se puede observar en la Figura 3.3; esta estabilización
+es indicativa del éxito de la implementación en minimizar las diferencias temporales entre
+los dispositivos. La presencia de valores positivos y negativos se debe a que el reloj esclavo
+puede adelantarse o atrasarse con respecto al reloj maestro. Por otro lado, las pequeñas
+fluctuaciones de offset son típicas de un ambiente de sincronización de tiempo debido a
+variaciones menores en el retardo de propagación y la precisión de las estampas de tiempo
+de los mensajes de eventos; sin embargo, estas variaciones están dentro de un rango
+aceptable, indicando que el reloj esclavo mantiene un buen sincronismo con el reloj maestro
+y el protocolo está operando eficazmente.
+
+Figura 3.3. Variación de offset del protocolo gPTP con el método de corrección de asimetrías
+[Elaboración propia].
+
+Capítulo 3
+
+48
+
+En resumen, el análisis de los datos graficados en la Figura 3.3 sugiere que el protocolo es
+robusto frente a las variaciones del entorno inalámbrico y logra reducir enseguida la
+diferencia inicial entre los relojes de los dispositivos. Igualmente, el comportamiento de los
+valores de offset alrededor de cero como valor central demuestra que la corrección de gPTP
+implementada es efectiva para lograr y mantener la sincronización con una rápida
+convergencia a un estado estable de sincronismo.
+Además, se comprobó la superioridad de la corrección establecida en la presente
+investigación más allá de los aspectos propios de la sincronización de tiempo analizados
+anteriormente, por lo que se realizó un experimento para observar y comparar el costo
+adicional en tiempo y recursos necesarios para ejecutar tareas computacionales
+(computational overhead). Este experimento se refiere al costo adicional en tiempo, recursos
+y rendimiento que se incurre al ejecutar operaciones computacionales, ya que esta sobrecarga
+puede afectar el rendimiento de los sistemas de comunicación, especialmente en aplicaciones
+de tiempo real o aquellas que requieren latencias bajas; por tanto, representa un aspecto
+considerable para tener en cuenta en el momento de implementar cualquier modificación al
+estándar IEEE 802.1AS. Ambos escenarios muestran, como es lógico, un incremento
+consistente en el tiempo de ejecución a medida que aumentan las iteraciones, esto refleja la
+carga computacional acumulativa inherente a las simulaciones repetidas. La implementación
+del método de corrección seleccionado exhibe tiempos de ejecución ligeramente superiores
+en cada punto evaluado; por ejemplo, para una sola simulación es aproximadamente un 67
+% más lento que el estándar (6.372 s frente a 3.819 s), para 10 iteraciones la diferencia
+porcentual es menor, cercana al 3 % (37.45 s frente a 36.39 s), mientras que para 100
+simulaciones tiene un valor de 3.65 % (365.9 s frente a 353 s), indicando que el overhead se
+estabiliza con el número de simulaciones. Aunque la corrección de gPTP implementada
+requiere un mayor tiempo de ejecución, dado por los algoritmos de corrección introducidos
+por el método seleccionado, el costo computacional adicional es relativamente pequeño en
+comparación con los beneficios que ofrece en cuanto a la precisión del sincronismo entre los
+relojes. Los resultados de esta evaluación son mostrados en la Figura 3.4, donde se grafica el
+costo computacional en tiempo de ejecución mientras se incrementa el número de
+simulaciones, y la Figura 3.5 que representa en porcentaje la diferencia en el tiempo de
+
+Capítulo 3
+
+49
+
+ejecución entre el método de corrección y el estándar para el número de simulaciones
+correspondiente.
+
+Figura 3.4. Tiempo de ejecución de gPTP estándar y gPTP con el método de corrección de
+asimetrías [Elaboración propia].
+
+Figura 3.5. Porcentaje de la diferencia en el tiempo de ejecución entre gPTP estándar y gPTP con el
+método de corrección de asimetrías [Elaboración propia].
+
+Capítulo 3
+
+50
+
+También se comprobó la existencia de los retardos asimétricos en los canales de
+comunicación inalámbricos tanto para el protocolo estándar como para la corrección
+implementada. Los tiempos de propagación de los mensajes de maestro a esclavo (tms) y en
+el sentido contrario (de esclavo a maestro, tsm) fueron calculados utilizando las Ecuaciones
+3.1 y 3.2. Para determinar las asimetrías (tasym) en el estándar se utilizó la Ecuación 3.3, donde
+se calcula la diferencia absoluta entre los tiempos de propagación en ambos sentidos;
+mientras que para la corrección implementada fue utilizada la Ecuación 3.4, que incluye los
+términos de los retardos p definidos en el método.
+t ms = t 2 − t1
+
+(3.1)
+
+t sm = t 4 − t 3
+
+(3.2)
+
+t asym = |t ms − t sm |
+
+(3.3)
+
+t asym = |(t ms − p1 − p2 ) − (t sm − p3 − p4 )|
+
+(3.4)
+
+La Figura 3.6 muestra el comportamiento de los retardos asimétricos calculados. En ambos
+escenarios las asimetrías oscilan aproximadamente entre 230 µs y 240 µs, por lo tanto, hay
+variaciones del retardo de propagación muy semejantes: de 10.2 µs en el protocolo estándar
+con una media de 235.1 µs, y de 8.5 µs para el método de corrección, teniendo este último
+como media un valor de 235.2 µs. Por consiguiente, la versión del protocolo gPTP
+implementada en la presente investigación no elimina las asimetrías presentes en el enlace,
+pero sí logra corregir el desfasaje que estas provocan alcanzando mayores niveles de
+precisión, lo cual constituye el objetivo fundamental del proceso de sincronismo. Esto se
+debe a que, tanto la presente investigación como el método seleccionado, están enfocados en
+determinar los retardos asimétricos, que ocurren en el estampado de tiempo por software y
+en el procesamiento de los mensajes, para utilizar esos valores en la corrección del cálculo
+de offset y no en eliminar las causas de las asimetrías en los canales inalámbricos.
+
+Capítulo 3
+
+51
+
+Figura 3.6. Medición de los retardos asimétricos [Elaboración propia].
+
+La versión del protocolo gPTP implementada en el presente estudio para mitigar el efecto de
+los retardos asimétricos en el sincronismo de redes inalámbricas, así como el análisis de los
+resultados obtenidos en la investigación, se encuentran sustentados en la estimación del error
+cometido durante la simulación, tal y como se muestra en la Figura 3.7. Para el cálculo de
+estimación del error se utilizó la Ecuación 3.5, donde Zα/2 es el coeficiente de confianza, valor
+en la tabla de distribución normal (conocida como tabla Z) correspondiente a la probabilidad
+de confianza de los resultados, σ es la desviación estándar de la población y n el tamaño de
+la muestra, es decir, el número de simulaciones.
+E = Zα⁄2 ×
+
+σ
+
+(3.5)
+
+√n
+
+Los resultados indican que, para un nivel de confianza de 95 %, el error estimado oscila entre
+los valores 2.9 y 4.3 %, presentando una media de 3.59 %; en cambio, para el nivel de
+confianza de 99 %, el error estimado tiene 4.66 % de media y un rango entre 3.8 y 5.5 %.
+
+Capítulo 3
+
+52
+
+Figura 3.7. Estimación del error de los resultados [Elaboración propia].
+
+3.3 Conclusiones del capítulo
+La versión del protocolo gPTP implementada alcanza altos valores de precisión,
+disminuyendo considerablemente las afectaciones que provocan los retardos asimétricos en
+el sincronismo de redes inalámbricas, lo cual es sumamente importante para aplicaciones
+donde se requiere una precisión de tiempo crítica. Además, el análisis de offset demuestra
+que el reloj esclavo logra mantener un buen sincronismo con el reloj maestro y, por ende, la
+eficacia en el funcionamiento del protocolo. Por otro lado, el análisis de los tiempos de
+ejecución del estándar y la corrección implementada revela que, a pesar de presentar este
+último un overhead computacional ligeramente superior, el costo es totalmente asumible en
+comparación con los beneficios que ofrece en cuanto a precisión del sincronismo. Asimismo,
+se respaldan los resultados de la investigación con muy bajos valores de error estimados para
+niveles de confianza superiores al 95 % de probabilidad, corroborando así la validez de la
+investigación y de la corrección implementada para mitigar los efectos de las asimetrías en
+el sincronismo.
+
+53
+
+CONCLUSIONES
+1. El sincronismo es un componente fundamental en las redes inalámbricas,
+especialmente en el contexto del IoT, pues permite la coordinación de recursos
+compartidos y optimiza el rendimiento de sistemas distribuidos. En estas redes los
+principales desafíos para una adecuada sincronización son los tiempos de
+propagación y las asimetrías en los canales. El protocolo gPTP es el más apropiado
+para estas redes, ofreciendo una mayor precisión y robustez ante los desafíos del
+sincronismo.
+2. El análisis de los métodos existentes revela que, en su mayoría, presentan limitaciones
+e inconvenientes para su implementación en el protocolo gPTP; en consecuencia, fue
+seleccionado el método de corrección de estampas de tiempo de Exel, el cual es
+compatible con el estándar y ofrece altos valores de precisión. La herramienta
+computacional MATLAB es empleada por su versatilidad y potencia en la resolución
+de problemas en diversos campos de la ciencia y la ingeniería.
+3. La implementación de la versión del protocolo gPTP logra reducir el impacto de los
+retardos asimétricos en un valor medio de 50.7 µs, lo que representa una mejora del
+sincronismo del estándar ante la presencia de asimetrías en un 33.31 %. Alcanza altos
+valores de precisión, en el rango de 85.51 µs y 118.4 µs, y una muy buena estabilidad
+dada por una desviación estándar de tan solo 14.78 µs.
+4. La variación de offset mostrada por la implementación indica que el reloj esclavo
+logra mantener un sincronismo adecuado con el reloj maestro, con pequeñas
+variaciones de 1.265 µs de media. A pesar de presentar un ligero aumento de alrededor
+del 3 % en el overhead computacional con respecto al protocolo estándar, se obtienen
+resultados superiores en cuanto a precisión y es eficiente para mitigar los efectos de
+las asimetrías en el sincronismo.
+
+54
+
+RECOMENDACIONES
+1. Aplicar la implementación desarrollada en dispositivos reales para evaluar su
+comportamiento en la práctica y comparar los resultados obtenidos mediante
+simulación.
+2. Emplear en futuras implementaciones hardware especializado en el estampado de
+tiempo, tal y como se especifica en el estándar IEEE 802.1AS que describe el
+funcionamiento de gPTP. De esta manera se deben lograr mayores resultados en
+cuanto a precisión del sincronismo.
+3. Evaluar la implementación en redes con varios dispositivos (de ser posible utilizar
+BMCA) para probar la robustez de la misma, así como los resultados de precisión
+alcanzados.
+
+Referencias
+
+55
+
+REFERENCIAS BIBLIOGRÁFICAS
+[1]
+
+K. Balakrishnan, R. Dhanalakshmi, S. B. Bahadur, y R. Gopalakrishnan, «Clock
+
+synchronization in industrial Internet of Things and potential works in precision time
+protocol: Review, challenges and future directions», Int. J. Cogn. Comput. Eng., vol. 4, pp.
+205-219, jun. 2023, doi: 10.1016/j.ijcce.2023.06.001.
+[2]
+
+W. Ayoub, A. E. Samhat, F. Nouvel, M. Mroue, y J.-C. Prevotet, «Internet of Mobile
+
+Things: Overview of LoRaWAN, DASH7, and NB-IoT in LPWANs Standards and Supported
+Mobility», IEEE Commun. Surv. Tutor., vol. 21, n.o 2, pp. 1561-1581, 2019, doi:
+10.1109/COMST.2018.2877382.
+[3]
+
+S. M. Lasassmeh y J. M. Conrad, «Time synchronization in wireless sensor networks:
+
+A survey», en Proceedings of the IEEE SoutheastCon 2010 (SoutheastCon), 2010, pp. 242245. doi: 10.1109/SECON.2010.5453878.
+[4]
+
+T. Yang, Y. Niu, y J. Yu, «Clock Synchronization in Wireless Sensor Networks Based
+
+on Bayesian Estimation», IEEE Access, vol. 8, pp. 69683-69694, 2020, doi:
+10.1109/ACCESS.2020.2984785.
+[5]
+
+V. Masalskyi, D. Čičiurėnas, A. Dzedzickis, U. Prentice, G. Braziulis, y V. Bučinskas,
+
+«Synchronization of Separate Sensors’ Data Transferred through a Local Wi-Fi Network: A
+Use Case of Human-Gait Monitoring», Future Internet, vol. 16, n.o 2, 2024, doi:
+10.3390/fi16020036.
+[6]
+
+O. Seijo, I. Val, M. Luvisotto, y Z. Pang, «Clock Synchronization for Wireless Time-
+
+Sensitive Networking: A March From Microsecond to Nanosecond», IEEE Ind. Electron.
+Mag., vol. 16, n.o 2, pp. 35-43, jun. 2022, doi: 10.1109/MIE.2021.3078071.
+[7]
+
+D. Krummacker et al., «Intra-Network Clock Synchronization for Wireless
+
+Networks: From State of the Art Systems to an Improved Solution», en 2020 2nd
+International Conference on Computer Communication and the Internet (ICCCI), Nagoya,
+Japan: IEEE, jun. 2020, pp. 36-44. doi: 10.1109/ICCCI49374.2020.9145977.
+[8]
+
+A. Mildner, «Time Sensitive Networking for Wireless Networks -- A State of the Art
+
+Analysis», pp. 33-37, 2019, doi: 10.2313/NET-2019-06-1_07.
+[9]
+
+Y. Zhang, H. Li, S. Wang, y F. Chen, «A Fuzzy-PI Clock Servo with Window Filter
+
+for Compensating Queue-Induced Delay Asymmetry in IEEE 1588 Networks», Sensors, vol.
+24, n.o 7, 2024, doi: 10.3390/s24072369.
+
+Referencias
+[10]
+
+56
+
+N. M. Freris, S. R. Graham, y P. R. Kumar, «Fundamental Limits on Synchronizing
+
+Clocks Over Networks», IEEE Trans. Autom. Control, vol. 56, n.o 6, pp. 1352-1364, jun.
+2011, doi: 10.1109/TAC.2010.2089210.
+[11]
+
+R. Exel, «Mitigation of Asymmetric Link Delays in IEEE 1588 Clock
+
+Synchronization Systems», IEEE Commun. Lett., vol. 18, n.o 3, pp. 507-510, mar. 2014, doi:
+10.1109/LCOMM.2014.012214.132540.
+[12]
+
+J. C. Oliva Pérez, «Implementación del protocolo de sincronismo gPTP sobre
+
+dispositivos LoRa», Maestría, Universidad Central Marta Abreu de Las Villas (UCLV), Santa
+Clara, Cuba, 2024.
+[13]
+
+B. S. Durán, «Sincronismo de reloj: Protocolo de precisión de tiempo y su empleo en
+
+entornos IoT.», Telemática, vol. 19, n.o 2, pp. 21-28, 2020, [En línea]. Disponible en:
+http://revistatelematica.cujae.edu.cu/index.php/tele
+[14]
+
+H. Baniabdelghany, R. Obermaisser, y A. Khalifeh, «Extended Synchronization
+
+Protocol Based on IEEE802.1AS for Improved Precision in Dynamic and Asymmetric TSN
+Hybrid Networks», en 2020 9th Mediterranean Conference on Embedded Computing
+(MECO),
+
+Budva,
+
+Montenegro:
+
+IEEE,
+
+jun.
+
+2020,
+
+pp.
+
+1-8.
+
+doi:
+
+10.1109/MECO49872.2020.9134100.
+[15]
+
+A. R. Swain y R. C. Hansdah, «A model for the classification and survey of clock
+
+synchronization protocols in WSNs», Ad Hoc Netw., vol. 27, pp. 219-241, abr. 2015, doi:
+10.1016/j.adhoc.2014.11.021.
+[16]
+
+P. Barooah, J. P. Hespanha, y A. Swami, «On the effect of asymmetric communication
+
+on distributed time synchronization», en 2007 46th IEEE Conference on Decision and
+Control,
+
+New
+
+Orleans,
+
+LA,
+
+USA:
+
+IEEE,
+
+2007,
+
+pp.
+
+5465-5471.
+
+doi:
+
+10.1109/CDC.2007.4434643.
+[17]
+
+L. Tavares Bruscato, T. Heimfarth, y E. Pignaton De Freitas, «Enhancing Time
+
+Synchronization Support in Wireless Sensor Networks», Sensors, vol. 17, n.o 12, dic. 2017,
+doi: 10.3390/s17122956.
+[18]
+
+F. Tirado-Andrés y A. Araujo, «Performance of clock sources and their influence on
+
+time synchronization in wireless sensor networks», Int. J. Distrib. Sens. Netw., vol. 15, n.o 9,
+p. 155014771987937, sep. 2019, doi: 10.1177/1550147719879372.
+
+Referencias
+[19]
+
+57
+
+C. Lenzen, P. Sommer, y R. Wattenhofer, «PulseSync: An Efficient and Scalable
+
+Clock Synchronization Protocol», IEEEACM Trans. Netw., vol. 23, n.o 3, pp. 717-727, jun.
+2015, doi: 10.1109/TNET.2014.2309805.
+[20]
+
+F. Tirado-Andrés, A. Rozas, y A. Araujo, «A Methodology for Choosing Time
+
+Synchronization Strategies for Wireless IoT Networks», Sensors, vol. 19, n.o 16, ago. 2019,
+doi: 10.3390/s19163476.
+[21]
+
+A. M. Romanov, F. Gringoli, y A. Sikora, «A Precise Synchronization Method for
+
+Future Wireless TSN Networks», IEEE Trans. Ind. Inform., vol. 17, n.o 5, pp. 3682-3692,
+may 2021, doi: 10.1109/TII.2020.3017016.
+[22]
+
+Z. Idrees et al., «IEEE 1588 for Clock Synchronization in Industrial IoT and Related
+
+Applications: A Review on Contributing Technologies, Protocols and Enhancement
+Methodologies», IEEE Access, vol. 8, 2020, doi: 10.1109/ACCESS.2020.3013669.
+[23]
+
+M. Levesque y D. Tipper, «Improving the PTP synchronization accuracy under
+
+asymmetric delay conditions», en 2015 IEEE International Symposium on Precision Clock
+Synchronization for Measurement, Control, and Communication (ISPCS), Beijing, China:
+IEEE, oct. 2015, pp. 88-93. doi: 10.1109/ISPCS.2015.7324689.
+[24]
+
+H. Puttnies, P. Danielis, A. R. Sharif, y D. Timmermann, «Estimators for Time
+
+Synchronization—Survey, Analysis, and Outlook», IoT, vol. 1, n.o 2, pp. 398-435, nov. 2020,
+doi: 10.3390/iot1020023.
+[25]
+
+Q. Mei, Y. Wang, T. Wang, y X. Tong, «Power System Clock Synchronization Method
+
+Based on Service Interoperability», J. Phys. Conf. Ser., vol. 1744, n.o 4, feb. 2021, doi:
+10.1088/1742-6596/1744/4/042195.
+[26]
+
+A. Mahmood, M. I. Ashraf, M. Gidlund, y J. Torsner, «Over-the-Air Time
+
+Synchronization for URLLC: Requirements, Challenges and Possible Enablers», en 2018
+15th International Symposium on Wireless Communication Systems (ISWCS), 2018, pp. 1-6.
+doi: 10.1109/ISWCS.2018.8491188.
+[27]
+
+M. Schungel, S. Dietrich, D. Ginthor, S.-P. Chen, y M. Kuhn, «Analysis of Time
+
+Synchronization for Converged Wired and Wireless Networks», en 2020 25th IEEE
+International Conference on Emerging Technologies and Factory Automation (ETFA),
+Vienna, Austria: IEEE, sep. 2020, pp. 198-205. doi: 10.1109/ETFA46521.2020.9212068.
+
+Referencias
+[28]
+
+58
+
+Jiho Han y Deog-Kyoon Jeong, «Practical considerations in the design and
+
+implementation of time synchronization systems using IEEE 1588», IEEE Commun. Mag.,
+vol. 47, n.o 11, pp. 164-170, nov. 2009, doi: 10.1109/MCOM.2009.5307481.
+[29]
+
+Y. Geng et al., «Exploiting a natural network effect for scalable, fine-grained clock
+
+synchronization», en Proceedings of the 15th USENIX Conference on Networked Systems
+Design and Implementation, en NSDI’18. USA: USENIX Association, 2018, pp. 81-94.
+[30]
+
+K. B. Stanton, «Distributing Deterministic, Accurate Time for Tightly Coordinated
+
+Network and Software Applications: IEEE 802.1AS, the TSN profile of PTP», IEEE
+Commun.
+
+Stand.
+
+Mag.,
+
+vol.
+
+2,
+
+n.o
+
+2,
+
+pp.
+
+34-40,
+
+jun.
+
+2018,
+
+doi:
+
+10.1109/MCOMSTD.2018.1700086.
+[31]
+
+H. Yiğitler, B. Badihi, y R. Jäntti, «Overview of Time Synchronization for IoT
+
+Deployments: Clock Discipline Algorithms and Protocols», Sensors, vol. 20, n.o 20, oct.
+2020, doi: 10.3390/s20205928.
+[32]
+
+Q. Bailleul, K. Jaffrès-Runser, J.-L. Scharbarg, y P. Cuenot, «Assessing a precise
+
+gPTP simulator with IEEE802.1AS hardware measurements», en 11th European Congress
+on Embedded Real-Time Systems (ERTS 2022), Toulouse, France, jun. 2022. [En línea].
+Disponible en: https://hal.science/hal-03620481
+[33]
+
+A. K. Karthik y R. S. Blum, «Robust Clock Skew and Offset Estimation for IEEE
+
+1588 in the Presence of Unexpected Deterministic Path Delay Asymmetries», IEEE Trans.
+Commun., vol. 68, n.o 8, pp. 5102-5119, 2020, doi: 10.1109/TCOMM.2020.2991212.
+[34]
+
+A. Mahmood, R. Exel, H. Trsek, y T. Sauter, «Clock Synchronization Over IEEE
+
+802.11—A Survey of Methodologies and Protocols», IEEE Trans. Ind. Inform., vol. 13, n.o
+2, pp. 907-922, abr. 2017, doi: 10.1109/TII.2016.2629669.
+[35]
+
+M. Aslam et al., «Hardware Efficient Clock Synchronization Across Wi-Fi and
+
+Ethernet-Based Network Using PTP», IEEE Trans. Ind. Inform., vol. 18, n.o 6, pp. 38083819, jun. 2022, doi: 10.1109/TII.2021.3120005.
+[36]
+
+I. Val, O. Seijo, R. Torrego, y A. Astarloa, «IEEE 802.1AS Clock Synchronization
+
+Performance Evaluation of an Integrated Wired–Wireless TSN Architecture», IEEE Trans.
+Ind. Inform., vol. 18, n.o 5, pp. 2986-2999, may 2022, doi: 10.1109/TII.2021.3106568.
+[37]
+
+A. Mahmood, G. Gaderer, H. Trsek, S. Schwalowsky, y N. Kero, «Towards high
+
+accuracy in IEEE 802.11 based clock synchronization using PTP», en 2011 IEEE
+
+Referencias
+
+59
+
+International Symposium on Precision Clock Synchronization for Measurement, Control and
+Communication,
+
+Munich,
+
+Germany:
+
+IEEE,
+
+sep.
+
+2011,
+
+pp.
+
+13-18.
+
+doi:
+
+10.1109/ISPCS.2011.6070152.
+[38]
+
+S. Lv, Y. Lu, y Y. Ji, «An Enhanced IEEE 1588 Time Synchronization for Asymmetric
+
+Communication Link in Packet Transport Network», IEEE Commun. Lett., vol. 14, n.o 8, pp.
+764-766, ago. 2010, doi: 10.1109/LCOMM.2010.08.091601.
+[39]
+
+Xueqiao Li, Yuan Chen, y Shuang Liang, «Improvement of precise time
+
+synchronization algorithm based on IEEE1588», en 2010 International Conference on
+Computer, Mechatronics, Control and Electronic Engineering, Changchun, China: IEEE,
+ago. 2010, pp. 70-73. doi: 10.1109/CMCE.2010.5609633.
+[40]
+
+S. Lee, S. Lee, y C. Hong, «An Accuracy Enhanced IEEE 1588 Synchronization
+
+Protocol for Dynamically Changing and Asymmetric Wireless Links», IEEE Commun. Lett.,
+vol. 16, n.o 2, pp. 190-192, feb. 2012, doi: 10.1109/LCOMM.2011.092011.110582.
+[41]
+
+D. Djenouri y M. Bagaa, «Synchronization Protocols and Implementation Issues in
+
+Wireless Sensor Networks: A Review», IEEE Syst. J., vol. 10, n.o 2, pp. 617-627, jun. 2016,
+doi: 10.1109/JSYST.2014.2360460.
+[42]
+
+S. Li, M. Hedley, K. Bengston, D. Humphrey, M. Johnson, y W. Ni, «Passive
+
+Localization of Standard WiFi Devices», IEEE Syst. J., vol. 13, n.o 4, pp. 3929-3932, dic.
+2019, doi: 10.1109/JSYST.2019.2903278.
+[43]
+
+H. Cho, J. Jung, B. Cho, Y. Jin, S.-W. Lee, y Y. Baek, «Precision Time
+
+Synchronization Using IEEE 1588 for Wireless Sensor Networks», en 2009 International
+Conference on Computational Science and Engineering, Vancouver, BC, Canada: IEEE,
+2009, pp. 579-586. doi: 10.1109/CSE.2009.264.
+[44]
+
+«IEEE Standard for a Precision Clock Synchronization Protocol for Networked
+
+Measurement and Control Systems», IEEE Std 1588-2019 Revis. OfIEEE Std 1588-2008, pp.
+1-499, 2020, doi: 10.1109/IEEESTD.2020.9120376.
+[45]
+
+K. S. Lee, H. Wang, V. Shrivastav, y H. Weatherspoon, «Globally Synchronized Time
+
+via Datacenter Networks», en Proceedings of the 2016 ACM SIGCOMM Conference,
+Florianopolis, Brazil: ACM, ago. 2016, pp. 454-467. doi: 10.1145/2934872.2934885.
+
+Referencias
+[46]
+
+60
+
+S. T. Watt, S. Achanta, H. Abubakari, E. Sagen, Z. Korkmaz, y H. Ahmed,
+
+«Understanding and applying precision time protocol», en 2015 Saudi Arabia Smart Grid
+(SASG), Jeddah, Saudi Arabia: IEEE, dic. 2015, pp. 1-7. doi: 10.1109/SASG.2015.7449285.
+[47]
+
+A. Pepiciello, A. Vaccaro, y T. Pietropaoli, «Experimental Assessment of a PTP-based
+
+System for Large Scale Time Synchronization of Smart Grids», en 2020 55th International
+Universities Power Engineering Conference (UPEC), Torino, Italy: IEEE, sep. 2020, pp. 16. doi: 10.1109/UPEC49904.2020.9209872.
+[48]
+
+«IEEE Standard for Local and Metropolitan Area Networks–Timing and
+
+Synchronization for Time-Sensitive Applications», IEEE Std 8021AS-2020 Revis. IEEE Std
+8021AS-2011, pp. 1-421, 2020, doi: 10.1109/IEEESTD.2020.9121845.
+[49]
+
+H. Puttnies, P. Danielis, y D. Timmermann, «PTP-LP: Using Linear Programming to
+
+Increase the Delay Robustness of IEEE 1588 PTP», en 2018 IEEE Global Communications
+Conference (GLOBECOM), Abu Dhabi, United Arab Emirates: IEEE, dic. 2018, pp. 1-7. doi:
+10.1109/GLOCOM.2018.8647777.
+[50]
+
+«IEEE Standard for Information technology–Telecommunications and information
+
+exchange between systems Local and metropolitan area networks–Specific requirements Part
+11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY)
+Specifications», IEEE Std 80211-2012 Revis. IEEE Std 80211-2007, pp. 1-2793, 2012, doi:
+10.1109/IEEESTD.2012.6178212.
+[51]
+
+«IEEE Standard for Information technology—Telecommunications and information
+
+exchange between systems Local and metropolitan area networks—Specific requirements Part 11: Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY)
+Specifications», IEEE Std 80211-2016 Revis. IEEE Std 80211-2012, pp. 1-3534, 2016, doi:
+10.1109/IEEESTD.2016.7786995.
+[52]
+
+H. Puttnies, P. Danielis, E. Janchivnyambuu, y D. Timmermann, «A Simulation
+
+Model of IEEE 802.1AS gPTP for Clock Synchronization in OMNeT++», en Proceedings of
+the 5th International OMNeT++ Community Summit, en EPiC Series in Computing, vol. 56.
+2018, pp. 63-72. doi: 10.29007/wfl9.
+[53]
+
+O. Seijo, J. A. Lopez-Fernandez, H.-P. Bernhard, y I. Val, «Enhanced Timestamping
+
+Method for Subnanosecond Time Synchronization in IEEE 802.11 Over WLAN Standard
+
+Referencias
+
+61
+
+Conditions», IEEE Trans. Ind. Inform., vol. 16, n.o 9, pp. 5792-5805, sep. 2020, doi:
+10.1109/TII.2019.2959200.
+[54]
+
+P. Ferrari, G. Giorgi, C. Narduzzi, S. Rinaldi, y M. Rizzi, «Timestamp Validation
+
+Strategy for Wireless Sensor Networks Based on IEEE 802.15.4 CSS», IEEE Trans. Instrum.
+Meas., vol. 63, n.o 11, pp. 2512-2521, nov. 2014, doi: 10.1109/TIM.2014.2326272.
+[55]
+
+A. Mahmood, R. Exel, y T. Sauter, «Impact of hard-and software timestamping on
+
+clock synchronization performance over IEEE 802.11», en 2014 10th IEEE Workshop on
+Factory Communication Systems (WFCS 2014), Toulouse, France: IEEE, may 2014, pp. 18. doi: 10.1109/WFCS.2014.6837584.
+[56]
+
+R. Exel, «Clock synchronization in IEEE 802.11 wireless LANs using physical layer
+
+timestamps», en 2012 IEEE International Symposium on Precision Clock Synchronization
+for Measurement, Control and Communication Proceedings, San Francisco, CA, USA:
+IEEE, sep. 2012, pp. 1-6. doi: 10.1109/ISPCS.2012.6336622.
+[57]
+
+P. Ferrari, A. Flammini, S. Rinaldi, A. Bondavalli, y F. Brancati, «Evaluation of
+
+timestamping uncertainty in a software-based IEEE1588 implementation», en 2011 IEEE
+International Instrumentation and Measurement Technology Conference, Hangzhou, China:
+IEEE, may 2011, pp. 1-6. doi: 10.1109/IMTC.2011.5944319.
+[58]
+
+G. Giorgi y C. Narduzzi, «Performance Analysis of Kalman-Filter-Based Clock
+
+Synchronization in IEEE 1588 Networks», IEEE Trans. Instrum. Meas., vol. 60, n.o 8, pp.
+2902-2909, ago. 2011, doi: 10.1109/TIM.2011.2113120.
+[59]
+
+Sungwon Lee, «An Enhanced IEEE 1588 Time Synchronization Algorithm for
+
+Asymmetric Communication Link using Block Burst Transmission», IEEE Commun. Lett.,
+vol. 12, n.o 9, pp. 687-689, sep. 2008, doi: 10.1109/LCOMM.2008.080824.
+[60]
+
+N. Kero, A. Puhm, T. Kernen, y A. Mroczkowski, «Performance and Reliability
+
+Aspects of Clock Synchronization Techniques for Industrial Automation», Proc. IEEE, vol.
+107, n.o 6, pp. 1011-1026, jun. 2019, doi: 10.1109/JPROC.2019.2915972.
+[61]
+
+A. Garg, A. Yadav, A. Sikora, y A. S. Sairam, «Wireless Precision Time Protocol»,
+
+IEEE
+
+Commun.
+
+Lett.,
+
+vol.
+
+22,
+
+n.o
+
+4,
+
+pp.
+
+812-815,
+
+abr.
+
+2018,
+
+doi:
+
+10.1109/LCOMM.2017.2781706.
+[62]
+
+D. C. Attaway, MATLAB. A practical introduction to programming and problem
+
+solving, Sixth Edition. Butterworth-Heinemann, 2022.
+
+Referencias
+
+62
+
+[63]
+
+S. J. Chapman, MATLAB Programming for Engineers, Sixth Edition. Cengage, 2020.
+
+[64]
+
+A. Gilat, MATLAB. An Introduction with Applications, Sixth Edition. Wiley, 2017.
+
+[65]
+
+D. Belfadel, M. Zabinski, y I. Macwan, «Introduction to MATLAB Programming in
+
+Fundamentals of Engineering Course», en 2021 ASEE Virtual Annual Conference Content
+Access Proceedings, Virtual Conference: ASEE Conferences, jul. 2021, p. 11. doi:
+10.18260/1-2--37388.
+[66]
+
+T. Young y M. J. Mohlenkamp, Introduction to Numerical Methods and Matlab
+
+Programming for Engineers. Ohio University, 2023.
+[67]
+
+S. C. Chapra, Applied numerical methods with MATLAB for engineers and scientists,
+
+Fourth edition. New York, NY: McGraw-Hill Education, 2019.
+[68]
+
+W. Y. Yang et al., Applied numerical methods using MATLAB, Second Edition.
+
+Hoboken,
+
+N.J:
+
+John
+
+Wiley
+
+&
+
+Sons,
+
+2020.
+
+[En
+
+línea].
+
+Disponible
+
+en:
+
+https://books.google.nl/books?id=LcnYDwAAQBAJ&lpg=PP1&hl=es&pg=PP4#v=onepa
+ge&q&f=false
+[69]
+John
+
+J. P. Mueller y J. Sizemore, MATLAB for Dummies, Second Edition. Hoboken, N.J:
+Wiley
+
+&
+
+Sons,
+
+2021.
+
+[En
+
+línea].
+
+Disponible
+
+en:
+
+https://books.google.nl/books?id=ec4vEAAAQBAJ&lpg=PA1&ots=3vr0ioJ96Y&dq=MAT
+LAB%20for%20Dummies&lr&hl=es&pg=PR4#v=onepage&q=MATLAB%20for%20Dum
+mies&f=false
+[70]
+
+J. C. Oliva Pérez, E. Ortiz Guerra, y O. E. Abreu Cruz, «Wireless Network
+
+Synchronization», en XX International Symposium of Electrical Engineering, SIE 2023, Villa
+Clara, Cuba, 2023. [En línea]. Disponible en: https://convencion.uclv.cu/es/event/xxsimposio-internacional-de-ingenieria-electrica-sie-2023-182/track/sincronismo-en-redesinalambricas-8216
+[71]
+
+D. Luengo, L. Martino, M. Bugallo, V. Elvira, y S. Särkkä, «A survey of Monte Carlo
+
+methods for parameter estimation», EURASIP J. Adv. Signal Process., vol. 25, n.o 2020, p.
+62, may 2020, doi: 10.1186/s13634-020-00675-6.
+
+

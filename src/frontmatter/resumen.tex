@@ -1,0 +1,17 @@
+% ===========================================================================
+% Resumen
+% ===========================================================================
+
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+El sincronismo de tiempo constituye uno de los temas de investigación más estudiados en las redes inalámbricas, especialmente para numerosas aplicaciones en el ámbito del IoT. En consecuencia, se han desarrollado diversos protocolos de sincronismo para satisfacer las demandas de las redes contemporáneas, entre los que sobresale el Protocolo de Tiempo de Precisión Generalizado (gPTP); sin embargo, su eficiencia en el sincronismo se ve gravemente afectada ante la presencia de asimetrías en los canales de comunicación.
+
+La presente investigación tiene como objetivo mitigar el efecto de los retardos asimétricos en el sincronismo en redes inalámbricas empleando una versión mejorada del protocolo gPTP. Para su cumplimiento, se realizó una revisión de las bases teóricas relacionadas con el tema y un análisis sistemático de 15 métodos existentes para mejorar el sincronismo en redes inalámbricas empleando gPTP, abarcando filtros de Kalman, estimación robusta, lógica difusa y aprendizaje computacional.
+
+Como resultado, se propone un enfoque híbrido que combina la corrección determinista de estampas de tiempo de Reinhard Exel con un Filtro de Kalman Adaptativo (AKF) de tres estados para la estimación conjunta de offset, skew y asimetría residual. Se implementó un simulador de eventos discretos del protocolo gPTP en MATLAB/GNU Octave, evaluado mediante simulación Monte Carlo de 3000 ejecuciones.
+
+Las evaluaciones realizadas confirman que la corrección Exel reduce el impacto de las asimetrías en un valor medio de 50.7~$\mu$s, lo que representa un aumento de la efectividad del sincronismo del 33.31\%. Se proyecta que el método híbrido Exel+AKF propuesto alcance una mejora adicional del 28.8\%, para una reducción total del error del 52.5\% respecto al protocolo sin corrección, con un \textit{overhead} computacional moderado.
+
+\vspace{1cm}
+\noindent\textbf{Palabras clave:} sincronismo, redes inalámbricas, protocolo gPTP, asimetrías, PTP, IEEE 802.1AS, Filtro de Kalman Adaptativo.

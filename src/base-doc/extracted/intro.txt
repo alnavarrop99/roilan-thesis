@@ -1,0 +1,129 @@
+INTRODUCCIÓN
+El Internet de las cosas (Internet of Things, IoT) ha revolucionado la vida cotidiana al permitir
+el intercambio de datos sin interrupciones entre varios dispositivos a través de Internet. Sin
+embargo, ha traído consigo desafíos significativos para las aplicaciones que requieren una
+temporización sincronizada, como garantizar la secuencia ordenada de los datos o el
+rendimiento sincronizado de las actividades. Las redes de IoT suelen estar compuestas por
+entidades con recursos variables, lo que dificulta la implementación de métodos de
+sincronización de tiempo tradicionales en dispositivos con recursos limitados. Por otro lado,
+es posible que las soluciones que funcionan para sistemas restringidos no sean escalables en
+diversas implementaciones de IoT [1]. Las aplicaciones de IoT cubren una amplia gama de
+necesidades humanas y vitales, desde entornos inteligentes (ciudades, hogar, transporte, etc.)
+hasta la salud y la calidad de vida [2].
+En este ámbito, las redes inalámbricas de sensores (Wireless Sensors Network, WSN) han
+adquirido un papel importante en una amplia gama de aplicaciones, atribuidas principalmente
+a su rentabilidad, capacidades funcionales, adaptabilidad y amplia cobertura. Estas redes son
+un tipo especial de red, donde los dispositivos inalámbricos (generalmente denominados
+nodos de la red) trabajan juntos para formar espontáneamente una red sin la necesidad de
+ninguna infraestructura. Los nodos pueden enviar datos, recibirlos o actuar como enrutadores
+en la red [3]. Sin embargo, la eficacia de las WSN se ve comprometida por obstrucciones que
+perjudican la intensidad de la señal y afectan el sincronismo. En consecuencia, la
+sincronización de reloj es esencial para el funcionamiento de las aplicaciones en redes
+inalámbricas de sensores, ya que logra mediciones confiables, facilita la coordinación de
+acciones y garantiza un intercambio de datos fluido entre dispositivos [4], [5]. WSN son
+utilizadas en muchas aplicaciones en las que se requiere una sincronización parcial o
+completa en la red, como el control de fusión nuclear, la automatización de plantas de
+fabricación, la comunicación móvil, el diagnóstico de fallos mecánicos, la robótica, Big Data,
+el diagnóstico médico y la educación [1], [3], [5].
+Los sistemas de control industriales en la era de la Industria 4.0 presentan desafíos
+significativos desde el punto de vista de la comunicación, es decir, baja latencia, confiabilidad
+y sincronización precisa. En este sentido, las redes sensibles al tiempo (Time Sensitive
+Network, TSN) se han convertido en la principal solución de estos desafíos; por tanto, un
+
+Introducción
+
+2
+
+requisito estratégico de la sincronización para TSN inalámbricas es lograr que la solución sea
+autónoma, es decir, que las funcionalidades sean realizadas por la propia red, sin depender
+de una infraestructura externa [6]. Las TSN se han desarrollado para permitir la
+comunicación en tiempo real y la unificación de partes de la red antes separadas [7],
+prestando especial atención a las aplicaciones industriales, puentes de audio y video, así como
+redes corporativas. Las redes sensibles al tiempo se basan en cuatro conceptos claves:
+sincronización de tiempo precisa, baja latencia garantizada, ultra confiabilidad y gestión de
+recursos. Para cada uno de estos pilares fundamentales, el Grupo de Trabajo (TG) de Redes
+Sensibles al Tiempo (TSN) del Instituto de Ingenieros Eléctricos y Electrónicos (IEEE) ha
+definido varios estándares para proporcionar la funcionalidad correspondiente. La tecnología
+inalámbrica ha aportado nuevas posibilidades y ventajas a las comunicaciones de red, en
+contraste con las redes cableadas, pero, a diferencia de la comunicación basada en Ethernet,
+los enlaces inalámbricos introducen falta de fiabilidad, canales y latencias asimétricas,
+interferencia de canal y distorsión de la señal en la ruta de comunicación, lo que dificulta el
+desarrollo de normas e implementaciones adecuadas para hacer posible el sincronismo en
+redes inalámbricas [8].
+La sincronización de reloj es uno de los temas de investigación más populares en los sistemas
+distribuidos de medición y control de estas redes, ya que en ellas hay un gran número de
+nodos controlados por relojes independientes y se requiere que cada nodo tenga una
+referencia de tiempo común [9]. Por consiguiente, muchos estándares internacionales han
+sido diseñados para satisfacer las demandas de sincronización de las redes contemporáneas
+[1], siendo ampliamente estudiados y desarrollados para abordar diversas tareas dentro del
+ámbito de IoT. Al diseñar protocolos de sincronismo, las limitaciones de la red inalámbrica
+imponen ciertos requisitos que deben cumplirse, debido a esto los protocolos tradicionales
+no son prácticos para lograr los altos niveles de precisión que requieren estas redes [3]. Una
+de las limitaciones más acuciantes es la presencia de retardos asimétricos en los canales de
+comunicación, ya que son una de las principales razones de la inexactitud del proceso de
+sincronismo. La presencia de asimetrías puede degradar significativamente el rendimiento de
+los esquemas de estimación del desfasaje y la desviación del reloj y, desafortunadamente, no
+pueden ser medidas en un sistema de sincronización por pares ni siquiera intercambiando un
+número infinito de mensajes [10]. Los protocolos de sincronismo tradicionales generalmente
+
+Introducción
+
+3
+
+asumen que los retardos son simétricos, por consiguiente, cuando surge una asimetría en el
+enlace, estos protocolos crean un desfasaje de reloj significativo. Debido a esta limitación
+fundamental, los protocolos convencionales no pueden mitigar el desfasaje de reloj creado
+por una asimetría desconocida [11], [12].
+Dentro de los protocolos existentes, el Protocolo de Tiempo de Precisión Generalizado
+(Generalized Precision Time Protocol, gPTP) destaca por ser uno de los pocos que está
+especificado para su uso en redes inalámbricas, además de obtener una eficiencia en cuanto
+a sincronización en el orden de los nanosegundos. Sin embargo, asume que el retardo de la
+red es constante, por tanto, ante la presencia de asimetrías se ve afectada su eficiencia, lo que
+puede provocar errores de sincronismo.
+En correspondencia con lo expuesto anteriormente se propone el siguiente problema de
+investigación: ¿Cómo mejorar el sincronismo en redes inalámbricas ante la presencia de
+retardos de propagación asimétricos empleando el protocolo gPTP? A partir de esta
+problemática se define como objetivo general: Mitigar el efecto de los retardos asimétricos
+en el sincronismo en redes inalámbricas empleando una versión del protocolo gPTP. Para dar
+cumplimiento al objetivo general se plantean los objetivos específicos siguientes:
+1. Realizar una revisión de las bases teóricas relacionadas con el sincronismo en redes
+inalámbricas, a partir del estudio de la literatura.
+2. Analizar herramientas empleadas y métodos existentes para mejorar el sincronismo
+en redes inalámbricas empleando el protocolo gPTP.
+3. Implementar una versión del protocolo gPTP en redes inalámbricas que mitigue el
+efecto de los retardos asimétricos en el sincronismo.
+4. Evaluar el rendimiento de la implementación en la mejora del sincronismo a través
+de distintas métricas.
+La hipótesis de la investigación se formula de la siguiente manera: si se emplea una versión
+adaptada del protocolo gPTP en redes inalámbricas, entonces se logra mitigar los efectos
+negativos de los retardos de propagación asimétricos, lo que resulta en una mejora
+significativa en la precisión del sincronismo entre los dispositivos en comparación con la
+precisión alcanzada por el protocolo estándar. Para esta hipótesis se propone trabajar con la
+variable independiente: empleo de una versión del protocolo gPTP en redes inalámbricas, y
+con la variable dependiente: precisión del sincronismo entre los dispositivos.
+
+Introducción
+
+4
+
+En el desarrollo de la investigación se utilizaron los siguientes métodos científicos: analíticosintético, inductivo-deductivo, estadístico-matemáticos, medición y modelación.
+Para su presentación, este trabajo de diploma cuenta con una estructura lógica que se
+compone del resumen de la investigación, el índice, la introducción donde se explica la
+importancia del tema y la metodología utilizada, y tres capítulos donde se desarrolla la
+investigación. En el Capítulo 1 se realiza una revisión bibliográfica del tema y aborda
+aspectos tales como el sincronismo en redes inalámbricas y cuáles son sus principales
+aplicaciones en IoT, los desafíos que presenta lograr la sincronización de tiempo en este tipo
+de redes, así como el efecto de las asimetrías en el retardo de propagación y una
+caracterización de los protocolos de precisión de tiempo que pueden ser empleados en esta
+investigación. En el segundo capítulo se hace un análisis de los procedimientos y
+metodologías existentes para mitigar el efecto de los retardos asimétricos en el sincronismo,
+incluyendo una descripción del método seleccionado; además, se realiza la caracterización
+de las herramientas que se utilizan en la implementación. El Capítulo 3 explica las
+características de la implementación que se desarrolla y las modificaciones al estándar como
+parte de la aplicación del método de corrección; igualmente, se exponen los resultados
+obtenidos y se describen las evaluaciones que se llevaron a cabo para probar la efectividad
+de la implementación de la versión de gPTP desarrollada. Finalmente, se expresan las
+conclusiones y recomendaciones para trabajos futuros derivadas de la investigación
+realizada; además, se incluyen las referencias bibliográficas conformando un listado de toda
+la bibliografía consultada según la norma IEEE.
+

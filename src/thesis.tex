@@ -1,0 +1,106 @@
+% ===========================================================================
+% Tesis: Mejora del sincronismo en redes inalámbricas empleando el
+%        protocolo gPTP
+% Autor: [Nombre del autor]
+% Universidad Central "Marta Abreu" de Las Villas (UCLV)
+% ===========================================================================
+
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ---------- Codificación e idioma ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+
+% ---------- Márgenes ----------
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+
+% ---------- Matemáticas ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+% ---------- Gráficos y figuras ----------
+\usepackage{graphicx}
+
+% ---------- Tablas ----------
+\usepackage{array}
+
+% ---------- Encabezados y pies de página ----------
+% \usepackage{fancyhdr} % requiere paquetes adicionales
+% \pagestyle{fancy}
+
+% ---------- Hipervínculos ----------
+% \usepackage[hidelinks]{hyperref} % requiere paquetes adicionales no instalados
+
+% ---------- Citas y bibliografía ----------
+% \usepackage{cite} % no disponible en instalación base
+\bibliographystyle{ieeetr}
+
+% ---------- Listas ----------
+% \usepackage{enumitem} % no disponible en instalación base
+
+% ---------- Acrónimos (requiere glossaries; deshabilitado por ahora) ----------
+% \usepackage[acronym,toc]{glossaries}
+% \makeglossaries
+
+% ---------- Apéndices ----------
+% \usepackage[titletoc]{appendix} % requiere paquete adicional
+
+% ---------- Metadatos del PDF ----------
+% \hypersetup{...} % requiere hyperref
+
+% ===========================================================================
+\begin{document}
+
+% ---------- Portada / Carátula ----------
+\input{frontmatter/caratula}
+
+% ---------- Resumen ----------
+\input{frontmatter/resumen}
+
+% ---------- Abstract ----------
+\input{frontmatter/abstract}
+
+% ---------- Agradecimientos ----------
+\input{frontmatter/agradecimientos}
+
+% ---------- Índices ----------
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+% ===========================================================================
+% CAPÍTULOS
+% ===========================================================================
+
+% --- Introducción ---
+\input{chapters/00-introduccion/00-introduccion}
+
+% --- Capítulo 1 ---
+\input{chapters/01-aplicaciones-desafios-sincronismo/01-aplicaciones-desafios-sincronismo}
+
+% --- Capítulo 2 ---
+\input{chapters/02-analisis-metodos-herramientas/02-analisis-metodos-herramientas}
+
+% --- Capítulo 3 ---
+\input{chapters/03-implementacion-resultados/03-implementacion-resultados}
+
+% --- Conclusiones ---
+\input{chapters/04-conclusiones/04-conclusiones}
+
+% --- Recomendaciones ---
+\input{chapters/05-recomendaciones/05-recomendaciones}
+
+% ===========================================================================
+% REFERENCIAS
+% ===========================================================================
+\bibliography{thesis}
+
+% ===========================================================================
+% APÉNDICES Y ACRÓNIMOS
+% ===========================================================================
+\appendix
+\input{backmatter/apendices}
+
+\end{document}

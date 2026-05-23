@@ -1,0 +1,698 @@
+CAPÍTULO 2. ANÁLISIS DE MÉTODOS Y HERRAMIENTAS PARA MEJORAR
+EL
+
+SINCRONISMO
+
+EN
+
+REDES
+
+INALÁMBRICAS
+
+EMPLEANDO
+
+EL
+
+PROTOCOLO GPTP
+En el capítulo anterior se realizó una revisión bibliográfica de los principales conceptos,
+desafíos y protocolos existentes en el ámbito de la sincronización de tiempo, concluyendo
+que el protocolo gPTP presenta las mejores cualidades para ser adaptado al entorno
+inalámbrico. De ahí que surja la necesidad de implementar una versión de este estándar que
+contrarreste los efectos negativos que provocan los retardos asimétricos en estas redes.
+Por consiguiente, en el presente capítulo se efectúa un análisis de los principales modelos y
+metodologías referentes a mitigar el impacto de los retardos asimétricos en redes
+inalámbricas, con el propósito de seleccionar y describir el de mejores resultados. Asimismo,
+se realiza una descripción del software especializado MATLAB y sus principales
+herramientas que posibilitan un ambiente de desarrollo adecuado para el estudio de esta
+problemática.
+2.1 Sistemas de estampado por Software
+La clave para obtener una sincronización de tiempo de alto rendimiento está estrechamente
+relacionada con la calidad de las estampas de tiempo (Timestamping, TS) [53], [54]. Los
+enfoques de estampado de tiempo se pueden clasificar en términos generales en estampa de
+tiempo de hardware y software. Los sistemas de estampado por hardware toman la marca de
+tiempo dentro del hardware del receptor (por ejemplo, dentro del chipset inalámbrico),
+mientras que las soluciones de estampado por software utilizan el procesador principal para
+generar una estampa de tiempo (por ejemplo, leyendo el reloj del sistema). Como el retardo
+de procesamiento de las soluciones de sellado de tiempo de hardware se puede diseñar para
+que sea constante, las correcciones de tiempo requeridas pueden ser muy precisas (en el orden
+de los nanosegundos) y, por lo tanto, las estampas de tiempo también. Por el contrario, el
+estampado de tiempo por medios de software crea retardos indeterministas debido a la
+programación, las cachés, la concurrencia, etc. y, por lo tanto, la estampa de tiempo debe
+estar lo más cerca posible del medio [55]. En la Figura 2.1 se muestran las posibles
+ubicaciones donde se pueden tomar estampas de tiempo; por ende, los protocolos de
+sincronismo, como PTP y gPTP, suelen mejorarse en términos de rendimiento si se utiliza la
+estampa de tiempo de hardware. Sin embargo, para llevar a cabo el sellado de tiempo por
+
+Capítulo 2
+
+26
+
+hardware, se requieren dispositivos dedicados o modificaciones dentro de los chipsets
+WLAN. Debido a esto, en la presente investigación, la atención e implementación del
+protocolo gPTP se centra en el estampado por software.
+
+Figura 2.1. Ubicaciones para la estampa de tiempo (TS) en redes orientadas a paquetes [56].
+
+Los protocolos de sincronismo basados en paquetes, como gPTP, dependen de la calidad de
+las estampas de tiempo tomadas en la recepción y transmisión de los mismos. Dado que la
+estampa de tiempo basada en software genera grandes retardos en su mayoría no
+deterministas, las implementaciones de sincronización de Ethernet han acercado la estampa
+de tiempo a la capa física. Sin embargo, la mayoría de los enfoques de sincronización
+inalámbrica se limitan a la estampa de tiempo de software debido a la falta de funciones de
+sellado de tiempo por hardware. Los protocolos de sincronización inalámbrica toman sus
+estampas de tiempo en el software, independientemente de la tecnología de comunicación
+subyacente; sin embargo, esto conduce a un aumento de la fluctuación de la estampa de
+tiempo y, por lo tanto, degrada la precisión de la sincronización [56]. Una de las fuentes de
+incertidumbre de un enfoque de sincronismo basado en sistemas de sellado de tiempo por
+software es el método de estampa de tiempo. Según [57], entre las diversas fuentes de
+imprecisión en el sellado de tiempo por software se tienen:
+•
+
+Capacidad de sellado de tiempo del maestro: este término incluye las capacidades de
+estampa de tiempo de los mensajes de eventos gPTP (mensaje de sincronización Sync
+y de solicitud de retardo PdelayReq) en el lado maestro. La incertidumbre en la
+
+Capítulo 2
+
+27
+
+identificación de t1 y t4 (ver Figura 1.3) afecta a la estimación tanto del PDelay (en
+Ecuación 1.2) como del desfasaje (offset).
+•
+
+Capacidad de sellado de tiempo del esclavo: este término incluye las capacidades de
+estampa de tiempo de los mensajes de eventos gPTP en el lado esclavo (mensaje de
+respuesta a la solicitud de retardo PdelayResp y de seguimiento PdelayResp
+FollowUp). Estas estampas de tiempo, t2 y t3 (ver Figura 1.3), también son utilizadas
+para estimar el PDelay y el desfasaje.
+
+•
+
+Capacidad de sellado de tiempo de la infraestructura: la exactitud de la información
+de tiempo contenida en la sincronización depende también de la capacidad de los
+dispositivos de red para transferir correctamente la hora. El uso de conmutadores de
+red
+
+que
+
+soporten
+
+gPTP
+
+puede
+
+reducir
+
+esta
+
+fuente
+
+de
+
+incertidumbre
+
+independientemente de la complejidad de la topología de la red o la carga de tráfico.
+•
+
+Variabilidad y comportamiento asimétrico del retardo de propagación: el retardo de
+propagación en la red no es constante y puede verse afectado por el tráfico, los
+dispositivos de red en la ruta seguida por los mensajes de sincronización y la carga
+de la red.
+
+Las estampas de tiempo basadas en detectores de inicio de trama convencionales (o estampas
+de tiempo convencionales) tienen dos problemas principales en los sistemas inalámbricos: en
+primer lugar, no pueden garantizar una precisión de transferencia de tiempo mejor que el
+período de muestreo y, en segundo lugar, la propagación por trayectos múltiples y el carácter
+de variación temporal del canal inalámbrico reducen la precisión del tiempo de llegada (Time
+of Arrival, ToA) de las tramas, lo que introduce un componente de error en la sincronización
+de tiempo. Esto es especialmente crítico en condiciones sin visibilidad directa (Non-Line of
+Sight, NLoS), donde no existe un trayecto de propagación prevalente, por lo que el ToA puede
+tener fuertes variaciones [53]. Por otro lado, en el esquema de sincronización basado en
+interrupciones, donde las estampas de tiempo son tomadas mediante rutina de servicio de
+interrupción (Interrupt Service Routine, ISR) el retardo de estampa de tiempo y la fluctuación
+se limitan principalmente al tiempo de recepción del paquete, que es el tiempo que tarda el
+receptor en recibir el paquete una vez que la transmisión ha comenzado; y al tiempo de
+notificación de interrupción, que es el tiempo que tarda en notificar a la CPU del dispositivo
+a través de una interrupción que un paquete se ha recibido o transmitido con éxito [37].
+
+Capítulo 2
+
+28
+
+El escenario tomado en cuenta en esta investigación es una red de sincronización sencilla,
+compuesta por un dispositivo maestro y un dispositivo esclavo que realizan el estampado de
+tiempo a nivel de software.
+2.2 Análisis de los modelos, metodologías y procedimientos existentes para el diseño de
+protocolos más robustos ante los retardos asimétricos
+Para desarrollar una implementación de cualquier índole es imprescindible y necesario
+escoger la tecnología o modelo que se empleará en dicho proceso, lo que demanda
+necesariamente un estudio profundo de la bibliografía que se relaciona con este aspecto. En
+el análisis de la literatura se pueden encontrar diferentes metodologías y procedimientos
+empleados; cada uno de los métodos definidos posee ciertas limitaciones que fomentan y
+ofrecen argumentos para su crítica, por lo tanto, para seleccionar una propuesta metodológica
+se analizaron algunos modelos, tal y como se explica a continuación.
+En [33] se aborda el problema de la estimación de la desviación y el desfasaje del reloj para
+PTP (o cualquier protocolo de sincronización de reloj basado en el intercambio de mensajes
+bidireccional) en presencia de posibles asimetrías desconocidas y se presenta un enfoque para
+aumentar la robustez de este protocolo ante esa problemática. Para ello, los autores
+elaboraron un esquema iterativo de baja complejidad computacional basado en el algoritmo
+de maximización de expectativas (EM) que les permite estimar los valores de desviación y
+desfasaje de reloj sin tener toda la información sobre las distribuciones estadísticas de los
+retardos de cola. Sin embargo, no se define con exactitud la precisión alcanzada al aplicar
+este esquema, solo lo valoran en función del error de estimación cuadrático medio
+normalizado de desviación (NRMSE); el hecho de que no sea el error cuadrático medio
+(RMSE) común hace difícil clasificar la precisión, pero debería estar en el intervalo de
+microsegundos.
+Por otro lado, los autores de [49] introducen un enfoque para aumentar la precisión de
+sincronización de PTP usando la programación lineal (PTP-LP). Este método es totalmente
+compatible tanto con PTP como con gPTP, y se ha demostrado que PTP-LP es muy robusto
+frente a retardos de paquetes variables. En la evaluación se tuvo en cuenta diferentes
+estabilidades de reloj, estampado de tiempo por hardware y software, así como distintas
+distribuciones de retardos de paquetes. El enfoque propuesto supera a los dos procedimientos
+
+Capítulo 2
+
+29
+
+comparados (PTP estándar [44] y PTP con filtrado de Kalman [58]) y aumenta la precisión
+de la sincronización en un factor de hasta 104.
+Un algoritmo de sincronización IEEE 1588 mejorado que tiene como objetivo resolver los
+desplazamientos de reloj inducidos por asimetría basados en mediciones de velocidad de
+enlace fue propuesto en [59]. El algoritmo permite un cálculo preciso del valor de desfasaje
+(offset) en el reloj esclavo mediante el tiempo de ida y vuelta (RTT) estimado en el
+intercambio de mensajes y la relación de velocidad (r), como se define en la Ecuación 2.1:
+t offset = t 2 −
+
+t RTT
+1+r
+
+(2.1)
+
+Cuando no existe asimetría el protocolo distribuye el RTT uniformemente entre el tiempo de
+la ruta maestro a esclavo (tms) y viceversa (tsm), equivalente a r = 1. Por tanto, utilizando la
+Ecuación 2.1 el enfoque propuesto asume que la relación de las latencias de transmisión
+(maestro a esclavo e inversa) corresponde a la relación de asimetría tsm/tms. Este algoritmo es
+superior al estándar convencional en cuanto a precisión; no obstante, el autor, Sungwon Lee,
+presentó una versión actualizada para redes inalámbricas con velocidades de enlace
+asimétricas [40], donde propone calcular los retardos de transmisión (u) individuales de los
+mensajes de sincronismo (Sync) y solicitud de retardo (PDelay_Req) mediante la relación
+entre el tamaño del mensaje (B) y la velocidad de transmisión actual (R), como u=B/R; en
+consecuencia, estos retardos son utilizados para corregir las estampas de tiempo. A diferencia
+del algoritmo anterior que corrige el desfasaje de reloj por el tiempo de ida y vuelta y la
+relación de velocidad estimados, la versión actualizada utiliza el tamaño de la carga útil
+(payload) y la velocidad de datos nominal de la trama.
+Además, [14] propone una extensión del protocolo IEEE 802.1AS (gPTP) para mejorar la
+sincronización del reloj en redes híbridas, incluidos los segmentos inalámbricos y cableados.
+Este enfoque considera los retardos deterministas, la deriva de los relojes y el problema que
+causan los retardos asimétricos en la transmisión de los paquetes de temporización del
+protocolo de sincronismo. La mejora se basa en introducir un filtro de retraso de desviación
+de ruta (Path Deviation Delay, PDD) para monitorear el comportamiento del tráfico de los
+paquetes de temporización, así como para excluir valores atípicos que pueden ocurrir como
+resultado de escenarios dinámicos y asimétricos. Además, se establece la Relación de Grados
+Simétricos (SDR) como la relación entre los mensajes de solicitud de retardo (Delay_request)
+
+Capítulo 2
+
+30
+
+y su respuesta (Delay_reply), como se muestra en la Ecuación 2.2. Si su valor es la unidad o
+muy cercano a la unidad significa que los retardos de estos mensajes son simétricos; en
+cambio, si su valor se desvía de la unidad expresa que hay asimetrías que deben ser
+compensadas y se define un procedimiento para ello.
+SDR =
+
+𝐷𝑒𝑙𝑎𝑦_𝑟𝑒𝑞𝑢𝑒𝑠𝑡
+𝐷𝑒𝑙𝑎𝑦_𝑟𝑒𝑝𝑙𝑦
+
+(2.2)
+
+El enfoque propuesto supera al estándar IEEE 802.1AS y proporciona una ganancia
+significativa en términos de precisión de sincronización, pero presenta dificultades ante
+algunas clases de asimetrías que pueden aparecer en este tipo de redes.
+En [60] se analizan las influencias que pueden tener un efecto negativo en la precisión de
+PTP y gPTP; además, se presentan contramedidas y un enfoque original. El procedimiento
+propuesto cumple con la norma y utiliza un filtro de Kalman como estimador, obteniendo
+una precisión en el rango de los 100 ns y 1 µs. No obstante, los autores creen que es
+obligatorio adherirse estrictamente a los estándares respectivos para garantizar la máxima
+interoperabilidad al implementar soluciones de transferencia de tiempo para grandes sistemas
+de múltiples proveedores. Por su parte, los autores de [61] proponen el Protocolo de Tiempo
+de Precisión Inalámbrico (WPTP) como una extensión de PTP para redes inalámbricas. En
+este enfoque solo se requieren tres paquetes para calcular y corregir el desplazamiento del
+reloj; para tener en cuenta el retardo en la transmisión del mensaje, se utiliza un segundo
+conjunto de mensajes SYNC y FOLLOWUP con el reloj corregido. WPTP reduce el tiempo
+total de convergencia en un 50 % y también el número de paquetes necesarios para la
+sincronización sin comprometer la precisión de la misma.
+Asimismo, en [23] se propone un mecanismo de mitigación de asimetría por paquete (PerPacket Asymmetry Mitigation, PPAM), cuyo objetivo es estimar los componentes de retardo
+por paquete. El protocolo sigue una estructura similar al algoritmo de Lee explicado
+anteriormente [59], pero logra una mayor precisión. Los extensos resultados de la simulación
+muestran que el enfoque propuesto, el mecanismo PPAM, supera al protocolo PTP estándar
+y al algoritmo elaborado por Lee, principalmente a cargas de red bajas a medias; sin embargo,
+bajo ciertas condiciones, el protocolo estándar proporciona un rendimiento y una precisión
+de sincronización más estable que ambos mecanismos mencionados.
+
+Capítulo 2
+
+31
+
+De igual manera, otro método de sincronización de tiempo enfocado en mejorar el
+sincronismo ante la presencia de retardos asimétricos es propuesto en [38]. El algoritmo
+adquiere elementos de las propuestas de Lee; sin embargo, se amplían las correcciones de la
+estampa de tiempo con términos para el almacenamiento en búfer y los retardos de
+propagación. Además, a diferencia de Lee en [40] y [59], este enfoque establece
+explícitamente retardos de propagación simétricos y constantes (tms = tsm) y compensa la
+asimetría debido al estampado de tiempo, pero exige conmutadores que sean capaces de
+retrasar los mensajes de eventos por una latencia definida. De acuerdo con los resultados de
+la simulación, el método propuesto mejora la precisión de la sincronización con respecto al
+protocolo estándar, independientemente de si los enlaces de comunicación son simétricos o
+no.
+En conclusión, los procedimientos y métodos explicados anteriormente presentan algunas
+limitaciones, pues varios de ellos necesitan utilizar más mensajes (esto puede cargar la red y
+ralentiza el proceso de sincronismo) o las modificaciones en cálculos y ecuaciones no logran
+resultados considerables en cuanto a mejora. Por tal motivo, en la presente investigación se
+decidió seleccionar el procedimiento propuesto por Reinhard Exel en [11], pues el método se
+ajusta a las características de la investigación y a las particularidades del protocolo gPTP, con
+un enfoque flexible y adaptable.
+2.3 Descripción del método seleccionado para reducir los efectos de los retardos
+asimétricos en el protocolo gPTP
+Como se explica en el análisis anterior, para efectos del diseño de una versión del protocolo
+gPTP más precisa ante los retardos asimétricos en redes inalámbricas, en la presente
+investigación se ha decidido emplear como procedimiento el método elaborado por Exel en
+[11]. Este posee mayor adaptabilidad que el resto y puede mitigar las asimetrías sin requerir
+ningún cambio en el protocolo estándar ni el uso de mensajes adicionales dentro del
+mecanismo de retardo entre pares.
+El estándar IEEE 802.1AS, más conocido como gPTP, es un subestándar TSN derivado de
+PTP, que está diseñado para su uso en redes cableadas, aunque también es adecuado para
+trabajar en el entorno de las redes inalámbricas. Este protocolo brinda un mecanismo de
+sincronización de reloj para redes basadas en paquetes; sin embargo, la precisión y el
+rendimiento tanto de PTP como gPTP dependen de varios factores, tales como: la calidad de
+
+Capítulo 2
+
+32
+
+las estampas de tiempo, la variación del retardo de los paquetes, la estabilidad del reloj y la
+asimetría. Debido a esto, el método seleccionado propone un esquema de mitigación de los
+retardos asimétricos basado en la corrección de la estampa de tiempo por software y logra
+aumentar la precisión del protocolo sin modificaciones al mismo, ni el uso de mensajes
+adicionales.
+El procedimiento de Exel se ajusta a la norma del protocolo gPTP, es decir, es compatible
+con el estándar; además, no usa ningún estimador especial en el cálculo del desfasaje ni del
+retardo de propagación, solo el RTT. Como se ha explicado en el capítulo anterior, el
+mecanismo de sincronismo del protocolo gPTP está basado en estampas de tiempo tomadas
+al enviar o recibir los correspondientes mensajes de eventos, a saber: solicitud de retardo
+(PDelay_Req), respuesta a la solicitud de retardo (PDelay_Resp), seguimiento a la respuesta
+(Follow_Up) y mensaje de sincronismo (Sync). De acuerdo con la sección 11.3.9 de IEEE
+802.1AS [48], el punto de estampa de tiempo para un mensaje de evento PTP será el
+comienzo del primer símbolo después del delimitador de inicio de trama (Start of Frame,
+SOF). Por tanto, el autor del enfoque seleccionado, basándose en que los algoritmos
+propuestos generalmente asumen que los tamaños de trama y las velocidades de enlace están
+fuertemente vinculados a la asimetría, investigó la validez de esta suposición y propuso
+resolver el problema de la asimetría basado en las funciones de corrección en el controlador
+del dispositivo.
+El funcionamiento del modelo de estampa de tiempo de software en el protocolo se muestra
+en la Figura 2.2, la transmisión es emitida en t̂1 o t̂3 (t̂1 para PDelay_Req y t̂3 para
+PDelay_Resp) y después de cierta latencia (p1 o p3, respectivamente) el primer bit del
+mensaje es entregado al medio. Después del retardo de propagación (tms, tsm), ese primer bit
+del mensaje llega al receptor y, una vez recibida la trama completa, pasa a través de la pila
+de protocolo; posteriormente, la carga útil del mensaje (payload) es presentada al nivel de
+aplicación (recepción completa), donde son tomadas las estampas de tiempo t̂2 y t̂4,
+respectivamente [11].
+
+Capítulo 2
+
+33
+
+Figura 2.2. Latencias de estampa de tiempo de software [11].
+
+Entonces, siendo t̂1 a t̂4 las estampas de tiempo tomadas por el software y t1 a t4 las estampas
+de tiempo para un mensaje de evento según la sección 11.3.9 del estándar, el procedimiento
+seleccionado plantea que estas pueden ser calculadas aplicando las correcciones de retardo
+de la Ecuación 2.3 a 2.6, donde las variables p1 y p3 corresponden a los retardos de
+procesamiento de salida, p2 y p4 a los retardos de entrada y la variación de los signos se debe
+a que todas las latencias p > 0.
+t1 = t̂1 + p1
+
+(2.3)
+
+t 2 = t̂2 − p2
+
+(2.4)
+
+t 3 = t̂3 + p3
+
+(2.5)
+
+t 4 = t̂4 − p4
+
+(2.6)
+
+Por consiguiente, el verdadero valor de corrección del desfasaje (toffset) y el RTT (tRTT) quedan
+definidos en la Ecuación 2.7 y la Ecuación 2.8 respectivamente, donde t̂offset y t̂RTT son los
+correspondientes valores sin aplicar las correcciones a las estampas de tiempo.
+t̂offset = t offset −
+
+(p1 + p2 ) − (p3 + p4 )
+2
+
+t̂RTT = t RTT + (p1 + p2 + p3 + p4 )
+
+(2.7)
+
+(2.8)
+
+Capítulo 2
+
+34
+
+En los sistemas de estampado por software, se toma una estampa de tiempo en el transmisor
+cuando se entrega un paquete a la pila de red del sistema operativo (SO) y, en el receptor,
+cuando se recupera el paquete del sistema operativo. Esto se muestra mediante las estampas
+de tiempo de salida, t̂1 y t̂3, y las estampas de tiempo de entrada, t̂2 y t̂4, en la Figura 2.2. Por
+lo tanto, los retardos de procesamiento de salida, p1 y p3, dependen de la pila de red en el
+maestro y el esclavo; mientras que, cuando el enlace es asimétrico, los retardos de
+procesamiento de entrada, p2 y p4, son diferentes, lo que da lugar a un desfasaje (offset) [11].
+Por consiguiente, los retardos asimétricos de procesamiento p se componen de términos
+deterministas y no deterministas, en la mayoría de los casos existen grandes retardos
+asimétricos deterministas que se pueden corregir aplicando el método descrito y que abarca
+también otros como la velocidad de datos, el tamaño del encabezado, la modulación, el
+tamaño de transferencia de acceso directo a memoria (Direct Memory Access, DMA) y la
+velocidad de la interfaz DMA. Para los retardos asimétricos desconocidos se plantea que, en
+el caso genérico de sincronización por pares con retrasos desconocidos de maestro a esclavo
+y de esclavo a maestro, se sabe por la literatura que la sincronización es imposible, incluso
+con un número infinito de intercambios de mensajes por pares. Debido a esto, Exel propone
+que el controlador del dispositivo realice las correcciones necesarias dentro de la rutina de
+servicio de interrupción (ISR) para los mensajes de entrada y salida individualmente, de
+acuerdo con la Ecuación 2.3 a 2.6. Además, para que el enfoque sea interoperable entre
+múltiples dispositivos PTP o gPTP de diferentes proveedores y con estampas de tiempo tanto
+de software como hardware, cada nodo debe corregir solo sus propias estampas de tiempo,
+es decir, el maestro corrige t1 y t3, mientras que el esclavo hace lo mismo con t2 y t4.
+El método seleccionado alcanza una precisión de entre 10 y 100 ns, siendo superior al resto
+de los métodos y procedimientos analizados. Asimismo, esos algoritmos asumen
+inherentemente que las estampas de tiempo de entrada y salida son tomadas con respecto al
+plano de referencia estándar; esto provoca que esos retardos asimétricos que pueden ser
+conocidos, también formen parte de asimetrías no deterministas, afectando el cálculo del
+desfasaje entre los relojes. Por tanto, el enfoque seleccionado ya elimina retardos asimétricos
+en su origen y mitiga entonces el efecto que puede tener la asimetría sobre el proceso de
+sincronismo, aunque no puede lograr la precisión de las estampas de tiempo de hardware,
+pero casi puede eliminar el desfasaje en una red inalámbrica a través de un salto.
+
+Capítulo 2
+
+35
+
+2.4 MATLAB
+MATLAB (abreviatura de MATrix LABoratory, Laboratorio de Matrices en español) es un
+programa informático de propósito especial optimizado para realizar cálculos científicos y
+de ingeniería, con funciones integradas para cumplir una amplia gama de tareas, desde
+operaciones matemáticas hasta imágenes tridimensionales [62], [63]. Comenzó su vida como
+un programa diseñado para realizar matemáticas matriciales, pero a lo largo de los años se
+ha convertido en un sistema informático flexible y fácil de usar, capaz de resolver
+esencialmente cualquier problema técnico; por ello, en la actualidad, es una herramienta muy
+popular entre estudiantes, ingenieros y científicos de universidades, institutos de
+investigación e industrias alrededor del mundo [64].
+Además, el programa implementa un lenguaje propio (lenguaje MATLAB) y proporciona
+una amplia biblioteca de funciones predefinidas para facilitar y hacer más eficientes las tareas
+de programación técnica. Esta amplísima variedad de funciones hace que sea mucho más
+fácil resolver problemas técnicos en MATLAB que en otros lenguajes de programación. El
+producto básico ofrece más de mil funciones y, por si fuera poco, cuenta con varios kits de
+herramientas (toolbox) que amplían esta capacidad con muchas más funciones en diversas
+especialidades, desde circuitos electrónicos hasta machine learning. Por ende, MATLAB
+posibilita resolver problemas muy complejos en pocos pasos (mediante ecuaciones
+diferenciales, inversión de matrices, etc.) ahorrando grandes cantidades de tiempo [63], [65].
+La unidad fundamental de datos en cualquier herramienta de MATLAB es la matriz. Una
+matriz es una colección de valores de datos organizados en filas y columnas, y conocidos por
+un solo nombre. Los vectores se pueden considerar como matrices especiales, un vector fila
+se registra como una matriz de 1×n y un vector columna se registra como una matriz m×1;
+incluso un escalar es analizado como una matriz de 1×1 [66]. Igualmente, se puede acceder
+a los valores de datos individuales dentro de una matriz incluyendo el nombre de la matriz
+seguido de subíndices entre paréntesis que identifican la fila y la columna del valor en
+particular.
+Cuando el software MATLAB se ejecuta, puede mostrar varios tipos de ventanas que reflejan
+información o aceptan comandos, siendo las tres ventanas principales: Ventana de Comandos
+(Command Window), se utiliza para introducir comandos y datos; Ventana de Figuras (Figure
+Window), se utiliza para mostrar gráficos y figuras; Ventana de Edición (Edit Window), se
+
+Capítulo 2
+
+36
+
+utiliza para crear y editar archivos [67]. En la Figura 2.3 se ilustran varias ventanas del
+escritorio MATLAB, como el Área de trabajo (Workspace, permite examinar los valores de
+las variables definidas en la memoria) y Carpeta actual (Current Folder, muestra los archivos
+en el directorio actual).
+
+Figura 2.3. Vista del escritorio MATLAB por defecto [Elaboración propia].
+
+2.4.1 Archivos-M
+MATLAB ofrece una buena combinación de funciones de programación prácticas con
+potentes capacidades numéricas integradas. Por un lado, su entorno de programación de
+archivos-M permite implementar algoritmos moderadamente complicados de forma
+estructurada y coherente. Por otro lado, sus capacidades numéricas incorporadas posibilitan
+resolver problemas difíciles de una manera más sencilla. Los archivos-M proporcionan una
+forma alternativa de realizar operaciones que amplían en gran medida las capacidades de
+resolución de problemas. Vale destacar que la nomenclatura dada proviene de que estos
+archivos se guardan con una extensión “.m”. Existen dos tipos de archivos-M: scripts y
+funciones [63], [66], [67].
+Una vez que se ha analizado un problema y definido el algoritmo para su solución, se escribe
+en un lenguaje de programación particular; MATLAB utiliza lo que se denomina archivos de
+script o archivos de código de MATLAB. Es decir, un archivo de script no es más que una
+
+Capítulo 2
+
+37
+
+serie de comandos de MATLAB que se guardan en un fichero y son útiles para retener una
+serie de comandos que se quieren ejecutar en más de una ocasión. Los scripts comparten el
+área de trabajo (workspace) de la ventana de comandos, por lo que las variables que se
+definieron antes de que se iniciara el archivo de script son visibles para él, y las variables que
+crea al finalizar permanecen en el área de trabajo después de que termine de ejecutarse. Un
+archivo de script no tiene argumentos de entrada y no devuelve resultados, pero puede
+comunicarse con otros scripts a través de los datos que quedan en el área de trabajo [62].
+Entre las características fundamentales de un script se tiene que: MATLAB ejecuta los
+comandos en el orden en que aparecen; cuando tiene un comando que genera una salida (por
+ejemplo, la asignación de un valor a una variable sin punto y coma al final), esta se muestra
+en la ventana de comandos; su uso es conveniente porque se puede editar y ejecutar muchas
+veces, incluso se pueden escribir y modificar en cualquier editor de texto y, posteriormente,
+pegar en el editor de MATLAB [66], [67].
+Por el contrario, una función de MATLAB es un tipo especial de archivo-M que se ejecuta
+en su propio espacio de trabajo independiente, recibe datos de entrada a través de una lista
+de argumentos de entrada y devuelve los resultados al autor de la llamada mediante una lista
+de argumentos de salida [63]. Por tanto, son análogas a las funciones definidas por el usuario
+en otros lenguajes de programación. Una función definida por el usuario es un fichero de
+MATLAB creado por él, guardado como un archivo de función y utilizado como una función
+integrada; en la mayoría de los casos es, en realidad, un subprograma dentro de un programa
+informático [64]. Las funciones pueden llamar a otras funciones; aunque estas pueden existir
+como archivos-M separados también pueden estar contenidas en un mismo archivo-M. En
+tales casos, la primera función se denomina función principal o primaria y es la única a la
+que se puede acceder desde la ventana de comandos o desde otras funciones y scripts. Todas
+las demás funciones se denominan subfunciones y solo son accesibles para la función
+principal y otras subfunciones dentro del archivo-M en el que ella reside [67]. Asimismo,
+MATLAB tiene un mecanismo especial diseñado para que cada función pueda probarse y
+depurarse independientemente del resto del programa, esto posibilita que estén bien
+diseñadas y reduce enormemente el esfuerzo requerido en un proyecto de programación de
+gran tamaño [63]. Entre los elementos esenciales de una función se tiene que: comienzan con
+la palabra function; tienen una lista de entrada y una de salida; la salida, el nombre de la
+
+Capítulo 2
+
+38
+
+función y la entrada deben aparecer en la primera línea y en ese orden; el cuerpo de la función
+debe asignar valor a la salida; no puede acceder a las variables en el área de trabajo actual a
+menos que sean de entrada; sus variables internas no aparecen en el espacio de trabajo; debe
+guardarse en un archivo de extensión “.m” con el mismo nombre (incluidas las mayúsculas)
+[66].
+2.4.2 Graficado en 2-D
+Los gráficos son una herramienta muy útil para presentar información, especialmente en la
+ciencia y la ingeniería, donde se utiliza principalmente MATLAB. El mismo tiene muchos
+comandos que se pueden utilizar para crear diferentes tipos de gráficas, estos incluyen
+gráficos estándar con ejes lineales, gráficos con ejes logarítmicos y semilogarítmicos,
+gráficos de barras y escaleras, gráficos polares, gráficos tridimensionales de superficie de
+contorno y malla, y muchos más [64]. Estas amplias capacidades de trazado independientes
+son una de sus características más potentes y hacen que sea muy fácil trazar datos en cualquier
+momento. Para ello, basta con crear dos vectores que contengan valores y utilizar la función
+plot, el gráfico aparece en la Ventana de Figuras y se puede imprimir o transferir a través del
+portapapeles a otros programas. El comando anterior muestra una línea azul fina y sólida de
+forma predeterminada, pero puede ser modificado con las funciones title, xlabel y ylabel para
+agregar títulos y etiquetas a los ejes de la figura. El gráfico se construye conectando los
+puntos de datos con las líneas rectas, por lo que es lineal por tramos, mientras que parece una
+curva ya que los puntos de datos se recopilan densamente [68]. Si desea trazar cada punto
+con un símbolo, puede incluir un especificador entre comillas simples en la función plot,
+también puede combinar varios especificadores y controlar el ancho de línea, así como el
+tamaño del marcador y sus colores de borde y cara (es decir, interior). En la Tabla 2.1 se
+enumeran los especificadores disponibles para color, estilo de línea y marcadores.
+Tabla 2.1. Especificadores para el color, los marcadores y el estilo de las líneas [69].
+Colores
+
+Marcadores
+
+Estilo de líneas
+
+Amarillo
+Magenta
+Cian
+
+y
+m
+c
+
+Punto
+Círculo
+Marca x
+
+.
+o
+x
+
+Rojo
+Verde
+
+r
+g
+
+Más
+Estrella
+
++
+*
+
+Sólida
+Punteada
+Punto
+de
+guion
+Discontinua
+
+:
+-.
+--
+
+Capítulo 2
+Azul
+Blanco
+Negro
+
+b
+w
+k
+
+Cuadrado
+Diamante
+Triángulo (abajo)
+Triángulo (arriba)
+Triángulo
+(izquierda)
+Triángulo (derecha)
+Pentagrama
+Hexagrama
+
+39
+
+s
+d
+v
+^
+<
+>
+p
+h
+
+Igualmente, aunque de forma predeterminada los gráficos anteriores se borran cada vez que
+se ejecuta el comando plot, MATLAB permite mostrar más de un conjunto de datos en la
+misma gráfica. Para lograr esto se utiliza el comando hold on, que retiene el contenido de la
+gráfica y todas las propiedades del eje para que se puedan agregar comandos de
+representación gráfica adicionales; mientras que el comando hold off vuelve al modo
+predeterminado. Otras funciones útiles en el graficado son subplot, que permite dividir la
+ventana en subventanas o paneles, y grid on/off, que agrega o elimina las líneas de cuadrícula
+en la figura [62], [67].
+2.4.3 Ventajas y desventajas de la programación en MATLAB
+La programación técnica en MATLAB y su uso en la resolución de problemas complejos de
+las matemáticas y la ingeniería tiene muchas ventajas en comparación con los lenguajes
+informáticos convencionales. Según [63], entre ellas se encuentran:
+•
+
+Facilidad de uso: MATLAB es un lenguaje interpretado y muy fácil de usar. Los
+programas se pueden escribir y modificar fácilmente con el entorno de desarrollo
+integrado que incorpora la herramienta y depurar con el depurador propio. Esta
+facilidad es ideal para uso educativo y para la creación rápida de prototipos de nuevos
+programas. Además de incluir un editor y depurador integrado, también ofrece
+documentación y manuales en línea, así como una potente consulta de ayuda con
+explicaciones precisas y demostraciones extensas.
+
+•
+
+Independencia de la plataforma: MATLAB es compatible con muchos sistemas
+informáticos diferentes, lo que proporciona un gran grado de independencia de la
+plataforma. El software es compatible con las versiones actuales de Windows, Linux
+y Mac; los archivos escritos en cualquier plataforma pueden leerse y ejecutarse en
+
+Capítulo 2
+
+40
+
+cualquier otra, por lo que el usuario puede migrar a nuevas plataformas y sistemas
+operativos sin problema alguno.
+•
+
+Funciones predefinidas: MATLAB incluye una amplia biblioteca de funciones
+predefinidas que proporcionan soluciones probadas para muchas tareas técnicas
+básicas; en cambio, en cualquier otro lenguaje se tendrían que implementar o importar
+bibliotecas de terceros. Igualmente, cuenta con kits de herramientas de propósito
+especial disponibles para ayudar a resolver problemas complejos en áreas específicas,
+como el procesamiento de señales y de imágenes, las comunicaciones, las redes
+neuronales, los sistemas de control, entre muchos otros.
+
+•
+
+Trazado independiente del dispositivo: a diferencia de otros lenguajes informáticos,
+MATLAB tiene muchos comandos integrales de trazado e imagen. Los gráficos y las
+imágenes se pueden mostrar en cualquier dispositivo de salida gráfica compatible con
+el ordenador en el que se está ejecutando. Esta capacidad convierte a MATLAB en
+una herramienta excepcional para la visualización de datos técnicos.
+
+•
+
+Interfaz gráfica de usuario (Graphical User Interface, GUI): MATLAB incluye
+herramientas que permiten a los programadores construir de forma interactiva una
+interfaz gráfica de usuario para su programa. Con esta capacidad, se pueden diseñar
+sofisticados programas de análisis de datos que pueden ser operados por usuarios
+relativamente inexpertos.
+
+Sin embargo, MATLAB tiene dos dificultades principales. La primera viene dada por ser un
+lenguaje interpretado y, por tanto, puede ejecutarse de manera más lenta que los lenguajes
+compilados; esta desventaja se puede mitigar estructurando correctamente el programa para
+maximizar el rendimiento del código vectorizado y utilizando el compilador justo a tiempo
+(Just-in-Time, JIT). La segunda desventaja es el costo, una copia completa de MATLAB es
+de cinco a diez veces más cara que un compilador convencional de C. Este costo
+relativamente alto se compensa con la reducción del tiempo necesario para que un ingeniero
+o científico cree un programa de trabajo, por lo que MATLAB es rentable para las empresas.
+Sin embargo, es demasiado caro para que la mayoría de las personas consideren comprarlo;
+aunque existe una edición económica para estudiantes que es esencialmente idéntica a la
+edición completa.
+
+Capítulo 2
+
+41
+
+2.5 Conclusiones del capítulo
+Los sistemas de estampado de tiempo por software más sofisticados, junto a cálculos precisos
+de retardos a través de la pila de software, posibilitan obtener estampas de tiempo más
+precisas, aunque no más precisas que por medios de hardware, que a su vez conducen a una
+mejor sincronización. Los procedimientos y métodos estudiados en el capítulo presentan
+limitaciones e inconvenientes para su implementación en la presente investigación, pues
+algunos utilizan mensajes adicionales o no logran resultados considerables de precisión al
+aplicar sus modificaciones.
+Por consiguiente, el método seleccionado es más factible de implementar en el protocolo
+gPTP para redes inalámbricas, no requiere de ningún tipo de mensaje adicional ni realiza
+cambios en la pila de protocolo, logrando precisiones altísimas en el rango de entre 10 y 100
+ns. Las estimaciones de retardo en la estampa de tiempo se ven perjudicadas por retardos
+asimétricos que pueden ser determinados y se ha demostrado que pueden ser corregidos por
+el controlador del dispositivo aplicando las correcciones de estampado de tiempo definidas;
+sin embargo, la solución descrita no puede alcanzar el determinismo y la precisión de los
+enfoques de estampa de tiempo de hardware.
+Por su parte, la herramienta MATLAB es uno de los paquetes de software más desarrollados
+disponibles en la actualidad, siendo muy fácil de usar, incluso para personas sin experiencia
+previa en programación. MATLAB constituye una potente herramienta de resolución de
+problemas en diversos campos de la matemática, la ciencia y la ingeniería, y un valioso
+instrumento para estudiantes, profesores y profesionales en su desempeño laboral.
+
