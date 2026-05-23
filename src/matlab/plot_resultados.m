@@ -52,7 +52,10 @@ plot(0:60, mean(p_mej)*ones(1,61), ':', 'Color',c_akf, 'LineWidth',2.5, 'Display
 xlabel('Tiempo [s]','FontSize',12); ylabel('Precisión [\mus]','FontSize',12);
 title('Precisión del sincronismo entre dispositivos','FontSize',13);
 legend('Location','best','FontSize',10); xlim([0 60]);
-print(gcf,[dir_salida 'fig_3_2_precision_tiempo.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_2_precision_tiempo.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.3: Variación del offset en tiempo ---
 fprintf('  Fig 3.3...');
@@ -65,7 +68,10 @@ plot(x,o_mej,'Color',c_akf,'LineWidth',2,'DisplayName','Exel+AKF');
 xlabel('Tiempo [s]','FontSize',12); ylabel('Offset [\mus]','FontSize',12);
 title('Variación del offset del protocolo gPTP','FontSize',13);
 legend('Location','northeast','FontSize',10); xlim([0 60]);
-print(gcf,[dir_salida 'fig_3_3_offset_tiempo.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_3_offset_tiempo.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.4: Tiempo de ejecución ---
 fprintf('  Fig 3.4...');
@@ -80,7 +86,10 @@ xlabel('N.° simulaciones','FontSize',12); ylabel('Tiempo [s]','FontSize',12);
 title('Tiempo de ejecución comparativo','FontSize',13);
 legend('Estándar','Exel','Exel+AKF','Location','northwest','FontSize',10);
 set(gca,'XTickLabel',{'1','10','100'});
-print(gcf,[dir_salida 'fig_3_4_tiempo_ejecucion.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_4_tiempo_ejecucion.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.5: Overhead porcentual ---
 fprintf('  Fig 3.5...');
@@ -91,7 +100,10 @@ xlabel('N.° simulaciones','FontSize',12); ylabel('Overhead [%]','FontSize',12);
 title('Overhead computacional','FontSize',13);
 legend('Exel vs Estándar','AKF adicional','Location','northeast','FontSize',10);
 set(gca,'XTickLabel',{'1','10','100'});
-print(gcf,[dir_salida 'fig_3_5_overhead_porcentaje.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_5_overhead_porcentaje.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.6: Retardos asimétricos ---
 fprintf('  Fig 3.6...');
@@ -104,7 +116,10 @@ plot(ts,tsm,'Color',c_asy,'LineWidth',1,'DisplayName','t_{sm} (S→M)');
 xlabel('Tiempo [s]','FontSize',12); ylabel('Retardo [\mus]','FontSize',12);
 title('Medición de los retardos asimétricos','FontSize',13);
 legend('Location','best','FontSize',10); xlim([0 60]);
-print(gcf,[dir_salida 'fig_3_6_retardos_asimetricos.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_6_retardos_asimetricos.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.7: Error estimado ---
 fprintf('  Fig 3.7...');
@@ -115,7 +130,10 @@ xlabel('Métrica','FontSize',12); ylabel('Error [%]','FontSize',12);
 title('Estimación del error','FontSize',13);
 set(gca,'XTickLabel',{'Precisión','Offset','Asimetría','Overhead'});
 legend('IC 95%','IC 99%','Location','north','FontSize',10);
-print(gcf,[dir_salida 'fig_3_7_estimacion_error.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_7_estimacion_error.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.8: Histograma 4 escenarios ---
 fprintf('  Fig 3.8...');
@@ -127,7 +145,10 @@ figure('Position',[100 100 900 500],'Color','w'); hold on; box on; grid on;
 xlabel('Precisión [\mus]','FontSize',12); ylabel('Frecuencia','FontSize',12);
 title('Distribución de precisión — 4 escenarios','FontSize',13);
 legend('Location','northeast','FontSize',10);
-print(gcf,[dir_salida 'fig_3_8_precision_4escenarios.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_8_precision_4escenarios.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.9: Offset comparativo ---
 fprintf('  Fig 3.9...');
@@ -136,7 +157,10 @@ subplot(1,2,1); [n1,x1]=hist(p_exl-mean(p_exl),30); bar(x1,n1,'FaceColor',c_exl,
 xlabel('Offset [\mus]'); ylabel('Frecuencia'); title('Exel (baseline)','FontSize',11); grid on;
 subplot(1,2,2); [n2,x2]=hist(p_mej-mean(p_mej),30); bar(x2,n2,'FaceColor',c_akf,'EdgeColor','none');
 xlabel('Offset [\mus]'); ylabel('Frecuencia'); title('Exel+AKF (mejorado)','FontSize',11); grid on;
-print(gcf,[dir_salida 'fig_3_9_offset_comparativo.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_9_offset_comparativo.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.10: Barplot comparativo con errorbar ---
 fprintf('  Fig 3.10...');
@@ -150,7 +174,10 @@ set(gca, 'XTick', 1:2, 'XTickLabel', {'Exel','Exel+AKF'});
 ylabel('Precisión [\mus]','FontSize',12);
 title('Comparación de precisión: Exel vs Exel+AKF','FontSize',13); grid on;
 hold off;
-print(gcf,[dir_salida 'fig_3_10_boxplot_metodos.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_10_boxplot_metodos.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.11: Convergencia ---
 fprintf('  Fig 3.11...');
@@ -160,7 +187,10 @@ cm=cumsum(p_mej)./(1:length(p_mej))'; plot(1:length(p_mej),cm,'Color',c_akf,'Lin
 xlabel('N.° simulaciones','FontSize',12); ylabel('Precisión media acumulada [\mus]','FontSize',12);
 title('Convergencia de Monte Carlo','FontSize',13);
 legend('Location','best','FontSize',10);
-print(gcf,[dir_salida 'fig_3_11_convergencia_montecarlo.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_11_convergencia_montecarlo.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.12: Estados AKF ---
 fprintf('  Fig 3.12...');
@@ -170,7 +200,10 @@ sk=20*(1-exp(-teje/10))+2*randn(size(teje)); de=5*exp(-teje/3)+0.5*randn(size(te
 subplot(1,3,1); plot(teje,th,'Color',c_akf,'LineWidth',2); grid on; xlabel('t [s]'); ylabel('\theta [\mus]'); title('Offset');
 subplot(1,3,2); plot(teje,sk,'Color',c_akf,'LineWidth',2); grid on; xlabel('t [s]'); ylabel('skew [ppm]'); title('Skew');
 subplot(1,3,3); plot(teje,de,'Color',c_akf,'LineWidth',2); grid on; xlabel('t [s]'); ylabel('\Delta [\mus]'); title('Asimetría residual');
-print(gcf,[dir_salida 'fig_3_12_estados_akf.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_12_estados_akf.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 % --- Fig 3.13: Overhead AKF ---
 fprintf('  Fig 3.13...');
@@ -180,6 +213,12 @@ colormap([c_exl; c_akf]);
 set(gca,'XTickLabel',{'1','10','100','500'});
 ylabel('Overhead [%]','FontSize',12); title('Overhead del AKF','FontSize',13);
 legend('Exel vs Estándar','AKF adicional','Location','northeast','FontSize',10);
-print(gcf,[dir_salida 'fig_3_13_overhead_akf.pdf'],'-dpdf'); close(gcf); fprintf(' OK\n');
+pos = get(gcf, 'Position');
+  w_in = pos(3)/150; h_in = pos(4)/150;
+  set(gcf, 'PaperUnits', 'inches', 'PaperSize', [w_in h_in], 'PaperPosition', [0 0 w_in h_in]);
+  print(gcf, [dir_salida 'fig_3_13_overhead_akf.pdf'], '-dpdf'); close(gcf); fprintf(' OK\n');
 
 fprintf('=== Todas las figuras OK en %s ===\n', dir_salida);
+
+
+% Helper: exportar figura como PDF con tamaño ajustado

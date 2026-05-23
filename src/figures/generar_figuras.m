@@ -32,6 +32,17 @@ function generar_figuras(opt)
   fprintf('=== Hecho ===\n');
 end
 
+% Helper: exportar figura como PDF con tamaño ajustado
+function export_fig(hf, filename)
+  pos = get(hf, 'Position');
+  w_in = pos(3) / 150;  % convertir píxeles a pulgadas (150 DPI)
+  h_in = pos(4) / 150;
+  set(hf, 'PaperUnits', 'inches');
+  set(hf, 'PaperSize', [w_in h_in]);
+  set(hf, 'PaperPosition', [0 0 w_in h_in]);
+  print(hf, filename, '-dpdf');
+end
+
 % =========================================================================
 % INTRODUCCIÓN
 % =========================================================================
@@ -71,7 +82,7 @@ function fig_intro_estructura()
   annotation('arrow',[0.65 0.76],[0.7 0.64],'LineWidth',1.5);
   annotation('arrow',[0.65 0.76],[0.58 0.52],'LineWidth',1.5);
 
-  print(gcf, 'intro/fig_intro_estructura.pdf', '-dpdf');
+  export_fig(gcf, 'intro/fig_intro_estructura.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -102,7 +113,7 @@ function fig_intro_ciclo_revt()
     'HorizontalAlignment','center');
   title('Ciclo R-E-V-T (Research-Execute-Validate-Test)','FontSize',13);
 
-  print(gcf, 'intro/fig_intro_ciclo_revt.pdf','-dpdf');
+  export_fig(gcf, 'intro/fig_intro_ciclo_revt.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -142,7 +153,7 @@ function fig_1_1()
   text(0.56,0.3,'Mide RTT y calcula offset','FontSize',9,'Color','b');
 
   text(0.5,0.1,'Fuente: Adaptado de [7].','FontSize',9,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
-  print(gcf,'ch01/fig_1_1_sync_uni_vs_bidi.pdf','-dpdf');
+  export_fig(gcf, 'ch01/fig_1_1_sync_uni_vs_bidi.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -171,7 +182,7 @@ function fig_1_2()
   text(0.96,0.525,'S','FontSize',12,'HorizontalAlignment','center','FontWeight','bold');
   annotation('arrow',[0.07 0.93],[0.525 0.525],'LineWidth',1,'LineStyle','--');
   text(0.5,0.12,'Fuente: Adaptado de [15].','FontSize',9,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
-  print(gcf,'ch01/fig_1_2_fuentes_error.pdf','-dpdf');
+  export_fig(gcf, 'ch01/fig_1_2_fuentes_error.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -203,7 +214,7 @@ function fig_1_3()
     'EdgeColor',[0.5 0.5 0.5],'LineWidth',1,'Curvature',0.1);
   text(0.5,-0.14,'Pdelay = [(t4 - t1) - r(t3 - t2)] / 2','FontSize',12,'HorizontalAlignment','center');
   text(0.5,-0.3,'Fuente: Adaptado de [48].','FontSize',9,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
-  print(gcf,'ch01/fig_1_3_gptp_medicion_retardo.pdf','-dpdf');
+  export_fig(gcf, 'ch01/fig_1_3_gptp_medicion_retardo.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -228,7 +239,7 @@ function fig_1_4()
   legend('Location','southoutside','FontSize',9);
   text(5,-0.85,'El offset crece con el tiempo debido al skew','FontSize',9,'HorizontalAlignment','center');
   % sgtitle('Figura 1.4','FontSize',11); (use suptitle in Octave)
-  print(gcf,'ch01/fig_1_4_retardo_y_deriva.pdf','-dpdf');
+  export_fig(gcf, 'ch01/fig_1_4_retardo_y_deriva.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -252,7 +263,7 @@ function fig_2_1()
   text(0.5,0.2,'TS por SW: alta varianza','FontSize',8,'Color',[0.8 0.2 0.2],'HorizontalAlignment','center');
   text(0.5,0.15,'TS por HW: precision ns', 'FontSize',8,'Color',[0.2 0.8 0.2],'HorizontalAlignment','center');
   text(0.5,0.05,'Fuente: Adaptado de [56].','FontSize',9,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
-  print(gcf,'ch02/fig_2_1_ubicaciones_ts.pdf','-dpdf');
+  export_fig(gcf, 'ch02/fig_2_1_ubicaciones_ts.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -294,7 +305,7 @@ function fig_2_2()
   rectangle('Position',rect,'FaceColor',[1 1 1],'EdgeColor',[0.5 0.5 0.5],'LineWidth',1,'Curvature',0.1);
   text(0.5,0.06,'t1 = ^t1 + p1  |  t2 = ^t2 - p2  |  t3 = ^t3 + p3  |  t4 = ^t4 - p4','FontSize',10,'HorizontalAlignment','center');
   text(0.5,-0.05,'Fuente: Adaptado de [11].','FontSize',9,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
-  print(gcf,'ch02/fig_2_2_latencias_sw.pdf','-dpdf');
+  export_fig(gcf, 'ch02/fig_2_2_latencias_sw.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -332,7 +343,7 @@ function fig_2_4()
   text(0.05,0.66,'Mensajes gPTP','FontSize',8,'HorizontalAlignment','center');
   text(0.05,0.62,'(t1..t4)','FontSize',8,'HorizontalAlignment','center');
 
-  print(gcf,'ch02/fig_2_4_metodo_hibrido.pdf','-dpdf');
+  export_fig(gcf, 'ch02/fig_2_4_metodo_hibrido.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -378,7 +389,7 @@ function fig_2_5()
   text(0.3,0.12,'SALIDA: theta\_AKF','FontSize',10,'FontWeight','bold','HorizontalAlignment','center');
 
   annotation('arrow',[0.45 0.6],[0.12 0.86],'LineWidth',1.5,'LineStyle',':','Color',[0.5 0.5 0.5]);
-  print(gcf,'ch02/fig_2_5_ciclo_akf.pdf','-dpdf');
+  export_fig(gcf, 'ch02/fig_2_5_ciclo_akf.pdf');
   close(gcf); fprintf(' OK\n');
 end
 
@@ -413,6 +424,6 @@ function fig_3_1()
   text(0.5,0.12,'d=30m | c=3e8 m/s | ta=asimetria desconocida','FontSize',9,'HorizontalAlignment','center');
   text(0.5,0.03,'Fuente: Elaboracion propia.','FontSize',9,'Color',[0.5 0.5 0.5],'HorizontalAlignment','center');
 
-  print(gcf,'ch03/fig_3_1_esquema_implementacion.pdf','-dpdf');
+  export_fig(gcf, 'ch03/fig_3_1_esquema_implementacion.pdf');
   close(gcf); fprintf(' OK\n');
 end

@@ -1,0 +1,38 @@
+Capítulo 1
+Recomendaciones
+A partir de los resultados obtenidos y las limitaciones identicadas en la presente
+investigación, se proponen las siguientes recomendaciones para trabajos futuros:
+1. Validación experimental. Ejecutar la simulación Monte Carlo de la implementación mejorada (Exel+AKF) para obtener resultados denitivos, realizando un
+barrido sistemático de los parámetros del AKF (Q0 , P0 , N ) para optimizar la
+relación precisión-overhead.
+2. Implementación en dispositivos reales. Aplicar la implementación en plataformas inalámbricas reales (Wi-Fi IEEE 802.11, LoRa) para evaluar el comportamiento en condiciones de canal reales con desvanecimiento, interferencia y
+movilidad.
+3. Estampado de tiempo por hardware. Emplear hardware especializado de
+estampado según IEEE 802.1AS, combinado con el método híbrido Exel+AKF,
+para alcanzar precisiones en el orden de nanosegundos.
+4. Extensión a redes multi-salto y BMCA. Evaluar la implementación en redes
+con múltiples dispositivos y saltos, incorporando el BMCA. La acumulación de
+errores y la interacción AKF-BMCA son problemas abiertos.
+5. Filtros no lineales y no Gaussianos. Explorar EKF, UKF y Filtros de Partículas para manejar no linealidades y distribuciones de retardo no Gaussianas
+comunes en entornos NLoS.
+6. Aprendizaje automático para estimación de asimetría. Investigar técnicas de ML (redes neuronales ligeras, reinforcement learning ) para predecir la
+asimetría a partir de métricas de capa física (RSSI, SNR, PER).
+7. Integración con 5G-TSN. Evaluar el método propuesto en el contexto de la
+convergencia 5G-TSN, donde las asimetrías uplink/downlink son inherentes.
+8. Seguridad en la sincronización. Investigar la robustez del método frente a
+ataques maliciosos y desarrollar mecanismos de detección integrados en el AKF
+mediante análisis de innovaciones.
+9. Análisis de sensibilidad y optimización. Realizar un análisis exhaustivo de
+los parámetros del AKF bajo diferentes condiciones (niveles de asimetría, estabilidad de osciladores, distancias) y aplicar optimización multiobjetivo.
+1
+
+10. Documentación y reproducibilidad. Publicar el código fuente en un repositorio abierto con documentación detallada para facilitar la reproducibilidad y la
+colaboración.
+
+2
+
+Bibliografía
+
+3
+
+

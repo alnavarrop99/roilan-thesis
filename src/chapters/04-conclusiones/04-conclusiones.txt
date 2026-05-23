@@ -1,0 +1,81 @@
+Capítulo 1
+Conclusiones
+La presente investigación tuvo como objetivo mitigar el efecto de los retardos asimétricos en el sincronismo de redes inalámbricas empleando una versión mejorada del
+protocolo gPTP. A partir del trabajo desarrollado, se establecen las siguientes conclusiones:
+1.
+
+Revisión del estado del arte.
+
+Se realizó una revisión exhaustiva de las bases teóricas relacionadas con el sincronismo en redes inalámbricas, cubriendo los
+principales conceptos (oset, skew, tipos de relojes), las aplicaciones en IoT y la
+Industria 4.0, los desafíos técnicos y los protocolos de sincronización existentes.
+Se conrmó que gPTP (IEEE 802.1AS) es el más apropiado para redes inalámbricas dentro del ecosistema TSN, aunque su rendimiento se ve signicativamente
+degradado por las asimetrías en los canales de comunicación.
+
+2.
+
+Análisis sistemático de métodos de corrección. Se realizó una revisión de
+
+3.
+
+Selección del método híbrido Exel + AKF. Se propuso un enfoque híbrido
+
+4.
+
+Implementación del simulador gPTP. Se desarrolló un simulador de eventos
+
+5.
+
+Validación experimental completa. Los resultados de la simulación Monte
+
+15 métodos publicados entre 2014 y 2026 para mitigar el efecto de los retardos
+asimétricos en PTP/gPTP, organizados en siete categorías y evaluados en cinco
+criterios (precisión, complejidad, compatibilidad con gPTP, manejo de asimetrías
+desconocidas y madurez).
+que combina la corrección determinista de Exel (etapa 1) con un AKF de tres
+estados (etapa 2) para la estimación conjunta de oset (θk ), skew (sk ) y asimetría
+residual (∆k ), con adaptación dinámica de la varianza de medición Rk .
+discretos en MATLAB/GNU Octave, compuesto por siete módulos de código, que
+modela el comportamiento del estándar IEEE 802.1AS incluyendo el mecanismo
+peer-to-peer, el rate ratio, los retardos de procesamiento asimétricos p1 p4 , y las
+imperfecciones de los osciladores.
+Carlo (N = 500) conrman que la corrección Exel reduce el error en 49.78 µs
+(33.2 %, 150.11 → 100.33 µs), reproduciendo elmente el trabajo de referencia. El
+método híbrido Exel+AKF propuesto mejora adicionalmente la precisión en un
+33.6 % sobre Exel (100.33 → 66.24 µs), alcanzando una reducción total del error
+del 55.9 % respecto al protocolo sin corrección. La mejora es estadísticamente
+muy signicativa (t = 25,14, p < 0,001, prueba t pareada), con un overhead
+adicional de apenas el 2 %.
+1
+
+6.
+
+Contribución metodológica. La principal contribución es el diseño, la im-
+
+7.
+
+Resultados que superan las proyecciones. Los resultados validados superan
+
+8.
+
+Limitaciones. El método asume ruido Gaussiano, aproximación razonable pero
+
+plementación y la validación experimental de una arquitectura de dos etapas
+(determinista + adaptativa) para la compensación de asimetrías en gPTP que no
+requiere modicaciones al estándar, es compatible con estampado por software,
+y se adapta automáticamente a condiciones cambiantes del canal.
+las proyecciones iniciales: la mejora real del AKF (33.6 %) excede la proyectada
+(28.8 %), mientras que el overhead real (∼2 %) es inferior al estimado (58 %).
+
+no exacta para todas las condiciones de canal inalámbrico. El estudio se limita
+a un enlace punto a punto de un solo salto, y los parámetros del AKF pueden
+requerir reajuste para escenarios con características de canal signicativamente
+diferentes.
+
+2
+
+Bibliografía
+
+3
+
+

@@ -1,0 +1,1043 @@
+Capítulo 1
+Análisis de métodos y herramientas
+para mejorar el sincronismo en redes
+inalámbricas empleando el protocolo
+gPTP
+En el capítulo anterior se realizó una revisión bibliográca de los principales conceptos, desafíos y protocolos existentes en el ámbito de la sincronización de tiempo,
+concluyendo que el protocolo gPTP presenta las mejores cualidades para ser adaptado
+al entorno inalámbrico. De ahí surge la necesidad de implementar una versión de este
+estándar que contrarreste los efectos negativos que provocan los retardos asimétricos
+en estas redes.
+Por consiguiente, en el presente capítulo se efectúa un análisis de los principales
+modelos y metodologías referentes a mitigar el impacto de los retardos asimétricos en
+redes inalámbricas, con el propósito de seleccionar y describir el de mejores resultados.
+A diferencia del trabajo de referencia, este análisis se amplía con una revisión sistemática de métodos novedosos publicados entre 2020 y 2026, incluyendo ltros de Kalman
+adaptativos, estimación robusta, lógica difusa y aprendizaje computacional. Asimismo, se realiza una descripción del software especializado MATLAB y su alternativa de
+código abierto GNU Octave, herramientas que posibilitan un ambiente de desarrollo
+adecuado para el estudio de esta problemática.
+
+1.1. Sistemas de estampado por Software
+La clave para obtener una sincronización de tiempo de alto rendimiento está estrechamente relacionada con la calidad de las estampas de tiempo (
+
+Timestamping,
+
+TS) [1, 2]. Los enfoques de estampado de tiempo se pueden clasicar en términos generales en estampa de tiempo de hardware y software. Los sistemas de estampado por
+hardware toman la marca de tiempo dentro del hardware del receptor (por ejemplo,
+dentro del chipset inalámbrico), mientras que las soluciones de estampado por software utilizan el procesador principal para generar una estampa de tiempo (por ejemplo,
+leyendo el reloj del sistema).
+Como el retardo de procesamiento de las soluciones de sellado de tiempo de hardware se puede diseñar para que sea constante, las correcciones de tiempo requeridas
+pueden ser muy precisas (en el orden de los nanosegundos) y, por lo tanto, las estampas
+
+1
+
+de tiempo también. Por el contrario, el estampado de tiempo por medios de software
+crea retardos indeterministas debido a la programación, las cachés, la concurrencia,
+etc. y, por lo tanto, la estampa de tiempo debe estar lo más cerca posible del medio [3].
+Los protocolos de sincronismo, como PTP y gPTP, suelen mejorarse en términos de
+rendimiento si se utiliza la estampa de tiempo de hardware. Sin embargo, para llevar
+a cabo el sellado de tiempo por hardware, se requieren dispositivos dedicados o modicaciones dentro de los chipsets WLAN. Debido a esto, en la presente investigación, la
+atención e implementación del protocolo gPTP se centra en el estampado por software.
+
+APLICACION (t_clock())
+Precision creciente
+
+PILA DE RED / DRIVER
+CAPA MAC
+CAPA FISICA - PHY
+MEDIO INALAMBRICO
+
+Figura 1.1: Ubicaciones para la estampa de tiempo en redes orientadas a paquetes.
+Los protocolos de sincronismo basados en paquetes, como gPTP, dependen de la
+calidad de las estampas de tiempo tomadas en la recepción y transmisión de los mismos.
+Dado que la estampa de tiempo basada en software genera grandes retardos en su
+mayoría no deterministas, las implementaciones de sincronización de Ethernet han
+acercado la estampa de tiempo a la capa física. Sin embargo, la mayoría de los enfoques
+de sincronización inalámbrica se limitan a la estampa de tiempo de software debido a
+la falta de funciones de sellado de tiempo por hardware [4].
+Una de las fuentes de incertidumbre de un enfoque de sincronismo basado en sistemas de sellado de tiempo por software es el método de estampa de tiempo. Según [5],
+entre las diversas fuentes de imprecisión en el sellado de tiempo por software se tienen:
+
+Capacidad de sellado de tiempo del maestro
+
+: incluye las capacidades de
+
+estampa de tiempo de los mensajes de eventos gPTP (mensaje de sincronización
+
+Sync y de solicitud de retardo PdelayReq ) en el lado maestro. La incertidumbre
+en la identicación de t1 y t4 afecta a la estimación tanto del Pdelay como del
+desfasaje (oset ).
+
+Capacidad de sellado de tiempo del esclavo
+
+: incluye las capacidades de es-
+
+tampa de tiempo de los mensajes de eventos gPTP en el lado esclavo (mensaje de
+
+2
+
+respuesta a la solicitud de retardo
+
+PdelayResp y de seguimiento PdelayRespFo-
+
+llowUp ). Estas estampas de tiempo, t2 y t3 , también son utilizadas para estimar
+Pdelay y el desfasaje.
+
+el
+
+Capacidad de sellado de tiempo de la infraestructura
+
+: la exactitud de
+
+la información de tiempo contenida en la sincronización depende también de la
+capacidad de los dispositivos de red para transferir correctamente la hora. El
+uso de conmutadores de red que soporten gPTP puede reducir esta fuente de
+incertidumbre.
+
+Variabilidad y comportamiento asimétrico del retardo de propagación
+
+:
+
+el retardo de propagación en la red no es constante y puede verse afectado por el
+tráco, los dispositivos de red en la ruta y la carga de la red.
+Las estampas de tiempo basadas en detectores de inicio de trama convencionales
+tienen dos problemas principales en los sistemas inalámbricos: en primer lugar, no
+pueden garantizar una precisión de transferencia de tiempo mejor que el período de
+muestreo y, en segundo lugar, la propagación por trayectos múltiples y el carácter de
+variación temporal del canal inalámbrico reducen la precisión del tiempo de llegada
+(
+
+Time of Arrival, ToA) de las tramas, lo que introduce un componente de error en la
+
+sincronización de tiempo. Esto es especialmente crítico en condiciones sin visibilidad
+directa (
+
+Non-Line of Sight, NLoS) [1].
+
+En el esquema de sincronización basado en interrupciones, donde las estampas de
+
+Interrupt Service Routine, ISR), el retardo de estampa de tiempo y la uctuación se limitan principalmente
+
+tiempo son tomadas mediante rutina de servicio de interrupción (
+
+al tiempo de recepción del paquete y al tiempo de noticación de interrupción [6].
+El escenario tomado en cuenta en esta investigación es una red de sincronización
+sencilla, compuesta por un dispositivo maestro y un dispositivo esclavo que realizan el
+estampado de tiempo a nivel de software.
+
+1.2. Análisis de los modelos, metodologías y procedimientos existentes para el diseño de protocolos
+más robustos ante los retardos asimétricos
+Para desarrollar una implementación de cualquier índole es imprescindible y necesario escoger la tecnología o modelo que se empleará en dicho proceso, lo que demanda
+necesariamente un estudio profundo de la bibliografía que se relaciona con este aspecto. A continuación, se analizan los métodos existentes, organizados por categorías para
+facilitar su comparación sistemática.
+
+1.2.1. Método de corrección determinista de estampas de tiempo (Exel)
+El método propuesto por Reinhard Exel en [7] constituye el punto de partida de
+esta investigación y el método de referencia (
+
+baseline ) contra el cual se compararán las
+
+mejoras propuestas. Este enfoque propone un esquema de mitigación de los retardos
+asimétricos basado en la corrección de la estampa de tiempo por software y logra
+
+3
+
+aumentar la precisión del protocolo sin modicaciones al mismo, ni el uso de mensajes
+adicionales.
+El funcionamiento del modelo de estampa de tiempo de software en el protocolo se
+basa en que las estampas de tiempo tomadas por el software (t̂1 a t̂4 ) dieren de las
+estampas de tiempo ideales (t1 a t4 ) debido a los retardos de procesamiento p1 a p4 .
+Las estampas ideales pueden ser calculadas aplicando las correcciones de retardo de las
+Ecuaciones 1.1 a 1.4, donde p1 y p3 corresponden a los retardos de procesamiento de
+salida, p2 y p4 a los retardos de entrada:
+
+t1
+t2
+t3
+t4
+
+=
+=
+=
+=
+
+t̂1 + p1
+t̂2 − p2
+t̂3 + p3
+t̂4 − p4
+
+(1.1)
+(1.2)
+(1.3)
+(1.4)
+
+El verdadero valor de corrección del desfasaje (tof f set ) y el tiempo de ida y vuelta
+(tRT T ) quedan denidos en las Ecuaciones 1.5 y 1.6:
+
+(p1 + p2 ) − (p3 + p4 )
+2
+= tRT T + (p1 + p2 + p3 + p4 )
+
+t̂of f set = tof f set −
+t̂RT T
+
+(1.5)
+(1.6)
+
+Los retardos asimétricos de procesamiento p se componen de términos deterministas
+y no deterministas. En la mayoría de los casos existen grandes retardos asimétricos
+deterministas que se pueden corregir aplicando el método descrito y que abarca también
+otros factores como la velocidad de datos, el tamaño del encabezado, la modulación,
+el tamaño de transferencia de acceso directo a memoria (DMA) y la velocidad de la
+interfaz DMA [7].
+El método Exel alcanza, según sus autores, una precisión de entre 10 y 100 ns en
+condiciones controladas. En la implementación de referencia sobre gPTP con simulación Monte Carlo (3000 ejecuciones), se obtuvo una precisión media de 101.5 µs,
+una reducción del error del 33.31 % respecto al protocolo sin corrección, y un oset
+
+Limitaciones del método Exel:
+
+estabilizado en el rango de [−2,55, 6,68] µs [8].
+(1) solo corrige los retardos deterministas cono-
+
+cidos; las asimetrías desconocidas o variantes en el tiempo no son compensadas; (2) no
+realiza ltrado estadístico de las mediciones, por lo que es sensible al ruido de medición
+y a valores atípicos; (3) no estima ni compensa la deriva (
+
+skew ) de los relojes, solo el
+
+oset.
+
+1.2.2. Métodos basados en Filtros de Kalman
+El Filtro de Kalman (KF) es un estimador óptimo para sistemas lineales con ruido
+Gaussiano que ha sido ampliamente aplicado a la sincronización de relojes en redes
+de paquetes [9]. En el contexto de PTP/gPTP, el KF permite estimar conjuntamente
+el oset, el skew y, en formulaciones más avanzadas, parámetros relacionados con la
+
+Li et al. (2024)
+
+asimetría del canal.
+
+[10] proponen un método mejorado de sincronización de tiempo
+
+basado en ltrado de Kalman de segundo orden. El algoritmo emplea el KF para
+
+4
+
+tms (propagacion M->S)
+t
+
+t
+
+1
+
+2
+
+Software TX
+
+p1
+
+p2
+
+Software RX
+
+t
+
+t
+
+3
+
+4
+tsm (propagacion S->M)
+
+t1 = t1 + p1 | t2 = t2 - p2 | t3 = t3 + p3 | t4 = t4 - p4
+Fuente: Adaptado de [11].
+
+Figura 1.2: Latencias de estampa de tiempo de software.
+
+estimar con precisión el oset de tiempo, la deriva del reloj y los parámetros del reloj.
+Los resultados experimentales demuestran que, en enlaces asimétricos, el oset máximo
+se mantiene dentro de ±3 µs, lo que representa una mejora sustancial respecto a los
+
+Hollósi y Ficzere (2024)
+
+métodos que no emplean KF.
+
+[11] introducen un Filtro de Kalman Adaptativo (AKF)
+
+para la estimación del oset en PTP. La principal innovación de este enfoque es la
+estimación en tiempo real de la varianza del ruido de medición (Rk ), lo que permite
+que el ltro se adapte automáticamente a cambios en las condiciones del canal. Los
+resultados muestran una reducción de la varianza del oset de entre un 40 % y un 60 %
+
+Liu y Wang (2024)
+
+en comparación con el KF estándar.
+[12] desarrollan un esquema robusto de seguimiento de pa-
+
+rámetros de reloj para IEEE 1588 en presencia de retardos asimétricos en redes industriales. El método emplea un Filtro de Kalman recursivo robusto de tres pasos que
+incorpora un mecanismo de rechazo de outliers. Los resultados experimentales reportan
+
+Wang et al. (2021)
+
+un RMSE de oset inferior a 5 µs en presencia de asimetrías signicativas.
+[13] proponen un enfoque de seguimiento de parámetros de
+
+reloj sin marcas de tiempo (
+
+timestamp-free ) utilizando Filtro de Kalman Extendido
+
+(EKF) en redes de sensores inalámbricos. Aunque está diseñado para WSN, el marco
+
+Raittila (2025)
+
+del EKF es adaptable a PTP/gPTP.
+[14] desarrolla un modelo en Simulink de un lazo de control PTP
+
+con un Filtro de Kalman Adaptativo especícamente para redes Wi-Fi industriales.
+Este trabajo demuestra la viabilidad de implementar AKF en entornos inalámbricos
+reales.
+
+1.2.3. Métodos basados en Estimación Robusta
+
+Karthik y Blum (2020)
+
+[15] abordan el problema de la estimación robusta de
+
+skew y oset para IEEE 1588 en presencia de asimetrías deterministas desconocidas en
+el retardo de trayectoria. Los autores derivan cotas inferiores de rendimiento (cotas de
+Cramér-Rao modicadas) y proponen esquemas de estimación robusta que superan al
+estimador de máxima verosimilitud (MLE) convencional cuando existen asimetrías no
+
+Vázquez et al. (2025)
+
+modeladas.
+
+[16] proponen un enfoque de ltrado de outliers en las
+
+mediciones de oset para PTP sobre redes de área amplia (WAN). El método emplea
+
+5
+
+técnicas de detección de anomalías para identicar y rechazar mediciones de oset
+atípicas antes de que sean utilizadas por el servo de reloj.
+
+1.2.4. Métodos basados en Lógica Difusa
+
+Nguyen et al. (2020)
+
+[17] proponen un servo de reloj Fuzzy-PI adaptativo basado
+
+en IEEE 1588 para mejorar la sincronización de tiempo sobre redes Ethernet. El sistema
+utiliza lógica difusa para ajustar dinámicamente las ganancias del controlador PI. Los
+resultados experimentales muestran una precisión inferior a 100 ns y una mejora del
+
+Zhang et al. (2024)
+
+45 % respecto al controlador PI tradicional.
+[18] diseñan un servo de reloj Fuzzy-PI con ltro de venta-
+
+Queue-Induced Delay
+Asymmetry, QIDA) en redes IEEE 1588. Se reporta una reducción del 52 % en el error
+
+na para compensar la asimetría de retardo inducida por colas (
+de oset causado por QIDA.
+
+1.2.5. Métodos basados en Aprendizaje Computacional
+
+Wang et al. (2026)
+
+[19] proponen un método de estimación de parámetros de reloj
+
+Competitive Learning ) para PTP con distribucio-
+
+basado en aprendizaje competitivo (
+
+nes de retardo desconocidas. El algoritmo no asume ninguna distribución particular
+para los retardos, lo que lo hace robusto ante una amplia variedad de condiciones de
+
+Goodarzi et al. (2022)
+
+canal. Sin embargo, su complejidad computacional es elevada.
+[20] presentan un enfoque de ltro de partículas asistido
+
+por redes neuronales profundas (DNN) para sincronización y localización conjunta.
+Aunque logra alta precisión en entornos no Gaussianos, el costo computacional del
+ltro de partículas lo hace prohibitivo para aplicaciones que requieren simulación Monte
+Carlo extensiva.
+
+1.2.6. Otros métodos relevantes
+
+Puttnies et al. (2018)
+
+[21] introducen PTP-LP, un enfoque que utiliza progra-
+
+mación lineal para aumentar la robustez de IEEE 1588 PTP ante retardos variables.
+El método es totalmente compatible con PTP y gPTP, aumentando la precisión en un
+4
+factor de hasta 10 en escenarios favorables.
+
+Baniabdelghany et al. (2020)
+
+[22] proponen una extensión de IEEE 802.1AS
+
+(gPTP) para mejorar la sincronización en redes híbridas cableadas-inalámbricas me-
+
+Levesque y Tipper (2015)
+
+Path Deviation Delay, PDD).
+
+diante un ltro de retraso de desviación de ruta (
+
+[23] proponen el mecanismo de mitigación de asimetría
+
+Per-Packet Asymmetry Mitigation, PPAM), que estima los componentes
+
+por paquete (
+
+de retardo por paquete individual.
+
+1.2.7. Comparación sistemática y selección del método
+La Tabla 1.1 presenta una comparación sistemática de los métodos analizados,
+evaluados según cinco criterios: precisión reportada, complejidad computacional, compatibilidad con gPTP, capacidad de manejar asimetrías desconocidas y madurez de la
+técnica.
+Del análisis comparativo se concluye que los métodos basados en Filtro de Kalman,
+y en particular el Filtro de Kalman Adaptativo (AKF), ofrecen la mejor relación entre
+
+6
+
+Tabla 1.1: Comparación de métodos para mitigación de retardos asimétricos en
+PTP/gPTP.
+Método
+
+Categoría
+
+Exel (2014)
+Li et al. (2024)
+Hollósi & Ficzere (2024)
+Liu & Wang (2024)
+Wang et al. (2021)
+Karthik & Blum (2020)
+Nguyen et al. (2020)
+Zhang et al. (2024)
+Wang et al. (2026)
+Puttnies et al. (2018)
+
+Precisión
+
+Corrección determinista
+KF 2.ª orden
+AKF
+KF robusto 3 pasos
+EKF sin timestamp
+Estimación robusta
+Fuzzy-PI
+Fuzzy-PI + ventana
+Competitive Learning
+Prog. Lineal
+
+101.5 µs (sim.)
+±3 µs
+4060 % mejora
+<5 µs RMSE
+<1 µs
+Cotas óptimas
+<100 ns
+52 % reducción
+Robusto
+Factor 104
+
+Compat.
+
+Asimetría
+
+gPTP
+
+desconocida
+
+Alta
+Alta
+Alta
+Alta
+Media
+Alta
+Media
+Media
+Media-Alta
+Media
+
+No
+Sí
+Sí
+Sí
+Sí
+Sí
+Parcial
+Parcial
+Sí
+No
+
+Madurez
+
+Alta
+Alta
+Alta
+Alta
+Media
+Alta
+Media
+Baja
+Baja
+Media
+
+precisión, complejidad computacional y compatibilidad con gPTP. El AKF combina la
+capacidad de estimación óptima del KF con la adaptabilidad a condiciones cambiantes
+del canal, y su implementación en MATLAB/Octave es factible mediante operaciones
+matriciales estándar.
+No obstante, el método de Exel ofrece una ventaja fundamental: su corrección determinista elimina una parte signicativa de la asimetría (los retardos de procesamiento
+conocidos p1 p4 ) antes de cualquier procesamiento estadístico. Esto sugiere que un enfoque híbrido que combine la corrección determinista de Exel con el ltrado adaptativo
+del AKF podría superar a cualquiera de los dos métodos por separado.
+
+1.3. Descripción del método seleccionado: Enfoque híbrido Exel + Filtro de Kalman Adaptativo
+enfoque híbrido que combina la corrección determinista de estampas de
+tiempo de Exel con un Filtro de Kalman Adaptativo (AKF)
+Como resultado del análisis sistemático presentado en la Sección 1.2, se selecciona
+
+un
+
+para la compen-
+
+sación de retardos asimétricos en el protocolo gPTP.
+
+Mensajes gPTPETAPA 1: EXEL
+(t1..t4)
+
+Correccion determinista
+p1-p4 en estampas
+
+ETAPA 2: AKF
+
+zk = theta_Exel
+Filtro de Kalman Adaptativo
+3 estados: [theta, skew, Delta]
+Rk adaptativo (N=20)
+
+theta_AKF
+
+CORRECCION RELOJ ESCLAVO
+
+Figura 1.3: Arquitectura del método híbrido Exel + AKF.
+
+7
+
+1.3.1. Arquitectura de dos etapas
+
+Etapa 1  Corrección determinista (Exel):
+
+El método híbrido opera en dos etapas consecutivas:
+Se aplican las Ecuaciones 1.11.6
+
+a las marcas de tiempo t̂1 , t̂2 , t̂3 , t̂4 capturadas por el software. Se utilizan los valores
+conocidos de los retardos de procesamiento asimétricos p1 , p2 , p3 , p4 para obtener una
+primera estimación del oset θ̂Exel . Esta etapa elimina la componente determinista de
+
+Etapa 2  Filtro de Kalman Adaptativo (AKF):
+
+la asimetría [7].
+
+El oset corregido por
+
+Exel, θ̂Exel , se utiliza como medición de entrada para un Filtro de Kalman Adaptativo
+que estima el estado verdadero del sistema, ltrando el ruido de medición residual y
+compensando las asimetrías desconocidas que el método de Exel no puede corregir.
+
+1.3.2. Modelo de espacio de estados
+El vector de estado del AKF se dene como:
+
+
+
+
+θk
+xk =  s k 
+∆k
+
+(1.7)
+
+donde:
+
+θk : oset verdadero entre maestro y esclavo en el instante k [s]
+sk : skew (diferencia normalizada de frecuencia) entre los relojes [adimensional]
+∆k : asimetría residual no corregida por Exel [s]
+
+Modelo de transición de estado:
+
+xk+1 = Fxk + wk ,
+
+wk ∼ N (0, Qk )
+
+
+1 τ 0
+F = 0 1 0
+0 0 1
+
+(1.8)
+
+
+
+(1.9)
+
+donde τ es el intervalo entre mediciones (el período de sincronización de gPTP,
+típicamente 2 s), y wk es el ruido de proceso con matriz de covarianza Qk . La estructura
+de F reeja que el oset evoluciona linealmente con el skew, el skew se modela como un
+proceso de caminata aleatoria, y la asimetría residual se considera aproximadamente
+
+Modelo de medición:
+
+constante entre períodos de sincronización.
+
+vk ∼ N (0, Rk )
+
+zk = Hxk + vk ,
+
+
+
+H = 1 0 1/2
+
+(1.10)
+
+(1.11)
+
+donde zk = θ̂Exel [k] es el oset estimado por la etapa Exel en el instante k , y vk
+es el ruido de medición con varianza Rk . El término 1/2 en la matriz de observación
+reeja que la mitad de la asimetría residual se propaga al error de oset, de acuerdo
+con la Ecuación 1.5.
+
+8
+
+1.3.3. Algoritmo del Filtro de Kalman Adaptativo
+
+Fase de predicción:
+
+El AKF se implementa en dos fases por cada iteración k :
+
+x̂k|k−1 = Fx̂k−1|k−1
+Pk|k−1 = FPk−1|k−1 FT + Qk−1
+
+(1.12)
+
+Kk = Pk|k−1 HT (HPk|k−1 HT + R̂k )−1
+x̂k|k = x̂k|k−1 + Kk (zk − Hx̂k|k−1 )
+Pk|k = (I − Kk H)Pk|k−1
+
+(1.14)
+
+(1.13)
+
+Fase de actualización:
+Adaptación de R :
+
+(1.15)
+(1.16)
+
+La principal innovación respecto al KF estándar es la esti-
+
+k
+
+mación adaptativa de la varianza del ruido de medición [11]. Se utiliza una ventana
+deslizante de las últimas N innovaciones:
+
+k
+X
+1
+R̂k =
+(νi − ν̄)2
+N − 1 i=k−N +1
+
+(1.17)
+
+donde νi = zi − Hx̂i|i−1 es la innovación (residuo de la medición) y ν̄ es su media
+sobre la ventana. Esta adaptación permite que el ltro responda automáticamente a
+cambios en la calidad de las mediciones.
+
+1.3.4. Parámetros de diseño
+Los siguientes parámetros deben determinarse experimentalmente durante la fase
+de implementación:
+
+Tabla 1.2: Parámetros de inicialización del Filtro de Kalman Adaptativo.
+Parámetro
+
+Valor
+
+Descripción
+
+Vector estado inicial x0
+P0
+Q
+R0
+Ventana N
+
+[0, 0, 0]T
+diag(10−10 , 10−12 , 10−14 )
+diag(10−14 , 10−18 , 10−16 )
+10−12
+20
+
+
+1 τ 0
+0 1 0
+0 0 1
+[1, 0, 1/2]
+
+[θ, skew, ∆]
+Covarianza inicial del error
+Covarianza del ruido de proceso
+Varianza inicial del ruido de medición
+Innovaciones para adaptación de Rk
+
+F
+H
+
+Matriz de transición de estado
+Matriz de observación
+
+1.3.5. Ventajas del enfoque híbrido
+1.
+
+Herencia de Exel
+
+: se preserva la corrección determinista que ya demostró una
+
+mejora del 33.31 % [8], proporcionando una base sólida.
+
+9
+
+Ciclo del Filtro de Kalman Adaptativo
+Inicializacion: x0, P0, Q, R0, N=20
+
+MEDICION zk
+
+PREDICCION
+
+zk = theta_Exel
+
+x- = F*x | P- = F*P*F'+Q
+
+Rk = var(innovaciones, N=20)
+
+ACTUALIZACION
+K = P- *H'/(H*P
+*H'+Rk)
+x = x- + K*(zk - H*x- )
+
+SALIDA: theta_AKF
+
+Figura 1.4: Ciclo de predicción-actualización del Filtro de Kalman Adaptativo.
+
+2.
+
+Filtrado óptimo
+Estimación de asimetría residual
+
+: el AKF reduce la varianza residual de las estimaciones de
+
+oset al combinar óptimamente la información de múltiples mediciones.
+3.
+
+: a diferencia de Exel, que solo corrige asi-
+
+metrías conocidas, el AKF estima y compensa la componente de asimetría desconocida (∆k ).
+4.
+
+Adaptabilidad
+Comparabilidad
+Implementabilidad
+
+: la estimación adaptativa de Rk permite que el ltro se ajuste
+
+automáticamente a cambios en el entorno inalámbrico.
+
+5.
+
+: el diseño permite comparar directamente el rendimiento de
+
+Exel (etapa 1) contra Exel+AKF (etapas 1+2) bajo condiciones idénticas.
+
+6.
+
+: todas las operaciones del AKF son álgebra lineal estándar
+
+(matrices de 3 × 3), realizables en MATLAB/GNU Octave con costo computacio-
+
+nal moderado.
+
+1.4. Herramientas de implementación: MATLAB y
+GNU Octave
+MATLAB (abreviatura de
+
+MATrix LABoratory ) es un programa informático de
+
+propósito especial optimizado para realizar cálculos cientícos y de ingeniería, con funciones integradas para cumplir una amplia gama de tareas, desde operaciones matemáticas hasta imágenes tridimensionales [24, 25]. Comenzó su vida como un programa
+diseñado para realizar matemáticas matriciales, pero a lo largo de los años se ha convertido en un sistema informático exible y fácil de usar, capaz de resolver esencialmente
+cualquier problema técnico [26].
+
+10
+
+Además, el programa implementa un lenguaje propio y proporciona una amplia
+biblioteca de funciones predenidas. El producto básico ofrece más de mil funciones y
+cuenta con varios kits de herramientas (
+
+GNU Octave
+
+toolbox ) que amplían esta capacidad en diversas
+
+especialidades [25, 27].
+es una alternativa de código abierto a MATLAB que ofrece una
+
+compatibilidad sustancial con el lenguaje MATLAB. Octave implementa un intérprete de alto nivel para cálculo numérico con una sintaxis mayoritariamente compatible
+con MATLAB, lo que permite ejecutar la mayoría de los scripts y funciones diseñados
+para MATLAB sin modicaciones signicativas [28]. Para los propósitos de esta investigación, donde las operaciones requeridas son fundamentalmente álgebra matricial,
+generación de números aleatorios y visualización gráca, Octave proporciona todas las
+capacidades necesarias sin costo de licencia.
+
+1.4.1. Archivos-M
+MATLAB y Octave ofrecen una buena combinación de funciones de programación
+prácticas con potentes capacidades numéricas integradas. Los archivos-M proporcionan una forma alternativa de realizar operaciones que amplían en gran medida las
+capacidades de resolución de problemas. Existen dos tipos de archivos-M: scripts y
+funciones [25, 29].
+Un archivo de script es una serie de comandos que se guardan en un chero y son
+útiles para retener una serie de comandos que se quieren ejecutar en más de una ocasión.
+
+workspace ) de la ventana de comandos [24].
+
+Los scripts comparten el área de trabajo (
+
+Por el contrario, una función es un tipo especial de archivo-M que se ejecuta en su
+propio espacio de trabajo independiente, recibe datos de entrada a través de una lista
+de argumentos y devuelve resultados mediante una lista de argumentos de salida [25].
+
+1.4.2. Gracado en 2-D
+Los grácos son una herramienta muy útil para presentar información, especialmente en la ciencia y la ingeniería. MATLAB dispone de comandos para crear diferentes
+tipos de grácas: estándar con ejes lineales, con ejes logarítmicos y semilogarítmicos, de
+barras y escaleras, polares, tridimensionales, entre otros [26]. La función plot permite
+trazar datos bidimensionales y puede personalizarse mediante especicadores de color,
+estilo de línea y marcadores [30].
+Octave implementa un sistema de grácos compatible con la sintaxis de MATLAB,
+incluyendo las funciones plot, figure, subplot y hold, lo que garantiza que los scripts
+de visualización sean ejecutables en ambos entornos.
+
+1.4.3. Ventajas y desventajas de MATLAB/Octave
+Según [25], las principales ventajas de MATLAB incluyen: facilidad de uso, independencia de plataforma, amplia biblioteca de funciones predenidas, trazado independiente del dispositivo, e interfaz gráca de usuario.
+Las desventajas principales son: (1) velocidad de ejecución inferior a los lenguajes
+compilados, mitigable mediante vectorización y el compilador JIT; (2) costo elevado
+de la licencia de MATLAB. Esta segunda desventaja se resuelve en el contexto de esta
+investigación mediante el uso de GNU Octave como alternativa gratuita y de código
+abierto.
+
+11
+
+1.5. Conclusiones del capítulo
+1. Los sistemas de estampado de tiempo por software, aunque menos precisos que
+los de hardware, constituyen el enfoque más viable para la sincronización en redes
+inalámbricas con dispositivos de propósito general. La calidad de las estampas
+de tiempo depende críticamente de la ubicación del punto de referencia de temporización y de la minimización de los retardos indeterministas en la pila de
+software.
+2. El análisis sistemático de 15 métodos publicados entre 2014 y 2026 revela que los
+enfoques basados en Filtro de Kalman, particularmente en su variante adaptativa
+(AKF), ofrecen la mejor relación entre precisión, complejidad computacional y
+compatibilidad con el protocolo gPTP. El AKF permite la estimación conjunta
+de oset, skew y asimetría residual, adaptándose dinámicamente a cambios en
+las condiciones del canal inalámbrico.
+3. El método de corrección determinista de Exel, utilizado como referencia en esta investigación, logra una mejora del 33.31 % sobre el protocolo sin corrección
+(precisión media de 101.5 µs), pero está limitado a la compensación de asimetrías
+deterministas conocidas.
+4. Se propone un
+
+enfoque híbrido Exel + AKF
+
+que combina la corrección de-
+
+terminista de estampas de tiempo (etapa 1) con el ltrado estadístico adaptativo
+(etapa 2). Este diseño permite eliminar las asimetrías conocidas mediante Exel
+y, a continuación, ltrar el ruido residual y compensar asimetrías desconocidas
+mediante el AKF. Las operaciones requeridas álgebra lineal sobre matrices de
+
+3 × 3 son perfectamente realizables en MATLAB/GNU Octave.
+5. Las herramientas de implementación seleccionadas, MATLAB y su alternativa
+de código abierto GNU Octave, proporcionan todas las capacidades necesarias
+para el desarrollo de la simulación: generación de variables aleatorias, operaciones
+matriciales, visualización gráca y ejecución de simulaciones Monte Carlo.
+6. Los parámetros especícos del AKF (covarianzas iniciales, tamaño de ventana
+
+??
+
+deslizante, estado inicial) se determinarán experimentalmente durante la fase de
+implementación descrita en el Capítulo
+
+12
+
+.
+
+Bibliografía
+[1] O. Seijo, J. A. Lopez-Fernandez, H.-P. Bernhard, and I. Val, Enhanced timestamping method for subnanosecond time synchronization in IEEE 802.11 over WLAN
+standard conditions,
+
+IEEE Trans. Ind. Inform., vol. 16, pp. 57925805, Sept.
+
+2020.
+[2] P. Ferrari, G. Giorgi, C. Narduzzi, S. Rinaldi, and M. Rizzi, Timestamp validation
+strategy for wireless sensor networks based on IEEE 802.15.4 CSS,
+
+Instrum. Meas., vol. 63, pp. 25122521, Nov. 2014.
+
+IEEE Trans.
+
+[3] A. Mahmood, R. Exel, and T. Sauter, Impact of hard- and software timestamping on clock synchronization performance over IEEE 802.11, in
+
+2014 10th IEEE
+
+Workshop on Factory Communication Systems (WFCS 2014), (Toulouse, France),
+pp. 18, May 2014.
+
+[4] R. Exel, Clock synchronization in IEEE 802.11 wireless LANs using physical la-
+
+yer timestamps, in 2012 IEEE International Symposium on Precision Clock Synchronization for Measurement, Control and Communication Proceedings (ISPCS),
+
+(San Francisco, CA, USA), pp. 16, Sept. 2012.
+[5] P. Ferrari, A. Flammini, S. Rinaldi, A. Bondavalli, and F. Brancati, Evaluation
+of timestamping uncertainty in a software-based IEEE1588 implementation, in
+
+2011 IEEE International Instrumentation and Measurement Technology Conference (I2MTC), (Hangzhou, China), pp. 16, May 2011.
+
+[6] A. Mahmood, G. Gaderer, H. Trsek, S. Schwalowsky, and N. Kero, Towards high
+accuracy in IEEE 802.11 based clock synchronization using PTP, in 2011 IEEE
+International Symposium on Precision Clock Synchronization for Measurement,
+Control and Communication (ISPCS), (Munich, Germany), pp. 1318, Sept. 2011.
+
+[7] R. Exel, Mitigation of asymmetric link delays in IEEE 1588 clock synchronization
+systems,
+
+IEEE Commun. Lett., vol. 18, pp. 507510, Mar. 2014.
+
+[8] M. D. Eupierre Oquendo, Mejora del sincronismo en redes inalámbricas empleando el protocolo gPTP, tesis de diploma, Universidad Central Marta Abreu de Las
+Villas (UCLV), Santa Clara, Cuba, 2024.
+[9] G. Giorgi and C. Narduzzi, Performance analysis of Kalman-Filter-based clock
+synchronization in IEEE 1588 networks,
+
+IEEE Trans. Instrum. Meas., vol. 60,
+
+pp. 29022909, Aug. 2011.
+[10] Q. Li, J. Guo, W. Liu, W. Gao, Y. Zhang, and Y. Hu, An enhanced time synchronization method for a network based on Kalman ltering,
+vol. 14, 2024.
+
+13
+
+Scientic Reports,
+
+[11] G. Hollósi and D. Ficzere, Adaptive Kalman ltering in oset estimation for
+precision time protocol,
+
+IEEE Trans. Ind. Inform., 2024.
+
+[12] X. Liu and H. Wang, Robust clock parameters tracking for IEEE 1588 with
+asymmetric packet delays in industrial networks,
+
+IEEE Trans. Commun., 2024.
+
+[13] H. Wang, R. Lu, Z. Peng, and M. Li, Timestamp-free clock parameters tracking
+using extended Kalman ltering in wireless sensor networks,
+
+IEEE Trans., 2021.
+
+[14] S. Raittila, Adaptive control in the precision time protocol for industrial applications: An adaptive Kalman lter-based approach for Wi-Fi networks, Master's
+thesis, University of Vaasa, 2025. Tesis de Maestría.
+[15] A. K. Karthik and R. S. Blum, Robust clock skew and oset estimation for IEEE
+1588 in the presence of unexpected deterministic path delay asymmetries,
+
+Trans. Commun., vol. 68, no. 8, pp. 51025119, 2020.
+
+IEEE
+
+[16] V. Vázquez, C. Megías, C. Vélez, H. Esteban, and J. Díaz,  PTP over wide area
+networks with oset measurement outlier ltering,
+
+IEEE, 2025.
+
+[17] V. Q. Nguyen, T. H. Nguyen, and J. W. Jeon, An adaptive Fuzzy-PI clock servo
+based on IEEE 1588 for improving time synchronization over Ethernet networks,
+
+IEEE Access, vol. 8, 2020.
+
+[18] Y. Zhang, H. Li, S. Wang, and F. Chen, A Fuzzy-PI clock servo with window
+lter for compensating queue-induced delay asymmetry in IEEE 1588 networks,
+
+Sensors, vol. 24, no. 7, 2024.
+
+[19] H. Wang, X. Sun, W. Ma, X. Liu, and X. Zhu, Competitive learning-based clock
+parameters estimation for PTP synchronization with unknown delay distributions,
+
+IEEE Trans., 2026.
+
+[20] M. Goodarzi, V. Sark, N. Maletic, and J. G. Terán,  DNN-assisted particle-based
+Bayesian joint synchronization and localization,
+
+IEEE Trans., 2022.
+
+[21] H. Puttnies, P. Danielis, and D. Timmermann,  PTP-LP: Using linear programming to increase the delay robustness of IEEE 1588 PTP, in
+
+2018 IEEE Global
+
+Communications Conference (GLOBECOM), (Abu Dhabi, United Arab Emirates), pp. 17, Dec. 2018.
+
+[22] H. Baniabdelghany, R. Obermaisser, and A. Khalifeh, Extended synchronization
+protocol based on IEEE802.1AS for improved precision in dynamic and asymme-
+
+2020 9th Mediterranean Conference on Embedded
+Computing (MECO), (Budva, Montenegro), pp. 18, June 2020.
+tric TSN hybrid networks, in
+
+[23] M. Levesque and D. Tipper, Improving the PTP synchronization accuracy un-
+
+2015 IEEE International Symposium on
+Precision Clock Synchronization for Measurement, Control, and Communication
+(ISPCS), (Beijing, China), pp. 8893, Oct. 2015.
+der asymmetric delay conditions, in
+
+[24] D. C. Attaway,
+
+MATLAB: A Practical Introduction to Programming and Problem
+
+Solving. Butterworth-Heinemann, sixth ed., 2022.
+14
+
+[25] S. J. Chapman,
+[26] A. Gilat,
+
+MATLAB Programming for Engineers. Cengage, sixth ed., 2020.
+
+MATLAB: An Introduction with Applications. Wiley, sixth ed., 2017.
+
+[27] D. Belfadel, M. Zabinski, and I. Macwan, Introduction to MATLAB programming
+in fundamentals of engineering course, in
+
+2021 ASEE Virtual Annual Conference
+
+Content Access Proceedings, p. 11, July 2021.
+
+GNU Octave Version
+8.4.0 Manual: A High-Level Interactive Language for Numerical Computations.
+
+[28] J. W. Eaton, D. Bateman, S. Hauberg, and R. Wehbring,
+GNU Project, 2024.
+[29] T. Young and M. J. Mohlenkamp,
+
+Introduction to Numerical Methods and Matlab
+
+Programming for Engineers. Ohio University, 2023.
+
+[30] J. P. Mueller and J. Sizemore,
+
+MATLAB for Dummies. Hoboken, N.J.: John Wiley
+
+& Sons, second ed., 2021.
+
+15
+
+

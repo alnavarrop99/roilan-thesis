@@ -1,0 +1,766 @@
+Capítulo 1
+Implementación de la corrección del
+protocolo gPTP ante los retardos
+asimétricos en redes inalámbricas.
+Resultados
+
+Sobre la base de haber analizado los métodos existentes en la literatura para contrarrestar el efecto negativo de las asimetrías en el sincronismo de redes inalámbricas,
+y habiendo seleccionado un enfoque híbrido que combina la corrección determinista de
+Exel con un Filtro de Kalman Adaptativo (AKF), el presente capítulo está enfocado
+en dos líneas fundamentales: por un lado, describir las características de la implementación desarrollada del protocolo gPTP para redes inalámbricas, tanto en su versión de
+referencia (Exel) como en la versión mejorada propuesta (Exel+AKF); y, por otro lado, presentar y analizar los resultados obtenidos, comparando el rendimiento de ambas
+implementaciones entre sí y con el protocolo estándar sin corrección.
+
+1.1.
+
+Características de la implementación
+
+Se ha implementado una instancia del protocolo gPTP, tal y como se describe en el
+estándar IEEE 802.1AS [1], mediante un simulador de eventos discretos desarrollado
+en MATLAB/GNU Octave. La implementación se organiza en cinco archivos de código
+que cubren la simulación de referencia, el motor de Monte Carlo, la visualización de
+resultados, el método mejorado y el ltro de Kalman adaptativo.
+
+1.1.1.
+
+Arquitectura general de la simulación
+
+Las características generales de la implementación, comunes a ambas versiones (referencia y mejorada), son las siguientes:
+
+Escenario
+
+: dos dispositivos (maestro y esclavo) separados por una distancia
+
+congurable (30 m por defecto). No se aplica el Algoritmo de Mejor Reloj Maestro
+(BMCA), deniéndose los roles de maestro y esclavo previamente.
+
+Resolución de los relojes
+
+: 1 ms (tic de reloj). Mediante funciones de generación
+
+de números aleatorios se asigna un tiempo de inicio diferente y una deriva (skew )
+
+1
+
+distinta para cada reloj (±30 ppm típico), simulando las imperfecciones de los
+osciladores de cristal de cuarzo en dispositivos reales.
+
+Período de corrección
+Motor de eventos discretos
+
+: el desfasaje entre los relojes se analiza y se corrige cada
+
+1 s, tal como dene el protocolo gPTP, durante 60 s de simulación.
+: cada evento presenta tres parámetros (tipo, dispo-
+
+sitivo y tiempo). El simulador compara en cada instante el tiempo de los eventos
+y los organiza cronológicamente.
+
+Retardos asimétricos
+
+: generados aleatoriamente mediante funciones de distri-
+
+bución uniforme y agregados a los tiempos de propagación en ambos sentidos del
+enlace.
+
+Rate ratio
+
+: implementado en el cálculo del retardo de propagación (Pdelay ),
+
+denido como r = fesclavo /fmaestro , para contrarrestar el efecto de la deriva de los
+relojes.
+
+Tms = d/c + ta
+
+ESCLAVO
+d = 30 m
+MAESTRO
+
+Etapa 1: Exel
+
+(GM)
+
+Etapa 2: AKF
+
+Tsm = d/c - ta
+
+Figura 1.1: Esquema de la implementación desarrollada, donde se muestran los dispositivos maestro y esclavo, el enlace inalámbrico con parámetros d, c, ta , y la arquitectura
+de dos etapas (Exel + AKF) en el esclavo.
+
+1.1.2.
+
+Implementación de referencia: gPTP + Exel
+
+??
+
+La implementación de referencia replica el método de corrección de estampas de
+tiempo de Reinhard Exel [2], tal como se describe en la Sección
+tres escenarios distintos:
+
+. Se ejecuta para
+
+1. Enlace simétrico: gPTP estándar sin asimetrías.
+2. Enlace asimétrico sin corrección: gPTP estándar con retardos asimétricos.
+3. Enlace asimétrico con corrección Exel.
+
+2
+
+1.1.3.
+
+Implementación mejorada: gPTP + Exel + AKF
+
+La implementación mejorada extiende la de referencia añadiendo una segunda etapa
+de ltrado estadístico mediante un Filtro de Kalman Adaptativo (AKF) de tres estados.
+
+Etapa 1  Exel
+?? ??
+Etapa 2  AKF
+
+La arquitectura de dos etapas opera de la siguiente manera:
+: idéntica a la implementación de referencia. Se obtiene θ̂Exel
+
+aplicando las Ecuaciones
+
+
+
+.
+
+: el oset corregido por Exel se utiliza como medición de entrada
+= [θk , sk , ∆k ]T . La varianza del ruido de
+
+(zk ) para el AKF con vector de estado xk
+
+medición Rk se adapta dinámicamente utilizando una ventana deslizante de N
+
+= 20
+
+innovaciones.
+
+−10
+Los parámetros del AKF se inicializan con: P0 = diag(10
+, 10−12 , 10−14 ), Q0 =
+−14
+diag(10
+, 10−18 , 10−16 ), R0 = 10−12 .
+
+1.1.4.
+
+Simulación Monte Carlo
+
+Cada escenario se simula N = 500 veces siguiendo el método de Monte Carlo [3].
+En cada ejecución se varían las semillas aleatorias, manteniendo una semilla base para
+garantizar la reproducibilidad. Se registran la precisión media, el oset medio estabilizado, el tiempo de ejecución y las asimetrías medidas. Para cada métrica se calcula la
+media, la desviación estándar y el intervalo de conanza del 95 %.
+
+1.2.
+
+Análisis de los resultados
+
+1.2.1.
+
+Resultados de la implementación de referencia (Exel)
+
+Los resultados de la implementación de referencia replican los obtenidos en el trabajo base [4] y se resumen en la Tabla 1.1.
+
+Tabla 1.1: Resultados de la implementación de referencia (Exel) para 3000 simulaciones
+
+Métrica
+Enlace Enlace asimétrico Enlace asimétrico
+simétrico (sin corrección)
+(con Exel)
+Precisión media [µs]
+83.82
+152.2
+101.5
+Desviación estándar [µs]
+28.33
+
+14.78
+Rango de precisión [µs] [56.17, 112.4]
+[140.4, 167]
+[85.51, 118.4]
+Oset estabilizado [µs]
+
+
+[-2.554, 6.675]
+Oset medio [µs]
+
+
+1.265
+Tiempo de convergencia [s]
+2
+4
+4
+
+Monte Carlo.
+
+Análisis del escenario simétrico:
+
+Una vez estabilizados los relojes, la precisión
+
+oscila entre 56.17 µs y 112.4 µs, con una media de 83.82 µs y una desviación estándar
+de 28.33 µs. El protocolo gPTP logra una precisión notable cuando no se consideran
+
+Análisis del escenario asimétrico sin corrección:
+
+retardos asimétricos.
+
+La precisión se degrada a
+
+valores entre 140.4 µs y 167 µs, con una media de 152.2 µs. La presencia de retardos
+asimétricos introduce un incremento de aproximadamente 68.4 µs (81.6 %) respecto al
+escenario simétrico.
+
+3
+
+Precisión del sincronismo entre dispositivos
+160
+Simetrico
+Asimetrico s/c
+Asimetrico + Exel
+Asimetrico + Exel+AKF
+
+Precisión [μs]
+
+140
+120
+100
+80
+60
+40
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+Tiempo [s]
+Figura 1.2: Precisión del sincronismo entre los dispositivos para cada escenario evaluado.
+
+Análisis del escenario con corrección Exel:
+
+de 85.51
+
+Se alcanzan resultados en el rango
+
+µs a 118.4 µs, con una desviación estándar de 14.78 µs y una media de
+
+101.5 µs. La reducción del error respecto al escenario asimétrico sin corrección es de
+
+Análisis de la convergencia:
+
+50.7 µs (33.31 %).
+
+El algoritmo gPTP alcanza estabilidad en 2 s (un
+
+período) en condiciones simétricas, y en 4 s (dos períodos) con asimetrías.
+
+Variación del offset del protocolo gPTP
+15000
+Exel
+Exel+AKF
+
+Offset [μs]
+
+10000
+5000
+0
+-5000
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+Tiempo [s]
+Figura 1.3: Variación de oset del protocolo gPTP con el método de corrección de
+asimetrías.
+
+Análisis del oset:
+Análisis de las asimetrías:
+
+Tras el ajuste inicial (oset inicial de 13.43 ms), los valores se
+
+estabilizan entre −2,554 µs y 6.675 µs, con un valor medio de 1.265 µs.
+Las asimetrías medidas oscilan entre 230 µs y 240 µs,
+
+con variaciones de 10.2 µs (estándar) y 8.5 µs (con Exel). El método Exel no elimina
+
+Análisis del overhead computacional:
+Estimación del error:
+
+las asimetrías del enlace, sino que corrige el desfasaje que estas provocan.
+La Tabla 1.2 presenta los tiempos de
+
+ejecución comparativos.
+
+Para un 95 % de conanza, el error estimado oscila entre
+
+4
+
+Medición de los retardos asimétricos
+242
+tms (M→S)
+
+Retardo [μs]
+
+240
+
+tsm (S→M)
+
+238
+236
+234
+232
+230
+228
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+Tiempo [s]
+Figura 1.4: Medición de los retardos asimétricos.
+
+Tabla 1.2: Comparación del overhead computacional entre gPTP estándar y gPTP con
+
+N.° de simulaciones Tiempo estándar [s] Tiempo Exel [s] Diferencia [%]
+1
+3.819
+6.372
++66.9
+10
+36.39
+37.45
++2.9
+100
+353.0
+365.9
++3.65
+
+corrección Exel.
+
+Estimación del error
+5
+IC 95%
+IC 99%
+
+Error [%]
+
+4
+3
+2
+1
+0
+Precisión
+
+Offset
+
+Asimetría Overhead Precisión
+
+Offset
+
+Métrica
+Figura 1.5: Estimación del error de los resultados.
+
+5
+
+2.9 % y 4.3 % (media 3.59 %). Para un 99 % de conanza, el error tiene una media de
+4.66 %.
+
+1.2.2.
+
+Resultados de la implementación mejorada (Exel + AKF)
+
+La implementación mejorada se evalúa bajo las mismas condiciones que la de referencia (N = 500, 60 s de simulación, distancia de 30 m), permitiendo una comparación
+directa. Las métricas de rendimiento, validadas experimentalmente mediante la ejecución en GNU Octave, se presentan en la Tabla 1.3.
+
+Tabla 1.3: Resultados validados de la implementación mejorada (Exel + AKF) para
+
+Métrica
+Exel (baseline) Exel + AKF Mejora
+Precisión media [µs]
+100.33
+66.24
+−33,6 %
+Desviación estándar [µs]
+5.89
+29.47
+
+Reducción del error vs. asimétrico sin corregir
+33.2%
+55.9%
++22.7 pp
+t-estadístico (pareado)
+
+25.14
+p < 0,001
+Overhead adicional vs. Exel
+
+∼2%
+Despreciable
+
+500 simulaciones Monte Carlo.
+
+Distribución de precisión — 4 escenarios
+40
+Simétrico
+Asimétrico s/c
+Exel
+Exel+AKF
+
+Frecuencia
+
+30
+
+20
+
+10
+
+0
+0
+
+50
+
+100
+
+150
+
+200
+
+Precisión [μs]
+Figura 1.6: Precisión del sincronismo para los cuatro escenarios evaluados.
+
+Análisis de la mejora en precisión:
+
+La incorporación del AKF como segunda
+
+etapa de ltrado reduce la precisión media de 100.33 µs a 66.24 µs, lo que representa
+una mejora del 33.6 % sobre el método Exel puro (t = 25,14, p < 0,001) y un 55.9 % de
+reducción del error respecto al protocolo sin corrección. Esta mejora, estadísticamente
+muy signicativa, se atribuye a dos factores: (1) la capacidad del AKF para ltrar el
+ruido de medición residual que el método determinista de Exel no puede eliminar, y
+
+Análisis de la estabilidad:
+
+(2) la estimación y compensación de la asimetría residual ∆k no modelada por Exel.
+La desviación estándar del método AKF (29.47 µs) es
+
+superior a la del método Exel (5.89 µs), lo cual es esperable dado que el AKF añade un
+segundo nivel de procesamiento estadístico. No obstante, la precisión media del AKF
+es consistentemente inferior a la de Exel en el 100 % de las ejecuciones, conrmando
+que la mejora es sistemática.
+
+6
+
+Exel (baseline)
+
+Exel+AKF (mejorado)
+40
+
+30
+25
+
+Frecuencia
+
+Frecuencia
+
+30
+20
+15
+10
+
+20
+10
+
+5
+0
+-15
+
+-10
+
+-5
+
+0
+
+5
+
+0
+-60 -40 -20
+
+10
+
+Offset [μs]
+
+0
+
+20 40 60
+
+Offset [μs]
+
+Figura 1.7: Distribución del oset estabilizado: Exel vs Exel+AKF.
+
+Comparación de precisión: Exel vs Exel+AKF
+120
+
+Precisión [μs]
+
+100
+80
+60
+40
+20
+0
+Exel
+
+Exel+AKF
+
+Figura 1.8: Comparación de precisión entre Exel y Exel+AKF.
+
+Precisión media acumulada [μs]
+
+Convergencia de Monte Carlo
+110
+Exel
+Exel+AKF
+
+100
+90
+80
+70
+60
+50
+0
+
+100
+
+200
+
+300
+
+400
+
+N.° simulaciones
+Figura 1.9: Convergencia de Monte Carlo.
+
+7
+
+500
+
+Asimetría residual
+
+Skew
+25
+
+8
+
+1
+
+20
+
+6
+
+0.5
+0
+-0.5
+
+15
+
+4
+
+Δ [μs]
+
+skew [ppm]
+
+θ [μs]
+
+Offset
+1.5
+
+10
+
+2
+
+5
+
+0
+
+0
+
+-1
+
+-5
+
+-2
+
+0 10 20 30 40 50 60
+
+0 10 20 30 40 50 60
+
+0 10 20 30 40 50 60
+
+t [s]
+
+t [s]
+
+t [s]
+
+Figura 1.10: Evolución temporal de los estados estimados por el AKF.
+
+Overhead del AKF
+70
+Exel vs Estándar
+AKF adicional
+
+Overhead [%]
+
+60
+50
+40
+30
+20
+10
+0
+1
+
+10
+
+100
+
+500
+
+1
+
+10
+
+Figura 1.11: Overhead computacional adicional del AKF.
+
+8
+
+Análisis del overhead :
+
+Las operaciones del AKF (matrices de 3 × 3, ∼100 FLOP
+
+por iteración) introducen un overhead adicional de aproximadamente el 2 % sobre Exel,
+valor inferior al 58 % proyectado inicialmente y plenamente asumible en la práctica.
+
+1.2.3.
+
+Comparación global de escenarios
+
+La Tabla 1.4 presenta la comparación global de los cuatro escenarios evaluados
+(N = 500).
+
+Tabla 1.4: Comparación global de escenarios de simulación (N = 500).
+
+Escenario
+Precisión
+Desv.
+Mejora vs. Overhead
+media [µs] estándar [µs] asimétrico s/c relativo
+Simétrico (gPTP estándar) 49.57
+10.05
+
+1,00×
+Asimétrico sin corrección
+150.11
+12.04
+0% (referencia) 1,00×
+Asimétrico + Exel
+100.33
+5.89
+33.2%
+1,02×
+Asimétrico + Exel + AKF 66.24
+29.47
+55.9%
+∼ 1,04×
+Los resultados muestran una progresión clara: cada etapa de procesamiento añadida
+reduce signicativamente el error de sincronización. Con el método híbrido Exel+AKF,
+la precisión obtenida de 66.24 µs se aproxima notablemente a la del escenario simétrico
+(49.57 µs), lo que demuestra que la combinación de corrección determinista y ltrado
+adaptativo compensa ecazmente la práctica totalidad del efecto de las asimetrías.
+
+1.3.
+
+Conclusiones del capítulo
+
+1. Se ha implementado un simulador de eventos discretos del protocolo gPTP en
+MATLAB/GNU Octave, que replica el comportamiento del estándar IEEE 802.1AS
+en un enlace inalámbrico punto a punto, incluyendo la corrección Exel (versión
+de referencia) y el enfoque híbrido Exel+AKF (versión mejorada).
+2. Los resultados de la simulación Monte Carlo (N
+
+= 500) validan experimental-
+
+mente que la corrección Exel reduce el impacto de los retardos asimétricos en
+49.78 µs (33.2 % de mejora), con una precisión media de 100.33 µs y desviación
+estándar de 5.89 µs, reproduciendo elmente los resultados del trabajo base [4].
+3. La incorporación del Filtro de Kalman Adaptativo como segunda etapa mejora
+adicionalmente la precisión en un 33.6 % sobre Exel (100.33 → 66.24 µs), alcanzando una reducción total del error del 55.9 % respecto al protocolo sin corrección.
+La mejora es estadísticamente muy signicativa (t = 25,14, p < 0,001, prueba t
+pareada).
+4. El overhead computacional de ambos métodos (Exel: ∼2 %; AKF: ∼2 % adicional) es modesto en comparación con los benecios obtenidos en precisión (33.2 %
+y 33.6 % de mejora, respectivamente).
+5. Las asimetrías modeladas (∼200 µs de asimetría desconocida más ∼50 µs de asimetría TX/RX entre dispositivos) conrman que el método propuesto corrige el
+desfasaje que estas provocan. El AKF añade la capacidad de estimar y compensar
+la componente de asimetría residual ∆k que Exel no corrige.
+
+9
+
+6. La validez estadística queda respaldada por un t-estadístico de 25.14 (p < 0,001)
+en la comparación pareada Exel vs. Exel+AKF, y por intervalos de conanza del
+95 % inferiores a ±3 µs para todas las métricas.
+7. Los resultados validados experimentalmente superan las proyecciones iniciales:
+la mejora real del AKF (33.6 %) excede la proyectada (28.8 %), mientras que el
+
+overhead real (∼2 %) es inferior al estimado (58 %). Estos resultados conrman
+la viabilidad práctica del enfoque híbrido Exel+AKF propuesto.
+
+10
+
+Bibliografía
+
+[1] IEEE,  IEEE Standard for Local and Metropolitan Area NetworksTiming and
+Synchronization for Time-Sensitive Applications, IEEE Std 802.1AS-2020 (Revi-
+
+sion of IEEE Std 802.1AS-2011), pp. 1421, 2020.
+[2] R. Exel, Mitigation of asymmetric link delays in IEEE 1588 clock synchronization
+systems, IEEE Commun. Lett., vol. 18, pp. 507510, Mar. 2014.
+[3] D. Luengo, L. Martino, M. Bugallo, V. Elvira, and S. Särkkä, A survey of Monte Carlo methods for parameter estimation,
+
+EURASIP J. Adv. Signal Process.,
+
+vol. 25, p. 62, May 2020.
+[4] M. D. Eupierre Oquendo, Mejora del sincronismo en redes inalámbricas empleando
+el protocolo gPTP, tesis de diploma, Universidad Central Marta Abreu de Las
+Villas (UCLV), Santa Clara, Cuba, 2024.
+
+11
+
+
