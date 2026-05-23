@@ -106,6 +106,22 @@ The thesis is organised into the following sections and chapters, matching the s
 6. **Recomendaciones** — Recommendations for future work.
 7. **Referencias Bibliográficas** — Bibliography formatted according to IEEE standards.
 
+### Development Plan
+
+The overall development roadmap for this thesis is documented in:
+
+**`src/PLAN.md`**
+
+This plan describes:
+- The relationship between the base document (`TD_Malcolm_Eupierre.pdf`) and the new thesis
+- The chapter-by-chapter development workflow with three-format output (Markdown → LaTeX → PDF)
+- The technical strategy for improving gPTP synchronization in **asymmetric** wireless networks using a **more optimal and novel program** that surpasses the original Exel-based implementation
+- The implementation approach (MATLAB/Octave) and simulation methodology (Monte Carlo)
+- The research plan for finding novel methods beyond Exel (Kalman filters, machine learning, adaptive techniques, etc.)
+- The cronogram for all phases of development
+
+All chapters follow the three-format rule (`.md` → `.tex` → `.pdf`) as described above.
+
 ### Build Commands
 
 ```bash
